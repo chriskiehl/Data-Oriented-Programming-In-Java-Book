@@ -1,2 +1,9 @@
-# Data-Oriented-Programming-In-Java-Book
-Source code for Data Oriented Programming in Java
+# Data Oriented Programming in Java
+
+Source code for the book Data Oriented Programming in Java (by me! Chris Kiehl!)
+
+
+
+
+
+
