@@ -2,6 +2,10 @@
 
 Source code for the book Data Oriented Programming in Java (by me! Chris Kiehl!)
 
+<p align="center">
+    <img src="https://raw.githubusercontent.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/main/graphics/book-cover.JPG" />
+</p>
+
 * ISBN 
 
 
