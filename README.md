@@ -86,7 +86,7 @@ Sometimes, separate listings in the book will be combined into one example in th
 ```
 
 > [!Note]
-> The class names in the code will often differ from the _single_ class name used in the book. Java doesn't let us redefine classes over and over again, so we 'cheat' by appending a qualifying suffix. For instance, `ScheduledTask` in listing A might become `ScheduledTaskV2` or `ScheduledTaskWithBetterOOP` in a subsequent example code. The listing numbers in the Javadoc will always tie to the Listing numbers in the book.  
+> The class names in the code will often differ from the class names used in the book. Java doesn't let us redefine classes over and over again (which we do in the book as we refactor), so we 'cheat' by appending a qualifying suffix. For instance, `ScheduledTask` in listing A might become `ScheduledTaskV2` or `ScheduledTaskWithBetterOOP` in a subsequent example code. The listing numbers in the Javadoc will always tie to the Listing numbers in the book.  
 
 
 **Character Encodings**
@@ -111,19 +111,19 @@ RetryDecision reschedule(FailedTask failedTask) {       //  ◄───┘ to u
 
 ## Table of Contents
 
-| Chapter                                                   | Code Listings                                                                                                                                 | Tests (if relevant) | 
-|-----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
-| Chapter 01 - Data Oriented Programming                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/main/java/dop/chapter01/Listings.java) | None |
-| Chapter 02 - Data, Identity, and Values                   | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/main/java/dop/chapter02/Listings.java) | None |
-| Chapter 03 - Data and Meaning                             | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/main/java/dop/chapter03/Listings.java) | None |
-| Chapter 03 - Representation is the Essence of Programming | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/main/java/dop/chapter04/Listings.java) | None |
-
+| Chapter                                                   | Code Listings                                                                                                                                 | 
+|-----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| Chapter 01 - Data Oriented Programming                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/main/java/dop/chapter01/Listings.java) |
+| Chapter 02 - Data, Identity, and Values                   | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/main/java/dop/chapter02/Listings.java) |
+| Chapter 03 - Data and Meaning                             | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/main/java/dop/chapter03/Listings.java) |
+| Chapter 04 - Representation is the Essence of Programming | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/main/java/dop/chapter04/Listings.java) |
+| Chapter 05 - Coming soon!                                 | Coming soon!                                                                                                                                  |
 
 
 ## Questions and Feedback
 
+TODO: Manning Forum link. 
 I'm most responsive to emails. If you have a question about the repo, feel free to write me at me@chriskiehl.com. 
-
 
 
 
