@@ -10,6 +10,13 @@ Source code for the book Data Oriented Programming in Java (by me! Chris Kiehl!)
 
 
 
+```
+gradle build
+
+gradle test --tests 'dop.chapter05.Chapter05Test'  
+gradle test --tests 'dop.chapter05.Chapter05Test.specificTest'
+```
+
 
 ## Questions and Feedback
 

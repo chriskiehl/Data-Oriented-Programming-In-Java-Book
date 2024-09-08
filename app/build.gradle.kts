@@ -32,6 +32,8 @@ java {
     }
 }
 
+
+
 application {
     // Define the main class for the application.
     mainClass.set("dop.App")
@@ -40,4 +42,14 @@ application {
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
+
+tasks.withType<JavaCompile>().configureEach {
+    //enable compilation in a separate daemon process
+    options.encoding = "UTF-8"
 }
