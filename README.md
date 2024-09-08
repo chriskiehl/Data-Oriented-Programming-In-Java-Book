@@ -8,7 +8,7 @@ Source code for the book Data Oriented Programming in Java (by me! Chris Kiehl!)
 
 * ISBN 
 
-> [!Heads up!]
+> [!Note]
 > This book is still in progress. This repository will be updated as new chapters are released. 
 
 This book is a distillation of everything I’ve learned about what effective development looks like in Java (so far!). It’s what’s left over after years of experimenting, getting things wrong (often catastrophically), and
@@ -32,6 +32,8 @@ The project is built with [Gradle](https://gradle.org/).
 gradle build
 ```
 
+### Running the code 
+
 The `tests/` package houses any runnable code. You can run all the tests in a class with this command:
 
 ```
@@ -50,13 +52,70 @@ gradle test --tests 'dop.chapter01.Chapter01Test.exampleMethod'
 
 
 
-## How to use this repository
+### How to use this repository
 
-Each chapter in the book has an associated package in the `src/` directory. Most of the examples aren't neccessarily things that we'll run. They're there for study. DoP is a book that's about design decisions and how they affect our code. We're striving to make incorrect states impossible to express or compile. Thus, a lot of the examples are exploring how our representation of the code changes as we refine our data model.  
+Each chapter in the book has an associated package in the `src/` directory. Most of the examples aren't necessarily things that we'll run. They're primarily for study. DoP is a book that's about design decisions and how they affect our code. We're striving to make incorrect states impossible to express or compile. Thus, a lot of the examples are exploring how code changes (or _disappears_ entirely) when we get our modeling right.  
+
+**Listings in the Book vs Code**
+
+Each listing in the book will have a corresponding example in the code. The Javadoc will describe which listing the code applies to.
+
+```
+/**
+* ───────────────────────────────────────────────────────
+*                      Listing 1.1
+* ───────────────────────────────────────────────────────
+*
+* Here's an example of how we might traditionally model
+* data "as data" using a Java object.
+* ───────────────────────────────────────────────────────
+*/
+```
+
+Sometimes, separate listings in the book will be combined into one example in the code.  
+
+```
+/**
+ * ───────────────────────────────────────────────────────
+ *                  Listings 1.5 & 1.6
+ * ───────────────────────────────────────────────────────
+ * Representation affects our ability to understand the code
+ * as a whole. [...]
+ * ───────────────────────────────────────────────────────
+ */
+```
 
 > [!Note]
-> Make sure your IDE / Text editor is configured for UTF-8 character encoding (Windows tends to default to other encodings). Many of the in-code diagrams leverage the utf-8 charset. 
+> The class names in the code will often differ from the _single_ class name used in the book. Java doesn't let us redefine classes over and over again, so we 'cheat' by appending a qualifying suffix. For instance, `ScheduledTask` in listing A might become `ScheduledTaskV2` or `ScheduledTaskWithBetterOOP` in a subsequent example code. The listing numbers in the Javadoc will always tie to the Listing numbers in the book.  
 
+
+**Character Encodings**
+
+Make sure your IDE / Text editor is configured for UTF-8 character encoding (Windows tends to default to other encodings). Many of the in-code diagrams leverage the utf-8 charset. 
+
+Example utf-8 diagram:
+```
+// An informational black hole!
+//
+//  ┌────────  It returns nothing!
+//  ▼
+// void reschedule( ) {   //  ◄─────────────────────────────────┐
+//     ...         ▲                                            │ Compare how very different
+// }               └────── It takes nothing!                    │ these two methods are in
+//                                                              │ terms of what they convey
+RetryDecision reschedule(FailedTask failedTask) {       //  ◄───┘ to us as readers
+    // ...
+}
+```
+
+
+## Table of Contents
+
+| Chapter                                | Code Listings                                                                                                                                 | Tests (if relevant) | 
+|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
+| Chapter 01 - Data Oriented Programming | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/main/java/dop/chapter01/Examples.java) | None |
+| Chapter 02 - Data, Identity, and Values | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/main/java/dop/chapter02/Examples.java) | None |
+| Chapter 03 - Data and Meaning          | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/main/java/dop/chapter01/Examples.java) | None |
 
 
 ## Questions and Feedback

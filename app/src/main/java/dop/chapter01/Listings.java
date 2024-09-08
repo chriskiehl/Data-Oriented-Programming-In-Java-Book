@@ -1,8 +1,9 @@
 package dop.chapter01;
 
-import dop.chapter01.Examples.RetryDecision.Abandoned;
-import dop.chapter01.Examples.RetryDecision.ReattemptLater;
-import dop.chapter01.Examples.RetryDecision.RetryImmediately;
+
+import dop.chapter01.Listings.RetryDecision.Abandoned;
+import dop.chapter01.Listings.RetryDecision.ReattemptLater;
+import dop.chapter01.Listings.RetryDecision.RetryImmediately;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,7 +13,12 @@ import java.util.UUID;
 import static java.time.LocalDateTime.now;
 
 
-public class Examples {
+/**
+ * Chapter 01 is a whirlwind tour of the main ideas of data-oriented
+ * programming. It can all be summed up in a single phrase from Fred
+ * Brooks: "representation is the essence of programming."
+ */
+public class Listings {
 
     /**
      * ───────────────────────────────────────────────────────
@@ -403,6 +409,8 @@ public class Examples {
      * We can combine the strengths of both approaches.
      * ───────────────────────────────────────────────────────
      */
+
+
     class ScheduledTaskWithBestOfBothWorlds {
         private RetryDecision status;
 
@@ -421,4 +429,36 @@ public class Examples {
         }
     }
 
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     *               Listings 1.14 & 1.15
+     * ───────────────────────────────────────────────────────
+     * We've made a lot of improvements to the implementation, but
+     * the method signature is still super vague.
+     * ───────────────────────────────────────────────────────
+     */
+    class FixingScheduledTasksRemainingAmbiguity {
+        private RetryDecision status;
+
+        // An informational black hole!
+        //
+        // ┌────────  It returns nothing!
+        // ▼
+        void reschedule( ) {   //  ◄─────────────────────────────────┐
+            // ...      ▲                                            │ Compare how very different
+        }   //          └────── It takes nothing!                    │ these two methods are in
+            //                                                       │ terms of what they convey
+        RetryDecision rescheduleV2(FailedTask failedTask) {  //  ◄───┘ to us as readers
+            // We'll implement this in a followup example
+            return null;
+        }
+    }
+
+    static class FailedTask {
+        // blank. Here just to enable
+        // compilation of listing 1.14 above
+    }
 }
