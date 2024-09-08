@@ -168,8 +168,8 @@ public class Examples {
         //───────────────────────────────────────────────────┐
         boolean someSuperComplexCondition() {            //  │ Note!
             return false;                                //  │ These are just here so the code will
-        }                                                //  │ compile. They return fixed junk values
-        boolean someOtherComplexCondition() {            //  │ because they're supposed to be ignored
+        }                                                //  │ compile. They return fixed junk values.
+        boolean someOtherComplexCondition() {            //  │ They should be ignored
             return false;                                //  │ for the purposes of the exercise.
         }                                                //  │
         int delay() {                                    //  │
@@ -387,7 +387,7 @@ public class Examples {
 
         private void pruneTasks() {
             // The API method nicely clarifies what the state of the
-            // task means.
+            // task means. This is much better than an ambiguous null check.
             this.tasks.removeIf((task) -> task.isAbandoned());
         }
     }
@@ -399,7 +399,8 @@ public class Examples {
      * ───────────────────────────────────────────────────────
      *                   Listings 1.13
      * ───────────────────────────────────────────────────────
-     * T
+     * Luckily, it's not one or the other. It's not OOP vs DoP.
+     * We can combine the strengths of both approaches.
      * ───────────────────────────────────────────────────────
      */
     class ScheduledTaskWithBestOfBothWorlds {
@@ -410,9 +411,14 @@ public class Examples {
         }
 
         public boolean isAbandoned() {
+            // By combing the approaches, we get a nice internal
+            // representation to program against. We can still use
+            // OOP to control the interfaces. Further, doesn't this
+            // code feel almost like it's writing itself? Of course
+            // we'd expose this method from our object -- it's a
+            // core idea we uncovered while modeling the data!
             return this.status instanceof Abandoned;
         }
-
     }
 
 }
