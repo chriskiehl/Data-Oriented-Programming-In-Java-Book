@@ -6,13 +6,14 @@ Source code for the book Data Oriented Programming in Java (by me! Chris Kiehl!)
     <img src="https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/graphics/book-cover.JPG?raw=true" />
 </p>
 
-* ISBN 
+* Early Access Link (Coming Soon!)
+* ISBN: 9781633436930
 
 > [!Note]
-> This book is still in progress. This repository will be updated as new chapters are released. 
+> This book is in Early Access while I continue to work on it. This repository will be updated as new chapters are released. 
 
 This book is a distillation of everything I’ve learned about what effective development looks like in Java (so far!). It’s what’s left over after years of experimenting, getting things wrong (often catastrophically), and
-slowly having anything resembling “devotion to a single paradigm” beat out of me by the great humbling filter that is reality.
+slowly having anything resembling “devotion to a single paradigm” beat out of me by the great humbling filter that is reality. 
 
 Data-orientation is born from a very simple idea, and one that people have been repeatedly rediscovering since the dawn of computing: “representation is essence of programming”. Programs that are organized around the data they manage tend to be simpler, smaller, and significantly easier understand. When we do a really good job of capturing the data in our domain, the rest of the system tends to fall into place in a way which can feel like it’s writing itself.
 

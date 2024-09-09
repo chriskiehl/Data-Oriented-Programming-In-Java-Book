@@ -22,9 +22,9 @@ public class Listings {
 
     /**
      * ───────────────────────────────────────────────────────
-     *                      Listing 1.1
+     * Listing 1.1
      * ───────────────────────────────────────────────────────
-     *
+     * <p>
      * Here's an example of how we might traditionally model
      * data "as data" using a Java object.
      * ───────────────────────────────────────────────────────
@@ -41,6 +41,7 @@ public class Listings {
             this.x = x;
             this.y = y;
         }
+
         // Equality is very important when modeling data, but that's a topic
         // for chapter 02 ^_^
         @Override
@@ -71,7 +72,7 @@ public class Listings {
 
     /**
      * ───────────────────────────────────────────────────────
-     *                      Listing 1.2
+     * Listing 1.2
      * ───────────────────────────────────────────────────────
      * This example is all about the ambiguity that most of our
      * representations carry with them. Checkout this attribute
@@ -82,13 +83,13 @@ public class Listings {
      */
     static class AmbiguousRepresentationExample {
         String id; // ◄── DoP is largely just the act of noticing
-                   //     that code like this is extremely vague.
+        //     that code like this is extremely vague.
     }
 
 
     /**
      * ───────────────────────────────────────────────────────
-     *                      Listing 1.3
+     * Listing 1.3
      * ───────────────────────────────────────────────────────
      * The representation we've picked for the ID, despite being
      * trivial and one line, captures the soul of data oriented
@@ -116,7 +117,7 @@ public class Listings {
 
     /**
      * ───────────────────────────────────────────────────────
-     *                      Listing 1.4
+     * Listing 1.4
      * ───────────────────────────────────────────────────────
      * Here's the magic of representation. I don't have to tell
      * you out of band what that ID is supposed to be. You don't
@@ -127,19 +128,15 @@ public class Listings {
      */
     static class ImprovedRepresentation {
         UUID id;   //  ◄── THIS tells us exactly what that ID should be! A UUID.
-                   //      Not an arbitrary string. Not a Product Code or SKU.
-                   //      ID is a UUID. Try to give it anything else and your
-                   //      code won't compile.
+        //      Not an arbitrary string. Not a Product Code or SKU.
+        //      ID is a UUID. Try to give it anything else and your
+        //      code won't compile.
     }
-
-
-
-
 
 
     /**
      * ───────────────────────────────────────────────────────
-     *                  Listings 1.5 & 1.6
+     * Listings 1.5 & 1.6
      * ───────────────────────────────────────────────────────
      * Representation affects our ability to understand the code
      * as a whole. The class below, ScheduledTask, is an example
@@ -175,12 +172,15 @@ public class Listings {
         boolean someSuperComplexCondition() {            //  │ Note!
             return false;                                //  │ These are just here so the code will
         }                                                //  │ compile. They return fixed junk values.
+
         boolean someOtherComplexCondition() {            //  │ They should be ignored
             return false;                                //  │ for the purposes of the exercise.
         }                                                //  │
+
         int delay() {                                    //  │
             return 0;                                    //  │
         }                                                //  │
+
         //  │
         private LocalDateTime standardInterval() {       //  │
             return now();                                //  │
@@ -205,11 +205,9 @@ public class Listings {
     }
 
 
-
-
     /**
      * ───────────────────────────────────────────────────────
-     *                     Listings 1.7
+     * Listings 1.7
      * ───────────────────────────────────────────────────────
      * The problem with the example above (listing 1.5 & 1.6) is
      * that we can't tell what any of it means. The code doesn't
@@ -240,15 +238,20 @@ public class Listings {
      * construct will be covered in Chapters 3 and 4.
      */
     sealed interface RetryDecision {
-        record RetryImmediately(LocalDateTime next, int attemptsSoFar) implements RetryDecision {}
-        record ReattemptLater(LocalDateTime next) implements RetryDecision {}
-        record Abandoned() implements RetryDecision {}
+        record RetryImmediately(LocalDateTime next, int attemptsSoFar) implements RetryDecision {
+        }
+
+        record ReattemptLater(LocalDateTime next) implements RetryDecision {
+        }
+
+        record Abandoned() implements RetryDecision {
+        }
     }
 
 
     /**
      * ───────────────────────────────────────────────────────
-     *                  Listings 1.8
+     * Listings 1.8
      * ───────────────────────────────────────────────────────
      * The thing we strive for in data-oriented programming is
      * to be able to communicate effectively within the code.
@@ -273,8 +276,8 @@ public class Listings {
         void reschedule() {
             if (this.someSuperComplexCondition()) {
                 this.setStatus(new RetryImmediately(  // ◄── NEW!
-                    now().plusSeconds(this.delay()),
-                    this.attempts(status) + 1
+                        now().plusSeconds(this.delay()),
+                        this.attempts(status) + 1
                 ));
             } else if (this.someOtherComplexCondition()) {
                 this.setStatus(new ReattemptLater(this.standardInterval())); // ◄── NEW!
@@ -287,17 +290,21 @@ public class Listings {
         boolean someSuperComplexCondition() {            //  │ Note!
             return false;                                //  │ These are just here so the code will
         }                                                //  │ compile. They return fixed junk values
+
         boolean someOtherComplexCondition() {            //  │ because they're supposed to be ignored
             return false;                                //  │ for the purposes of the exercise.
         }                                                //  │
+
         int delay() {                                    //  │
             return 0;                                    //  │
         }                                                //  │
+
         //  │
         private LocalDateTime standardInterval() {       //  │
             return now();                                //  │
         }                                                //  │
-                                                         //  │
+
+        //  │
         private int attempts(RetryDecision decision) {   //  │
             return 1;                                    //  │
         }                                                //  │
@@ -306,20 +313,16 @@ public class Listings {
         private void setStatus(RetryDecision decision) {
             this.status = decision;
         }
+
         public RetryDecision status() {
             return this.status;
         }
     }
 
 
-
-
-
-
-
     /**
      * ───────────────────────────────────────────────────────
-     *                 Listings 1.9 & 1.10
+     * Listings 1.9 & 1.10
      * ───────────────────────────────────────────────────────
      * Good modeling has a simplifying effect on the entire
      * codebase. We can refactor other parts of the code to
@@ -345,12 +348,9 @@ public class Listings {
     }
 
 
-
-
-
     /**
      * ───────────────────────────────────────────────────────
-     *                  Listings 1.11
+     * Listings 1.11
      * ───────────────────────────────────────────────────────
      * You might argue that the problem with the original code
      * was that it leaked information. It didn't define domain
@@ -375,12 +375,9 @@ public class Listings {
     }
 
 
-
-
-
     /**
      * ───────────────────────────────────────────────────────
-     *                   Listings 1.12
+     * Listings 1.12
      * ───────────────────────────────────────────────────────
      * The improvements from Listing 1.11 ripple outward in a
      * similar way to the improvements we made in listing 1.9 & 1.10.
@@ -399,11 +396,9 @@ public class Listings {
     }
 
 
-
-
     /**
      * ───────────────────────────────────────────────────────
-     *                   Listings 1.13
+     * Listings 1.13
      * ───────────────────────────────────────────────────────
      * Luckily, it's not one or the other. It's not OOP vs DoP.
      * We can combine the strengths of both approaches.
@@ -430,11 +425,9 @@ public class Listings {
     }
 
 
-
-
     /**
      * ───────────────────────────────────────────────────────
-     *               Listings 1.14 & 1.15
+     * Listings 1.14 & 1.15
      * ───────────────────────────────────────────────────────
      * We've made a lot of improvements to the implementation, but
      * the method signature is still super vague.
@@ -447,10 +440,11 @@ public class Listings {
         //
         // ┌────────  It returns nothing!
         // ▼
-        void reschedule( ) {   //  ◄─────────────────────────────────┐
+        void reschedule() {   //  ◄─────────────────────────────────┐
             // ...      ▲                                            │ Compare how very different
         }   //          └────── It takes nothing!                    │ these two methods are in
-            //                                                       │ terms of what they convey
+
+        //                                                       │ terms of what they convey
         RetryDecision rescheduleV2(FailedTask failedTask) {  //  ◄───┘ to us as readers
             // We'll implement this in a followup example
             return null;
@@ -460,5 +454,94 @@ public class Listings {
     static class FailedTask {
         // blank. Here just to enable
         // compilation of listing 1.14 above
+        // The fact that it tells us quite a bit without
+        // us implementing anything is pretty nice feature!
     }
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listings 1.16
+     * ───────────────────────────────────────────────────────
+     * Letting the data types guide our refactoring of the
+     * reschedule method.
+     * ───────────────────────────────────────────────────────
+     */
+    class DataDrivenRefactoringOfScheduledTask {
+        private RetryDecision status;
+
+        // What's powerful about this refactoring is that it makes our
+        // code describe exactly what it is to everyone who reads it.
+        // No wikis or external 'design docs' needed. There's no secret
+        // institutional knowledge. The code teaches us what we need to
+        // know about how retries are handled in this domain.
+        RetryDecision reschedule(FailedTask failedTask) {
+            return switch (failedTask) {
+                case FailedTask task when someSuperComplexCondition(task) ->
+                        new RetryImmediately(now(), attempts(status) + 1);
+                case FailedTask task when someOtherComplexCondition(task) ->
+                        new ReattemptLater(this.standardInterval());
+                default -> new Abandoned();
+            };
+        }
+
+        // As with the prior listing. The implementation for all
+        // the methods below are just placeholders. We don't care
+        // (or even *want* to care) about their implementation details.
+        // We should be able to reason "above" the details by looking
+        // at the high level data types in the code.
+        //───────────────────────────────────────────────────────┐
+        boolean someSuperComplexCondition(FailedTask task) {  // │
+            return false;                                     // │
+        }                                                     // │
+
+        boolean someOtherComplexCondition(FailedTask task) {  // │
+            return false;                                     // │
+        }                                                     // │
+
+        int delay() {                                         // │
+            return 0;                                         // │
+        }                                                     // │
+
+        private LocalDateTime standardInterval() {            // │
+            return now();                                     // │
+        }                                                     // │
+
+        private int attempts(RetryDecision decision) {        // │
+            return 1;                                         // │
+        }                                                     // │
+        //───────────────────────────────────────────────────────┘
+    }
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listings 1.17
+     * ───────────────────────────────────────────────────────
+     * The more we listen to the data, the more it will shape
+     * how we write our code. "Design" becomes simply noticing
+     * when we can make our code clearer.
+     * ───────────────────────────────────────────────────────
+     */
+    // Note:
+    // This code for this listing is commented out as it relies on
+    // syntax that will not compile in Java in order to clarify the
+    // output of the method. In latest chapters, we'll learn how to
+    // model this kind of output in Java.
+    // static class SketchingTheRunMethodForTheScheduler {
+    //
+    //
+    //            Scheduled Tasks ──────────────────────┐
+    //                                                  │
+    //                                                  ▼
+    //    private <CompletedTask | FailedTask> run(ScheduledTask task) {
+    //        ...
+    //    }                ▲
+    //                     │
+    //                     │
+    //                     └───────────  Get turned into either Completed
+    //                                   Tasks or Failed tasks
+    // }
+
 }
