@@ -83,7 +83,7 @@ public class Listings {
      */
     static class AmbiguousRepresentationExample {
         String id; // ◄── DoP is largely just the act of noticing
-        //     that code like this is extremely vague.
+                   //     that code like this is extremely vague.
     }
 
 
@@ -128,9 +128,9 @@ public class Listings {
      */
     static class ImprovedRepresentation {
         UUID id;   //  ◄── THIS tells us exactly what that ID should be! A UUID.
-        //      Not an arbitrary string. Not a Product Code or SKU.
-        //      ID is a UUID. Try to give it anything else and your
-        //      code won't compile.
+                   //      Not an arbitrary string. Not a Product Code or SKU.
+                   //      ID is a UUID. Try to give it anything else and your
+                   //      code won't compile.
     }
 
 
@@ -536,11 +536,11 @@ public class Listings {
     //                                                  │
     //                                                  ▼
     //    private <CompletedTask | FailedTask> run(ScheduledTask task) {
-    //        ...
-    //    }                ▲
-    //                     │
-    //                     │
-    //                     └───────────  Get turned into either Completed
+    //        ... ────────────────────────────
+    //    }                    ▲
+    //                         │
+    //                         │
+    //                         └───────  Get turned into either Completed
     //                                   Tasks or Failed tasks
     // }
 
