@@ -187,11 +187,11 @@ public class Listings {
         }                                                //  │
         //───────────────────────────────────────────────────┘
 
-        private LocalDateTime scheduledAt() {
+        LocalDateTime scheduledAt() {
             return scheduledAt;
         }
 
-        private int attempts() {
+        int attempts() {
             return attempts;
         }
 
