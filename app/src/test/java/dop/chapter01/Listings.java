@@ -1,17 +1,16 @@
 package dop.chapter01;
 
-
-import dop.chapter01.Listings.RetryDecision.Abandoned;
 import dop.chapter01.Listings.RetryDecision.ReattemptLater;
 import dop.chapter01.Listings.RetryDecision.RetryImmediately;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static dop.chapter01.Listings.RetryDecision.*;
 import static java.time.LocalDateTime.now;
-
 
 /**
  * Chapter 01 is a whirlwind tour of the main ideas of data-oriented
@@ -19,6 +18,7 @@ import static java.time.LocalDateTime.now;
  * Brooks: "representation is the essence of programming."
  */
 public class Listings {
+
 
     /**
      * ───────────────────────────────────────────────────────
@@ -29,43 +29,45 @@ public class Listings {
      * data "as data" using a Java object.
      * ───────────────────────────────────────────────────────
      */
-    public static class Point {
-        private final double x;   // ◄── The object is entirely defined by these attributes.
-        private final double y;   // ◄── It has no behaviors. It has no hidden state. It's "just" data.
+    public void listing_1_1() {
+        class Point {
+            private final double x;   // ◄── The object is entirely defined by these attributes.
+            private final double y;   // ◄── It has no behaviors. It has no hidden state. It's "just" data.
 
-        // We omit everything below in the chapter for brevity. But we need
-        // all this stuff in order to get an object in Java to behave like a
-        // value rather than an identity (we'll explore that idea in detail
-        // in chapter 02!)
-        public Point(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
+            // We omit everything below in the chapter for brevity. But we need
+            // all this stuff in order to get an object in Java to behave like a
+            // value rather than an identity (we'll explore that idea in detail
+            // in chapter 02!)
+            public Point(double x, double y) {
+                this.x = x;
+                this.y = y;
+            }
 
-        // Equality is very important when modeling data, but that's a topic
-        // for chapter 02 ^_^
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Point point = (Point) o;
-            return Double.compare(x, point.x) == 0 && Double.compare(y, point.y) == 0;
-        }
+            // Equality is very important when modeling data, but that's a topic
+            // for chapter 02 ^_^
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                Point point = (Point) o;
+                return Double.compare(x, point.x) == 0 && Double.compare(y, point.y) == 0;
+            }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(x, y);
-        }
+            @Override
+            public int hashCode() {
+                return Objects.hash(x, y);
+            }
 
-        // Any accessors we define manually will be done without the
-        // Java Bean style `get` prefix. This is so that our transition to
-        // records is easy.
-        public double x() {
-            return x;
-        }
+            // Any accessors we define manually will be done without the
+            // Java Bean style `get` prefix. This is so that our transition to
+            // records is easy.
+            public double x() {
+                return x;
+            }
 
-        public double y() {
-            return y;
+            public double y() {
+                return y;
+            }
         }
     }
 
@@ -82,8 +84,8 @@ public class Listings {
      * ───────────────────────────────────────────────────────
      */
     static class AmbiguousRepresentationExample {
-        String id; // ◄── DoP is largely just the act of noticing
-                   //     that code like this is extremely vague.
+        String id; // ◄──┐ DoP is largely just the act of noticing
+                   //    │ that code like this is extremely vague.
     }
 
 
@@ -127,10 +129,10 @@ public class Listings {
      * ───────────────────────────────────────────────────────
      */
     static class ImprovedRepresentation {
-        UUID id;   //  ◄── THIS tells us exactly what that ID should be! A UUID.
-                   //      Not an arbitrary string. Not a Product Code or SKU.
-                   //      ID is a UUID. Try to give it anything else and your
-                   //      code won't compile.
+        UUID id;   //  ◄───┐ THIS tells us exactly what that ID should be! A UUID.
+                   //      │ Not an arbitrary string. Not a Product Code or SKU.
+                   //      │ ID is a UUID. Try to give it anything else and your
+                   //      │ code won't compile.
     }
 
 
@@ -172,16 +174,13 @@ public class Listings {
         boolean someSuperComplexCondition() {            //  │ Note!
             return false;                                //  │ These are just here so the code will
         }                                                //  │ compile. They return fixed junk values.
-
         boolean someOtherComplexCondition() {            //  │ They should be ignored
             return false;                                //  │ for the purposes of the exercise.
         }                                                //  │
-
         int delay() {                                    //  │
             return 0;                                    //  │
         }                                                //  │
-
-        //  │
+                                                         //  │
         private LocalDateTime standardInterval() {       //  │
             return now();                                //  │
         }                                                //  │
@@ -290,21 +289,15 @@ public class Listings {
         boolean someSuperComplexCondition() {            //  │ Note!
             return false;                                //  │ These are just here so the code will
         }                                                //  │ compile. They return fixed junk values
-
         boolean someOtherComplexCondition() {            //  │ because they're supposed to be ignored
             return false;                                //  │ for the purposes of the exercise.
         }                                                //  │
-
         int delay() {                                    //  │
             return 0;                                    //  │
         }                                                //  │
-
-        //  │
         private LocalDateTime standardInterval() {       //  │
             return now();                                //  │
         }                                                //  │
-
-        //  │
         private int attempts(RetryDecision decision) {   //  │
             return 1;                                    //  │
         }                                                //  │
@@ -440,14 +433,17 @@ public class Listings {
         //
         // ┌────────  It returns nothing!
         // ▼
-        void reschedule() {   //  ◄─────────────────────────────────┐
+        void reschedule( ) {   //  ◄─────────────────────────────────┐
             // ...      ▲                                            │ Compare how very different
         }   //          └────── It takes nothing!                    │ these two methods are in
-
-        //                                                       │ terms of what they convey
+        //                                                           │ terms of what they convey
         RetryDecision rescheduleV2(FailedTask failedTask) {  //  ◄───┘ to us as readers
-            // We'll implement this in a followup example
-            return null;
+        //    ▲                          ▲
+        //    │                          └── takes a failed task
+        //    │
+        //    └── and tells us what to do with it
+
+            return null; // {We'll implement this in a followup example}
         }
     }
 
@@ -494,19 +490,15 @@ public class Listings {
         boolean someSuperComplexCondition(FailedTask task) {  // │
             return false;                                     // │
         }                                                     // │
-
         boolean someOtherComplexCondition(FailedTask task) {  // │
             return false;                                     // │
         }                                                     // │
-
         int delay() {                                         // │
             return 0;                                         // │
         }                                                     // │
-
         private LocalDateTime standardInterval() {            // │
             return now();                                     // │
         }                                                     // │
-
         private int attempts(RetryDecision decision) {        // │
             return 1;                                         // │
         }                                                     // │
@@ -543,5 +535,4 @@ public class Listings {
     //                         └───────  Get turned into either Completed
     //                                   Tasks or Failed tasks
     // }
-
 }

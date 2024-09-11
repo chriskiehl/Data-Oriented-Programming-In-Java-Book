@@ -1,6 +1,5 @@
 package dop.chapter02;
 
-import dop.chapter02.Listings.L2_2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +12,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class Examples {
+public class Listings {
 
     /**
      * ───────────────────────────────────────────────────────
@@ -46,7 +45,32 @@ public class Examples {
      */
     @Test
     public void listing_2_2() {
-        L2_2.Person person = new L2_2.Person(
+        class Person {
+            String name;
+            int age;
+            String hairColor;
+
+            public Person(String name, int age, String hairColor) {
+                this.name = name;
+                this.age = age;
+                this.hairColor = hairColor;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public void setAge(int age) {
+                this.age = age;
+            }
+
+            public void setHairColor(String hairColor) {
+                this.hairColor = hairColor;
+            }
+        }
+
+
+        Person person = new Person(
             "Chris",
             36,
             "brown"
@@ -147,9 +171,9 @@ public class Examples {
         //  values follow the rules for an Equivalent Relation.
         Assertions.assertTrue(  //
             a.equals(a)    //  ◄───  They're reflexive (equal to themselves a == a)
-                && a.equals(b) //  ◄───┐ Symmetric (a == b && b == a)
-                && b.equals(a) //  ◄───┘
-                && a.equals(c) // ◄───  and transitive! if a == b, and b == c, then a == c
+                && a.equals(b) //  ◄───────┐
+                && b.equals(a) //          │ Symmetric (a == b && b == a)
+                && a.equals(c) // ◄── and transitive! if a == b, and b == c, then a == c
                 && Integer.valueOf(1234).equals(a)
                 && Integer.valueOf(1234).equals(b)
                 && a.equals(Integer.valueOf(1234))
@@ -259,8 +283,8 @@ public class Examples {
                                                                    //│
         // Ditto here.                                               │
         // These are just placeholders for compilation               │
-        String request = null;                                            //│
-        DefinitelyNotDynamoDb database = null;                            //│
+        String request = null;                                     //│
+        DefinitelyNotDynamoDb database = null;                     //│
         // ──────────────────────────────────────────────────────────┘
 
         // Here's the bulk of the listing. It's exploring how we often
@@ -282,7 +306,7 @@ public class Examples {
                     customers.add(new Customer(result));  // ◄─────  And then over-and-over again down here
                 }
             }
-            return customers;  //      ◄───────────────────────────  Before finally returning it here
+            return customers;  //  ◄───────────────────────────────  Before finally returning it here
         };
     }
 
