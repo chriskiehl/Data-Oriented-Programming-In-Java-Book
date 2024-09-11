@@ -133,7 +133,7 @@ public class Listings {
      * ───────────────────────────────────────────────────────
      * Listing 2.5
      * ───────────────────────────────────────────────────────
-     * Value objects should be compared exclusively by their
+     * Value classes should be compared exclusively by their
      * state. The identities will vary, but that's OK.
      * They're irrelevant to values!
      * ───────────────────────────────────────────────────────
@@ -185,7 +185,7 @@ public class Listings {
      * ───────────────────────────────────────────────────────
      * Listing 2.7
      * ───────────────────────────────────────────────────────
-     * We can make new value objects on top of existing ones!
+     * We can make new value classes on top of existing ones!
      * ───────────────────────────────────────────────────────
      */
     static class Vector {
@@ -203,7 +203,7 @@ public class Listings {
         public Double x(){return x;}
         public Double y(){return y;}
         //            ▲
-        //            └───── Getters are A-OK on value objects
+        //            └───── Getters are A-OK on value classes
         //
         //      ┌───── But note that there are no setters!
         //      ▼                   Values don't change!
