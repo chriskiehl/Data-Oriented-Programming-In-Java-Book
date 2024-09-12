@@ -379,9 +379,16 @@ public class Listings {
         //     ▼    we don't lose track of what it is were dealing with.
         List<Degrees> totalChanges = bySampleId.values()
                 .stream()
-                .map(x -> minus.apply(x.getLast(), x.getFirst()))
-                .toList();
+                .map(x ->   minus.apply(x.getLast(), x.getFirst()))
+                .toList();//  ▲
+                          //  └─ Check this out. We're doing math on Degrees. That might
+                          //     produce things that aren't valid degrees. The data type forces
+                          //     us to consider these cases. Even if we don't it still watches
+                          //     our back and will raise an error if we unknowingly drift away
+                          //     from our domain of degrees.
     }
 
+
+    
 
 }
