@@ -118,13 +118,13 @@ public class Listings {
         Integer x = Integer.valueOf(128);  // We’re creating different objects, which
         Integer y = Integer.valueOf(128);  // means unique object identities, right?
 
-        System.out.println(x == y);
-        // So far it seems that way. This will show false .
+        System.out.println(x == y); // So far it seems that way. This will show false .
+
         // But, hang on...
         x = Integer.valueOf(127);  // What happens if we pick a slightly different
         y = Integer.valueOf(127);  // number...?
 
-        System.out.println(x == y);  // What the heck?! They're now different!
+        System.out.println(x == y);  // What the heck?! They're now the same!
     }
 
 
@@ -382,8 +382,7 @@ public class Listings {
         List<String> mutable = new ArrayList<>(); // However, with an identity-based setup...
         map.put(mutable, "TBD");
         mutable.add("Bob");                           // ◄─┐
-        System.out.println(map.get(mutable) == null); //   │ We'll never see ol' Bob again...
-        // [out] NULL
+        System.out.println(map.get(mutable) == null); //   │ We'll never see ol' Bob again
     }
 
 
@@ -403,7 +402,7 @@ public class Listings {
         // It creates an identity, xPosition, against which
         // values will be tracked over time.
         // We can do something that should be impossible:
-        xPosition = Integer.valueOf(5); // The change breaks the core contract of values!
+        xPosition = Integer.valueOf(5); // Change breaks the core contract of values!
     }
 
 
@@ -1016,9 +1015,6 @@ public class Listings {
                 String name,
                 // Dangerous!
                 List<String> friends
-
-
-
         ) {
             Person {
                 friends = List.copyOf(friends);  // ◄── copyOf produces an Unmodifiable copy of the list.
