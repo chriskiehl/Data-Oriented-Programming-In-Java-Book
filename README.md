@@ -55,7 +55,7 @@ gradle test --tests 'dop.chapter01.Chapter01Test.exampleMethod'
 
 ### How to use this repository
 
-Each chapter in the book has an associated package in the `src/` directory. Most of the examples aren't necessarily things that we'll run. They're primarily for study. DoP is a book that's about design decisions and how they affect our code. We're striving to make incorrect states impossible to express or compile. Thus, a lot of the examples are exploring how code changes (or _disappears_ entirely) when we get our modeling right.  
+Each chapter in the book has an associated package in the `src/test/` directory. Most of the examples aren't necessarily things that we'll run. They're primarily for study. DoP is a book that's about design decisions and how they affect our code. We're striving to make incorrect states impossible to express or compile. Thus, a lot of the examples are exploring how code changes (or _disappears_ entirely) when we get our modeling right.  
 
 **Listings in the Book vs Code**
 
@@ -78,7 +78,7 @@ Sometimes, separate listings in the book will be combined into one example in th
 ```
 /**
  * ───────────────────────────────────────────────────────
- *                  Listings 1.5 & 1.6
+ *                Listings 1.5 through 1.9
  * ───────────────────────────────────────────────────────
  * Representation affects our ability to understand the code
  * as a whole. [...]
