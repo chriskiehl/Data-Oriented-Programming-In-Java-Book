@@ -316,7 +316,7 @@ public class Listings {
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listings 3.16
+     * Listings 3.16 through 3.18
      * ───────────────────────────────────────────────────────
      * The problem with the design in the previous listing is that
      * it is missing type information. Inside of the measurement
@@ -326,7 +326,7 @@ public class Listings {
      * in our domain.
      * ───────────────────────────────────────────────────────
      */
-    void listing_3_16() {
+    void listing_3_16_to_3_18() {
         // Degrees is a core idea in our domain. It has a semantics.
         // A set of rules which make it, *it*.
         record Degrees(double value) {
@@ -346,7 +346,6 @@ public class Listings {
                 Integer daysElapsed,
                 Degrees contactAngle  // Nice!
         ) {}
-
 
         // And this yields something really cool.
         // The code no longer "forgets" what it is.
@@ -389,6 +388,252 @@ public class Listings {
     }
 
 
-    
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listings 3.19 to 3.20
+     * ───────────────────────────────────────────────────────
+     * We can apply this idea to all the data in our domain.
+     * We can make what we're talking about unambiguous.
+     * ───────────────────────────────────────────────────────
+     */
+    void listing_3_19_to_3_20() {
+        // Here's the Degrees implementation from the previous listing.
+        record Degrees(double value) {
+            Degrees {
+                if (!(Double.compare(value, 0.0) >= 0
+                        && Double.compare(value, 360.0) < 0)) {
+                    throw new IllegalArgumentException("Invalid angle");
+                }
+            }
+        }
+
+        //         ┌ Here's a new data type that captures the fact that
+        //         │ we're only talking about integers >= 0
+        //         ▼
+        record PositiveInt(int value) {
+            PositiveInt {
+                if (value < 0) {
+                    throw new IllegalArgumentException(
+                            "Hey! No negatives allowed!"
+                    );
+                }
+            }
+        }
+        // We can stick this new type on our data model.
+        record Measurement(
+                String sampleId,
+                PositiveInt daysElapsed,  // ◄────┐ These changes have a compounding effect on our
+                Degrees contactAngle      //      │ understanding. Now at a glance, we can tell
+        ) {}                              //      │ exactly what these Measurement attributes *mean*.
+    }
+
+
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listings 3.21 through 3.25
+     * ───────────────────────────────────────────────────────
+     * The most important part of this process is making sure we
+     * don't accidentally slip into creating types "mechanically".
+     * We want to remain thoughtful about what we're communicating
+     * about the system. We want to make that our representation
+     * captures the core ideas of what we're modeling.
+     * ───────────────────────────────────────────────────────
+     */
+    void listing_3_21_to_3_25() {
+        // Here's the Degrees implementation from the previous listing.
+        record Degrees(double value) {
+            Degrees {
+                if (!(Double.compare(value, 0.0) >= 0
+                        && Double.compare(value, 360.0) < 0)) {
+                    throw new IllegalArgumentException("Invalid angle");
+                }
+            }
+        }
+
+        //  This is from the previous listing as well
+        record PositiveInt(int value) {
+            PositiveInt {
+                if (value < 0) {
+                    throw new IllegalArgumentException(
+                            "Hey! No negatives allowed!"
+                    );
+                }
+            }
+        }
+
+        //         ┌ This is the next logical data type to introduce, but... does
+        //         │ it really capture what it means to be a Sample ID in our domain?
+        //         ▼
+        record SampleId(String value) {
+            SampleId {
+                if (!value.matches("(HEAT|AIR|UV)-\\d+")) {                 // │ This is all great validation. It
+                    throw new IllegalArgumentException(                     // │ enforces what we know about the shape
+                        "Must honor the form {CuringMethod}-{number}" +     // │ of the IDs inside of that String.
+                        "Where CuringMethod is one of (HEAT, AIR, UV), " +  // │ However, there are some problems.
+                        "and number is any positive integer"
+                    );
+                }
+            }
+        }
+
+        record Measurement(
+                SampleId sampleId,        // ◄────┐ What's wrong with this modeling?
+                PositiveInt daysElapsed,  //      │ Let's take it for a spin and see how it feels.
+                Degrees contactAngle
+        ) {}
+
+        // What if we wanted to do something super basic, say, bucket all the
+        // measurements by their curing method.
+        List<Measurement> measurements = List.of(); // (we don't need any items for the example to work)
+        measurements.stream()
+            .collect(groupingBy(m -> m.sampleId()/* ??? */));
+        //                                           ▲
+        //                                           │ Gah! We're back in that world where we "forget"
+        //                                           │ what our code is. We know the shape of the string
+        //                                           │ during validation in the constructor, but out here
+        //                                           │ it's "just" another string.
+        //                                           └─
+
+        measurements.stream()
+                .collect(groupingBy(
+                        m -> m.sampleId().value().split("-")[0]
+                )); //                             ▲
+                    //                             └─ We are guaranteed that the string will be in a known shape, so
+                    //                                we *could* "safely" access its individual pieces ("safely" here
+                    //                                used very loosely and with disregard for potential future change)
+
+        //         ┌ One option would be to steal some ideas from OOP and "hide" the internal
+        //         │ details behind public methods.
+        //         ▼
+        record SampleIdV2(String value) {
+            SampleIdV2 {
+                if (!value.matches("(HEAT|AIR|UV)-\\d+")) {
+                    throw new IllegalArgumentException(
+                            "Must honor the form {CuringMethod}-{number}" +
+                            "Where CuringMethod is one of (HEAT, AIR, UV), " +
+                            "and number is any positive integer"
+                    );
+                }
+            }
+            public String curingMethod() {
+                return this.value().split("-")[0];  // This gives the curing method without leaking "how"
+            }
+
+            public String sampleNumber() {
+                return this.value().split("-")[1]; // ditto for the sample number.
+            }
+        }
+
+        // This feels like progress, but we can again do the very simple gut check
+        // of just seeing what happens when we poke the data type.
+        String method = new SampleIdV2("HEAT-1").curingMethod();
+        // ▲
+        // └─ Ugh! We're back to just a plain string disconnected from its domain.
+    }
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listings 3.26 through 3.27
+     * ───────────────────────────────────────────────────────
+     * Back to the drawing board. What is it that we're trying to
+     * represent?
+     * ───────────────────────────────────────────────────────
+     */
+    void listing_3_26_to_3_27() {
+        //       ┌─ Revisiting what we know about the domain
+        //       │  independent of our code
+        /**      ▼
+         * CuringMethod:
+         *     One of: (AIR, UV, HEAT)
+         *
+         * SampleID:
+         *     The pair: (CuringMethod, positive integer (0 inclusive))
+         *     Globally unique.
+         */
+
+        // A sample ID isn't a string (despite the fact that it might be
+        // serialized that way on the way into our system). The sample ID
+        // is made up of multiple pieces of information. Each has it's own
+        // constraints and things that make it *it*.
+        record PositiveInt(int value){
+            // constructor omitted for brevity
+        }
+
+        enum CuringMethod {HEAT, AIR, UV}  // this is important info! It's these three things
+                                           // *and nothing else* (a very important idea in modeling).
+
+        // We can combine these into a refined representation for SampleID.
+        record SampleId(
+                CuringMethod method,
+                PositiveInt sampleNum
+        ) {
+        // (Empty!)
+        //   ▲
+        //   └── Check out that the body of sample ID is now empty. We don't have
+        //       to validate anything here. It's entirely described (and made safe) by
+        //       the data types which it's built upon.
+        }
+
+        // With this, our code no longer "forgets" its meaning.
+        // Everything is well typed and descriptive.
+        CuringMethod method = new SampleId(CuringMethod.HEAT, new PositiveInt(1)).method();
+    }
+
+
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listings 3.8 through 3.9
+     * ───────────────────────────────────────────────────────
+     * Modeling isn't just informational. It can prevent very real
+     * bugs from even being possible. Ambiguity is a dangerous thing
+     * to have in a code base. People come from different backgrounds.
+     * Codebases change hands. What's "obvious" to one group will be
+     * not at all "obvious" to another.
+     * ───────────────────────────────────────────────────────
+     */
+    void listing_3_28() {
+        // (Note: as usual, the below is only defined as an inline lambda in order to keep
+        //       each listing isolated)
+        //
+        BiFunction<Double, Double, Double> computeFee = (Double total, Double feePercent) -> {
+            return total * feePercent;
+        }; //        ▲
+           //        │
+           //        └── What kind of tests would you write to 'prove' this does the right thing?
+
+        // You can't write any! Whether it does the right thing or not depends entirely on the
+        // caller knowing how to use it correctly. For instance, how should that fee percentage
+        // be represented? 0.10? 10.0? The "obvious" way will vary from person to person!
+
+        // We can completely eliminate this ambiguity and potential customer impacting bug
+        // through better modeling. What does it *mean* to be a percentage? A value between 0..1?
+        // 1..100? A rational?
+
+        // We can use the design of our code to ensure that *only* correct notion of percents
+        // can be created. We don't need to rely on secret team knowledge or everyone having the
+        // same notion of "the obvious way" -- we make it absolutely explicit in code.
+        record Percent(double numerator, double denominator) {
+            Percent {
+                if (numerator > denominator) {
+                    throw new IllegalArgumentException(
+                            "Percentages are 0..1 and must be expressed " +
+                            "as a proper fraction. e.g. 1/100");
+                }
+            }
+        }
+        // Any departure from what percentages mean to us gets halted with an error (rather than
+        // propagated out to very angry and confused customers)
+    }
+
+
 
 }
