@@ -35,7 +35,7 @@ gradle build
 
 ### Running the code 
 
-The `tests/` package houses any runnable code. You can run all the tests in a class with this command:
+The `tests/` package houses all of the runnable code. You can run all the tests in a class with this command:
 
 ```
 gradle test --tests 'path.to.test.Class'
