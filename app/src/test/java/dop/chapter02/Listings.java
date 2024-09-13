@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -1120,14 +1121,20 @@ public class Listings {
             return 0;
         };
 
-        List<Person> people = List.of();
+        List<Person> people = List.of(
+            new Person("Bob"),
+            new Person("Joe"),
+            // ...
+            new Person("Mary")
+
+        );
         // (As with all the listings. We're only defining this as a lambda
         // so everything stays within its particular listing)
-        Supplier<Person> mostPopular = () -> {
-            //      ┌ Records can be defined directly in a method body!
-            //      │ (We've actually seen this a ton so far)
-            //      │ This is a huge improvement over tuples or lists.
-            //      ▼
+        Supplier<Optional<Person>> mostPopular = () -> {
+            //       ┌ Records can be defined directly in a method body!
+            //       │ (We've actually seen this a ton so far)
+            //       │ This is a huge improvement over tuples or lists.
+            //       ▼
             record Popularity(Person person, Integer totalFriends){};
             return people.stream()
                     .map(person -> new Popularity(
@@ -1136,8 +1143,7 @@ public class Listings {
                     )
                     .sorted(Comparator.comparingDouble(Popularity::totalFriends))
                     .map(Popularity::person)
-                    .toList()
-                    .getFirst();
+                    .findFirst();
         };
     }
 
