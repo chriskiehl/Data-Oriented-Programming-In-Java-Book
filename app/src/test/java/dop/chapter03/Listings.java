@@ -10,6 +10,19 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
+
+/**
+ * Chapter 3 is about starting to explore the semantics
+ * that govern the data within a domain. It looks at the
+ * gaps that usually exist between what we "know" in our
+ * heads about the things we're modeling, versus how much
+ * of that knowledge actually ends up in the code (very
+ * little).
+ *
+ * This chapter will give you the tools to see "through"
+ * your programs into the underlying sets of values that
+ * it denotes.
+ */
 public class Listings {
 
 
