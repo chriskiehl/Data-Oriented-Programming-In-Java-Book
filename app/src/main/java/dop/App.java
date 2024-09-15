@@ -3,9 +3,18 @@
  */
 package dop;
 
+/**
+ * Howdy!
+ *
+ * Thanks for checking out the repository for the book!
+ * This is just a placeholder. I've put all the supporting
+ * code for the book's listings in the test/ package.
+ */
 public class App {
 
     public static void main(String[] args) {
         System.out.println("Hello from Data Oriented Java!");
+        System.out.println("All the supporting material and listings can be found in the /tests package");
+        System.out.println("https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/tree/main/app/src/test/java/dop");
     }
 }
