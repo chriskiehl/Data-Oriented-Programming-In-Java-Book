@@ -42,20 +42,20 @@ gradle test --tests 'path.to.test.Class'
 ```
 e.g. 
 ```
-gradle test --tests 'dop.chapter01.Chapter01Test'  
+gradle test --tests 'dop.chapter02.Listings'
 ```
 
 You can also run individual tests by specifying the method. 
 
 ```
-gradle test --tests 'dop.chapter01.Chapter01Test.exampleMethod'
+gradle test --tests 'dop.chapter02.Listings.listing_2_1'
 ```
 
 
 
 ### How to use this repository
 
-Each chapter in the book has an associated package in the `src/test/` directory. Most of the examples aren't necessarily things that we'll run. They're primarily for study. DoP is a book that's about design decisions and how they affect our code. We're striving to make incorrect states impossible to express or compile. Thus, a lot of the examples are exploring how code changes (or _disappears_ entirely) when we get our modeling right.  
+Each chapter in the book has an associated package in the `src/test/` directory. Most of the examples aren't necessarily things that we'll run. They're primarily for study. We'll look at them and go "Hmm. Interesting." DoP is a book that's about design decisions and how they affect our code. We're striving to make incorrect states impossible to express or compile. Thus, a lot of the examples are exploring how code changes (or _disappears_ entirely) when we get our modeling right.  
 
 **Listings in the Book vs Code**
 
