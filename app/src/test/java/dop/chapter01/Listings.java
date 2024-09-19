@@ -29,6 +29,7 @@ public class Listings {
      * data "as data" using a Java object.
      * ───────────────────────────────────────────────────────
      */
+    @Test
     public void listing_1_1() {
         class Point {
             private final double x;   // ◄── The object is entirely defined by these attributes.
