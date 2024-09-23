@@ -124,8 +124,7 @@ RetryDecision reschedule(FailedTask failedTask) {       //  ◄───┘ to u
 
 ## Questions and Feedback
 
-TODO: Manning Forum link.
-I'm most responsive to emails. If you have a question about the repo, feel free to write me at me@chriskiehl.com. 
+I'd love to hear any and all feedback. You can leave comments in the [Manning forum](https://livebook.manning.com/forum?product=kiehl&page=1). I'm also very responsive to emails. If you have a question about the repo, feel free to write me at me@chriskiehl.com. 
 
 
 
