@@ -834,7 +834,7 @@ public class Listings {
         // Just like the one we defined on the Value Class, this one takes
         // input and uses it to compute the next state.
         Function<Person, Person> haveBirthday = (p) -> {
-            return new Person(p.name(), p.age());
+            return new Person(p.name(), p.age() + 1);
         };
 
         // These two approaches lead to very different programming styles.
