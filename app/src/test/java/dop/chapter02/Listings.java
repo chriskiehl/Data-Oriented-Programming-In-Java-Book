@@ -535,7 +535,7 @@ public class Listings {
      * ───────────────────────────────────────────────────────
      * Listings 2.19 & 2.20
      * ───────────────────────────────────────────────────────
-     * Mutability where is doesn't belong is dangerous. It breaks
+     * Mutability where it doesn't belong is dangerous. It breaks
      * the semantics of our code. The ground shakes under our feet
      * when our core assumptions get violated.
      *
