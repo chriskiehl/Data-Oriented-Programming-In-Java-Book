@@ -1123,6 +1123,7 @@ public class Listings {
     public void listing_2_47_and_2_48() {
         record Person(String name){}
         // Note! Here just for completeness of example.
+        // Pretend it does some fancy graph traversing
         BiFunction<Person, List<Person>, Integer> friendGraph = (person, people) -> {
             return 0;
         };
@@ -1147,7 +1148,7 @@ public class Listings {
                             person,
                             friendGraph.apply(person, people))
                     )
-                    .sorted(Comparator.comparingDouble(Popularity::totalFriends))
+                    .sorted(Comparator.comparingDouble(Popularity::totalFriends).reversed())
                     .map(Popularity::person)
                     .findFirst();
         };
