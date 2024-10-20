@@ -7,7 +7,6 @@ Source code for the book Data Oriented Programming in Java (by me! Chris Kiehl!)
 </p>
 
 * [Get the book here!](https://mng.bz/BgQv)
-* Use the discount code `mlkiehl` to get 50% off all formats! (Valid through October 9)
 * ISBN: 9781633436930
 
 > [!Note]
