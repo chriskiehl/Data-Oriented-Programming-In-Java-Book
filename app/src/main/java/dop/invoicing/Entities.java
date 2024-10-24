@@ -1,6 +1,7 @@
 package dop.invoicing;
 
 
+import dop.invoicing.Springish.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,6 +40,7 @@ public class Entities {
 
     @Springish.Entity
     public record Customer(
+            @Id
             String id,
             Address billingAddress,
             Boolean approvedForLargeFees,
@@ -71,8 +73,6 @@ public class Entities {
         CannotBillReasons reason;
         List<Invoice> includedInFee;
         List<Invoice> excludedFromFee;
-
-
     }
 
     @Springish.Entity

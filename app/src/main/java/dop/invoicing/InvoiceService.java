@@ -1,8 +1,8 @@
 package dop.invoicing;
 
 
-import dop.invoicing.BillingSystem.BillStatus;
-import dop.invoicing.BillingSystem.BillSubmitResponse;
+import dop.invoicing.Clients.BillingSystem.BillStatus;
+import dop.invoicing.Clients.BillingSystem.BillSubmitResponse;
 import dop.invoicing.Entities.*;
 import dop.invoicing.Repositories.*;
 
@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @Springish.Service
 public class InvoiceService {
@@ -18,8 +19,21 @@ public class InvoiceService {
     CustomerRepo customerRepo;
     FeeRepo feeRepo;
     RulesRepo rulesRepo;
-    BillingSystem billingSystem;
+    Clients.BillingSystem billingSystem;
     ApprovalsRepo approvalsRepo;
+    // TODO: make customerStanding a service call.
+    //       the leads into "smarter repositories" and
+    //       stitching together different things.
+    //       Isolate "getting data in the right shape"
+    //       from the business logic.
+    //       More thoughts: the fact that keeping them
+    //       separate forces your code to know about how
+    //       the services in your organization are laid out.
+    //       that there's a CustomerStandingService sitting on
+    //       the network. The code doesn't care where it comes
+    //       from! It only cares that the *data* it needs is
+    //       available. 
+
 
 
 
@@ -45,8 +59,7 @@ public class InvoiceService {
         Config config = rulesRepo.loadDefaults();
 
         for (Customer customer : customerRepo.findAll()) {
-            BigDecimal feePercentage = BigDecimal.valueOf(feeRepo.get(customer.billingAddress().country()));
-
+            BigDecimal feePercentage = feeRepo.get(customer.billingAddress().country());
             List<Invoice> pastDueInvoices = this.getPastDueInvoices(customer);
             USD totalPastDue = getTotalPastDue(pastDueInvoices);
             USD latefee = totalPastDue.multiply(feePercentage);
@@ -145,6 +158,8 @@ public class InvoiceService {
     private void validateInput(BillRunRequest command) throws RuntimeException {
         LocalDate.parse(command.asOfDate());
         Locale.IsoCountryCode.valueOf(command.countryCode());
+        // TODO: make sure we haven't already generated bills for this
+        // asOf date.
     }
 
     public USD getTotalPastDue(List<Invoice> invoices) {

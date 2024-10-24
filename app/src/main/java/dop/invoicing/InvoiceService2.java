@@ -1,10 +1,11 @@
 package dop.invoicing;
 
-import dop.invoicing.BillingSystem.ImprovedResponse;
+import dop.invoicing.Clients.BillingSystem.ImprovedResponse;
 import dop.invoicing.DataTypes.*;
 import dop.invoicing.DataTypes.BillingState.Pending;
 import dop.invoicing.Entities.Config;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -16,7 +17,7 @@ public class InvoiceService2 {
 
     Repositories.FeeRepo feeRepo;
     Repositories.RulesRepo rulesRepo;
-    private BillingSystem billingSystem;
+    private Clients.BillingSystem billingSystem;
 
     public void processLateFees(LocalDate accountingCloseDate, Locale.IsoCountryCode country) {
         LocalDate validCloseDate = verifyDate(accountingCloseDate);
@@ -67,7 +68,7 @@ public class InvoiceService2 {
         return customerRepo.findAll().stream()
                 .map(( x -> (DataTypes.Customer) (Object) x))// TODO: FIX ME
                 .map(customer -> {
-                    Double howMuchToCharge = feeRepo.get(customer.billingAddress().country());
+                    BigDecimal howMuchToCharge = feeRepo.get(customer.billingAddress().country());
                     Config config = rulesRepo.loadDefaults();
                     List<Entities.Invoice> invoices = invoiceRepo.findInvoices(customer.id());
                     return new InvoicingData(

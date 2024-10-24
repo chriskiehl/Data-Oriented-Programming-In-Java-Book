@@ -52,7 +52,7 @@ public class DataTypes {
 
     public sealed interface BillingState {
         record Pending() implements BillingState {}
-        record Billed(String invoiceId) implements BillingState {}
+        record Billed(String invoiceId, LocalDate invoiceDate, LocalDate due) implements BillingState {}
         record Rejected(String why) implements BillingState {}
     }
 

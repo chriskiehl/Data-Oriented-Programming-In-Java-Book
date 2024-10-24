@@ -3,10 +3,7 @@ package dop.invoicing;
 import dop.invoicing.DataTypes.BillingState;
 import dop.invoicing.DataTypes.Latefee;
 import dop.invoicing.DataTypes.ReviewedLatefee;
-import dop.invoicing.Entities.Config;
-import dop.invoicing.Entities.Customer;
-import dop.invoicing.Entities.Invoice;
-import dop.invoicing.Entities.USD;
+import dop.invoicing.Entities.*;
 import dop.invoicing.Springish.Repository;
 
 import java.math.BigDecimal;
@@ -38,7 +35,24 @@ public class Repositories {
         }
 
         public void save(Invoice invoice){}
-        public void save(Latefee<? extends BillingState> invoice){
+        public void save(Latefee<? extends BillingState> latefee){
+            Invoice invoice = new Invoice();
+            invoice.setCharges(latefee.total());
+            invoice.setCredits(USD.zero());
+            invoice.setIncludedInFee(latefee.includedInFee());
+            switch (latefee.state()) {
+                case BillingState.Pending p:
+                    invoice.setInvoiceId("PENDING_TODO");
+                    break;
+                case BillingState.Billed billed:
+                    invoice.setInvoiceId(billed.invoiceId());
+                    invoice.setStatus(InvoiceStatus.OPEN);
+                    invoice.setInvoiceDate(latefee.asOfDate());
+                    invoice.setDueDate(billed.due());
+                    break;
+                case BillingState.Rejected rejected:
+                    invoice.setStatus();
+            }
 
         }
 
@@ -54,8 +68,8 @@ public class Repositories {
 
     public static class FeeRepo implements Repository<Double, IsoCountryCode> {
 
-        public Double get(IsoCountryCode code) {
-            return 0.1;
+        public BigDecimal get(IsoCountryCode code) {
+            return BigDecimal.valueOf(0.015);
         }
     }
 

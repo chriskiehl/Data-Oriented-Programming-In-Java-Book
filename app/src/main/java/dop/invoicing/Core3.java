@@ -46,10 +46,10 @@ public class Core3 {
         }
     }
 
-    public static List<Invoice> collectPastDue(InvoicingData info) {
-        return info.invoices().stream()
+    public static List<Invoice> collectPastDue(InvoicingData data) {
+        return data.invoices().stream()
                 .filter(invoice -> invoice.getStatus().equals(Entities.InvoiceStatus.OPEN))
-                .filter(invoice -> isPastDue(invoice, info.customer(), info.closeDate()))
+                .filter(invoice -> isPastDue(invoice, data.customer(), data.closeDate()))
                 .toList();
     }
 
