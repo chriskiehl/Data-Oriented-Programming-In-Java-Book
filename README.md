@@ -112,13 +112,14 @@ RetryDecision reschedule(FailedTask failedTask) {       //  ◄───┘ to u
 
 ## Table of Contents
 
-| Chapter                                                   | Code Listings                                                                                                                                 | 
-|-----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| Chapter 01 - Data Oriented Programming                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter01/Listings.java) |
-| Chapter 02 - Data, Identity, and Values                   | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter02/Listings.java) |
-| Chapter 03 - Data and Meaning                             | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter03/Listings.java) |
+| Chapter                                                  | Code Listings                                                                                                                                 | 
+|----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| Chapter 01 - Data Oriented Programming                   | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter01/Listings.java) |
+| Chapter 02 - Data, Identity, and Values                  | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter02/Listings.java) |
+| Chapter 03 - Data and Meaning                            | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter03/Listings.java) |
 | Chapter 04 - Representation is the Essence of Programming | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter04/Listings.java) |
-| Chapter 05 - Coming soon!                                 | Coming soon!                                                                                                                                  |
+| Chapter 05 - Modeling Domain Behaviors                   | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter05/Listings.java) |
+| Chapter 06 - Coming soon!                                | Coming soon!                                                                                                                                  |
 
 
 ## Questions and Feedback
