@@ -1,14 +1,30 @@
 package dop.chapter05;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
+import com.google.common.base.Supplier;
 import dop.chapter05.the.existing.world.Entities.*;
 import dop.chapter05.the.existing.world.Repositories;
+import dop.chapter05.the.existing.world.Repositories.FeesRepo;
 import dop.chapter05.the.existing.world.Services;
+import dop.chapter05.the.existing.world.Services.ApprovalsAPI.Approval;
+import dop.chapter05.the.existing.world.Services.ApprovalsAPI.ApprovalStatus;
+import dop.chapter05.the.existing.world.Services.ContractsAPI;
+import dop.chapter05.the.existing.world.Services.ContractsAPI.PaymentTerms;
+import dop.chapter05.the.existing.world.Services.RatingsAPI.CustomerRating;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
+import static java.util.stream.Collectors.*;
 
 /**
  * Chapter 5 takes all the modeling tools we've explored
@@ -91,22 +107,38 @@ public class Listings {
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 5.3 through 5.4
+     * Listing 5.3 through 5.5
      * ───────────────────────────────────────────────────────
-     * The starting point for our feature, and the general shape
-     * in which so much of our programming work falls into.
+     * These listings tackle our first stab at an implementation.
+     *
+     * Author note:
+     * I stressed over this example more than any other
+     * in the book. It drives me crazy people use "strawman" examples
+     * that are so comically bad that they obviously only exist so
+     * that the author can swoop in with their magical and perfect
+     * paradigm to fix the day. I wanted something that demonstrated
+     * the usual problems we face in software development, but that
+     * still felt "fair."
+     *
+     * The below might not be how you would have done it, but I hope
+     * that it feels familiar. I think we've all written at least some
+     * code like this. I know I have. It's "I just want to be done"
+     * style code.
+     *
+     * It's of an assembly of what's already there rather than a
+     * conscious design.
      */
-    public void listing5_3() {
+    public void listing5_3_to_5_5() {
         // These services are all defined in listing 5.1
         class LateFeeChargingService {               // ◄───────┐ The bet I make in the book is that this general
             private Services.RatingsAPI ratingsApi;         //  │ setup feels deeply familiar as a starting point.
-            private Services.ContractsAPI contractsApi;     //  │ We have an army of Entities, Service Classes, and
+            private ContractsAPI contractsApi;     //  │ We have an army of Entities, Service Classes, and
             private Services.ApprovalsAPI approvalsApit;    //  │ Repositories (or "Data Access Objects" depending on
             private Services.BillingAPI billingApi;         //  │ your preferred lingo) all crammed into the top of a
             private Repositories.CustomerRepo customerRepo; //  │ a class that's usually called [Thing]Service.
             private Repositories.InvoiceRepo invoiceRepo;
             private Repositories.RulesRepo rulesRepo;
-            private Repositories.FeesRepo feesRepo;
+            private FeesRepo feesRepo;
 
             // It's here that we'll assemble all of this
             // pre-existing *stuff* into something that satisfies
@@ -116,25 +148,27 @@ public class Listings {
             // might implement the same set of requirements, but
             // I hope that it feels familiar -- like something you
             // could have written (I've written *lots* of code like
-            // this). It's not terrible, but it's also not good.
+            // this over the years). It's not terrible, but it's
+            // also not good.
             //
             // Let's walk through it.
             public void processLatefees() {
-                LocalDate today = LocalDate.now();
+                LocalDate today = LocalDate.now();                     // ─┐
+                                                                       //  │ Before we can start doing anything
+                Rules rules = rulesRepo.loadDefaults();                //  │ useful, our method starts off doing
+                for (Customer customer : customerRepo.findAll()) {     //  │ a bunch of busy work to poking and
+                    BigDecimal feePercentage = feesRepo.get(           //  │ prodding all of the existing stuff
+                            customer.getAddress().getCountry()         //  │ to get it into a shape we can use
+                    );                                                 //──┘
+                    List<Invoice> pastDueInvoices = getPastDueInvoices(customer); // (We'll look at this below)
 
-                Rules rules = rulesRepo.loadDefaults();
-                for (Customer customer : customerRepo.findAll()) {               
-                    BigDecimal feePercentage = feesRepo.get(
-                            customer.getAddress().getCountry()
-                    );                                                             
-                    List<Invoice> pastDueInvoices = getPastDueInvoices(customer);
-                    BigDecimal totalPastDue = getTotalPastDue(pastDueInvoices);
-                    BigDecimal latefee = totalPastDue.multiply(feePercentage);
+                    BigDecimal totalPastDue = getTotalPastDue(pastDueInvoices);  // ◄──┐ Here we finally start to write
+                    BigDecimal latefee = totalPastDue.multiply(feePercentage);   //    │ some business logic.
 
-                    Invoice latefeeInvoice = new Invoice();
-                    latefeeInvoice.setInvoiceType(InvoiceType.LATEFEE);
-                    latefeeInvoice.setCustomerId(customer.getId());
-                    latefeeInvoice.setInvoiceDate(today);
+                    Invoice latefeeInvoice = new Invoice();   //◄───────────┐ Now we begin the long, slow process
+                    latefeeInvoice.setInvoiceType(InvoiceType.LATEFEE);  // │ of building up our result.
+                    latefeeInvoice.setCustomerId(customer.getId());      // │
+                    latefeeInvoice.setInvoiceDate(today);                // │
                     latefeeInvoice.setDueDate(this.figureOutDueDate());
                     latefeeInvoice.setLineItems(List.of(
                         new LineItem(
@@ -144,21 +178,30 @@ public class Listings {
                                 Currency.getInstance("USD")
                         ))
                     );
-                    latefeeInvoice.setAuditInfo(new AuditInfo(null, pastDueInvoices, null));
+                    latefeeInvoice.setAuditInfo(new AuditInfo(  // null is a pervasive and familiar element in
+                            null, pastDueInvoices, null)        // ORM backed identity objects.
+                    );                                          // Why are these null? Usually the only way to answer
+                                                                // is to go study the database itself.
+
+                    // We could go line by line with a red pen, but instead, let's ask ourselves a
+                    // question about what this code is actually doing. It has, what, 8-9 distinct
+                    // branches? But what is it actually doing? How many of those are just different
+                    // flavors of the same thing? Inside of this mess of if/else statements is actually
+                    // a really, really simple domain idea -- it's just hidden by the noise!
                     if (latefee.compareTo(rules.getMinimumFeeThreshold()) <= 0) {
                         latefeeInvoice.getAuditInfo().setReason("too low to charge!");
                         invoiceRepo.save(latefeeInvoice);
                     } else {
-                        if (latefee.compareTo(rules.maximumFeeThreshold()) > 0) {
+                        if (latefee.compareTo(rules.getMaximumFeeThreshold()) > 0) {
                             if (customer.getApprovalId().isEmpty()) {
                                 this.requestReview(latefeeInvoice, customer);
-                                latefeeInvoice.setReason("Above default threshold");
+                                latefeeInvoice.getAuditInfo().setReason("Above default threshold");
                             } else {
                                 ApprovalStatus status = getApprovalStatus(customer);
-                                if (status.equals(ApprovalStatus.Pending)) {
-                                    latefeeInvoice.setReason("Pending decision");
-                                } else if (status.equals(ApprovalStatus.Rejected)) {
-                                    latefeeInvoice.setReason("Exempt from large fees");
+                                if (status.equals(ApprovalStatus.PENDING)) {
+                                    latefeeInvoice.getAuditInfo().setReason("Pending decision");
+                                } else if (status.equals(ApprovalStatus.DENIED)) {
+                                    latefeeInvoice.getAuditInfo().setReason("Exempt from large fees");
                                 }
                             }
                             invoiceRepo.save(latefeeInvoice);
@@ -171,39 +214,1071 @@ public class Listings {
                 }
             }
 
+            // This method has extraordinary power!
+            // It's the scariest in our entire codebase. There's no "undo" button with
+            // this one. Real customers live on the other side of it. A bug here
+            // has the ability to cause immense stress due to unexpected bills and time
+            // fighting with customer service reps to prove that we're in the wrong.
+            //
+            //                 ┌─── And yet it begins with a lie.
+            //                 ▼
+            void submitBill(Invoice invoice) {
+                //             ▲
+                //             └─── It doesn't take ANY invoice.
+                //
+                //     ┌─ We have to mount detailed defenses against that lie.
+                //     ▼
+                if (invoice.getInvoiceType().equals(InvoiceType.LATEFEE)
+                        // But we can't even express those defenses well due to our modeling.
+                        // Why are we checking invoiceID is null? What does that *mean*?
+                        && invoice.getInvoiceId() == null
+                        // Ditto here. Can you connect these back to any specific
+                        // requirement? These are mired in the details of how they
+                        // map into the *database*. You just have to "know" what these
+                        // cryptic assertions mean.
+                        && invoice.getAuditInfo() != null
+                        && Strings.isNullOrEmpty(
+                            invoice.getAuditInfo().getReason())
+                ) {
+                    // charge the customer
+                } else {
+                    throw new IllegalArgumentException(
+                            "You're about to charge something you shouldn't!"
+                    );
+                }
+            }
             List<Invoice> getPastDueInvoices(Customer customer) {
-                return invoiceRepo.findInvoices(customer.id())
+                CustomerRating rating = this.ratingsApi.getRating(customer.getId());
+                return invoiceRepo.findInvoices(customer.getId())
                         .stream()
                         .filter(invoice -> {
-                            if (customer.standing().equals(GOOD)) {
+                            if (rating.equals(CustomerRating.GOOD)) {
                                 return invoice.getDueDate()
                                         .plusDays(60).isBefore(LocalDate.now());
                             }
-                            else if (customer.standing().equals(ACCEPTABLE)) {
+                            else if (rating.equals(CustomerRating.ACCEPTABLE)) {
                                 return invoice.getDueDate()
                                         .plusDays(30).isBefore(LocalDate.now());
                             } else {
                                 return invoice.getDueDate()
-                                        .with(lastDayOfMonth().isBefore(LocalDate.now());
+                                        .with(lastDayOfMonth()).isBefore(LocalDate.now());
                             }
                         })
                         .toList();
             }
 
+            // The below are all left undefined in the book.
             BigDecimal getTotalPastDue(List<Invoice> invoices) {
-                // not defined in the book. We assume it does what it
-                // says on the tin.
-                return BigDecimal.ZERO; // (just to make things compile)
+                return null; // (just to make things compile)
             }
-
             LocalDate figureOutDueDate() {
-                // Ditto the above.
-                // We gloss over it to focus on other things.
-                return LocalDate.now(); // (just to make things compile)
+                return null; // (just to make things compile)
             }
+            void requestReview(Invoice invoice, Customer customer) {}
+            ApprovalStatus getApprovalStatus(Customer customer){
+                return null; // (just to make things compile)
+            }
+        }
+    }
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.6
+     * ───────────────────────────────────────────────────────
+     * These listings explore one of my favorite design tools for
+     * behaviors: thinking in transforms between data.
+     *
+     * We represent a transformation with an arrow (->).
+     * Data goes in one side, new data comes out the other.
+     *
+     * This is about as lightweight as design processes get. We
+     * invent data on the fly and give it 'movement' through our
+     * system via the arrows. From this movement comes continuity.
+     * The data types moving through our system begin to tell a
+     * story -- if we do it well, this story reads almost like
+     * a plain english version of our requirements.
+     */
+    public void listing5_6() {
+        // We represent transforms with the ascii arrow (->)
+        //
+        //      ┌─────────────────────────────┐  This transform says that
+        //      ▼                             │  a List of Invoices is used to
+        // List<Invoice> -> LateFeeInvoice  ◄─┘  produce a new LateFeeInvoice
+    }
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.6 through 5.9
+     * ───────────────────────────────────────────────────────
+     * The design work is refining the "story" that our data types communicate.
+     *
+     * You might imagine explaining the feature to a coworker. Actually just
+     * putting the requirements to words (rather than code) tends to quickly
+     * clarify when your story is "saying" the wrong thing or missing details.
+     */
+    public void listing5_7_to_5_9() {
+        //
+        // List<Invoice>
+        // -> List<PastDue>   ◄──────┐ This is what was missing from out first
+        // -> LateFeeInvoice         │ description. We don't process ANY invoices, we
+        //                           │ process *Past Due* invoices.
+        //
+        // Is this the whole story? Would the imaginary coworker we're explaining
+        // all of this to have a good mental model at this point?
+        // Probably not! There's still much left unsaid.
+        //
+        // We keep refining
+        //
+        // List<Invoice>
+        // -> List<PastDue>
+        // -> DraftLateFee    ◄──────┐ Another clarification. Our service is just a
+        // -> LateFeeInvoice         │ middleman. We don't make the late fees directly.
+        //                           │ We make a description of a latefee we want to have later.
+        //
+        // If you mentally swap those arrows (->) for something like "and then we use
+        // that to make..." you the story this data is telling becomes explicit
+        //
+        //  (we start with) List<Invoice>
+        //  (and then we use that to make) List<PastDue>
+        //  (and then we use that to make a) LateFeeDraft
+        //  (and then we use that to make a) LateFeeInvoice
+        //
+    }
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.10 through 5.13
+     * ───────────────────────────────────────────────────────
+     * We can express branching / choice in our "story" by moving stuff that
+     * used to be complicated if/else statements at runtime into
+     * algebraic Sum Types expressed at compile time.
+     */
+    public void listing5_10_to_5_13() {
+        // Here's part of the original implementation
+        // It can be very hard to see inside all this sea of nested if/else
+        // statements, but we're actually only doing three distinct actions.
+        // These three things are hidden because of all the other stuff going on.
+        Runnable originalImplementation = () -> {
+            Rules rules;         //─┐
+            BigDecimal latefee;  // │ here just to make things compile
+            Customer customer;   //─┘
+            if (latefee.compareTo(rules.getMaximumFeeThreshold()) <= 0) {
+                // [logic omitted]
+            } else {
+                if (latefee.compareTo(rules.getMaximumFeeThreshold()) > 0) {
+                    if (customer.getApprovalId().isEmpty()) {
+                        // [logic omitted]
+                    } else {
+                        ApprovalStatus status; // = getApprovalStatus(customer);
+                        if (status.equals(ApprovalStatus.PENDING)) {
+                            // [logic omitted]
+                        } else if (status.equals(ApprovalStatus.DENIED)) {
+                            // [logic omitted]
+                        }
+                    }
+                    // [logic omitted]
+                }
+                // [logic omitted]
+            }
+        };
+
+        // Powerful modeling idea:
+        // Decisions at runtime can be expressed at compile
+        // time using algebraic data types.
+        //
+        // for example:
+        //     if (option1) {          ──┐
+        //          // ...               │ Note: This is left as a comment rather than
+        //     } else if (option2) {     │ code just because the spirit of it gets lost
+        //          // ...               │ in the busy work of adding everything needed
+        //     } else {                  │ to make the example compilable.
+        //          // ...               │
+        //     }                       ──┘
+        //
+        //
+        // This same information can be expressed as a Sum Type!
+        //
+        //  ┌─ (The sealed part is commented out because we're defining it
+        //  │   inside a method)
+        //  ▼
+        /*sealed*/ interface Decision {
+            record Option1() implements Decision {}  // ─┐
+            record Option2() implements Decision {}  //  │ This captures the same if/else information above
+            record Option3() implements Decision {}  // ─┘ as a piece of data!
+
+            // This is one of the things that makes data-oriented programming
+            // so powerful. We can *decouple* decision from action.
+            // This lets us decide what to do with the decisions our application
+            // makes and when (if ever!) we take action.
+            //
+            // We can build interpreters for those decisions!
+            Function<Decision, String> doSomethingWithTheDecision = (Decision decision) -> {
+                return switch(decision) {
+                    case Option1 op -> "I do something with option1";
+                    case Option2 op -> "I do something with option2";
+                    case Option3 op -> "I do something with option3";
+                    // Note! This is only here because we didn't seal the type
+                    // above (due to limitations of what we can define in a method)
+                    default -> throw new IllegalStateException("Unexpected value: " + decision);
+                };
+            };
+        }
+    }
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.14
+     * ───────────────────────────────────────────────────────
+     * Using Sum Types, we can capture how Draft late fees actually
+     * get used in our program. The decisions our program makes
+     * are a core part of the domain.
+     */
+    public void listing5_14() {
+        //
+        // List<Invoice>
+        // -> List<PastDue>
+        // -> LateFeeDraft
+        // -> (BillableFee OR NotBillable OR NeedsApproval)
+        //    └───────────────────────────────────────────┘
+        //                      │ These capture the three distinct decisions
+        //                      │ out program makes
+        //
+    }
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.15 through 5.17
+     * ───────────────────────────────────────────────────────
+     * Interesting things happen when we lift the decisions our
+     * program makes into the type system. We're suddenly forced
+     * to deal with each of those decisions *as a data type*.
+     *
+     * Our "story" starts to naturally follow those branching paths.
+     */
+    public void listing5_15_5_17() {
+        //
+        // List<Invoice>
+        // -> List<PastDue>
+        // -> LateFeeDraft
+        // -> BillableFee -> (BilledLateFee OR RejectedLateFee)
+        //    OR NotBillable -> NotBillable  ◄── Keeping the type the same is how we can say "no change"
+        //    OR NeedsApproval -> Approval
+        //          ▲                ▲
+        //          └────────────────┘
+        //                  │ The nice thing about really descriptive types is that they largely
+        //                  │ push themselves in the right direction.
+        //                  │ What kind of output will something that takes a `NeedsApproval` as
+        //                  │ input produce? An `Approval`!
+    }
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.18
+     * ───────────────────────────────────────────────────────
+     * A narrative for human consumption.
+     *
+     * This is why we go through this design exercise. You can see
+     * all of the important requirements directly in the data types.
+     * We have an outline for our code that looks like it was written
+     * for humans, rather than machines.
+     */
+    public void listing5_18() {
+        // step 1: collect the past due
+        // List<Invoice> -> List<PastDue>
+
+        // Step 2: use those to build the draft
+        // List<PastDue> -> LateFeeDraft
+
+        // Step 3: decide what to do with the draft
+        // LateFeeDraft -> (BillableFee OR NotBillable OR NeedsApproval
+
+        // then depending on what we decided, either:
+        // Step 4.1: submit billable items
+        // BillableFee -> (BilledLateFee OR RejectedLateFee)
+
+        // OR Step 4.2: Start the approval process for those that need it
+        // NeedsApproval -> Approval
+
+        // OR Step 4.3: keep the non-billable data for posterity
+        // NotBillable -> NotBillable  (Stays the same)
+    }
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.19
+     * ───────────────────────────────────────────────────────
+     * We use this design to guide our implementation.
+     * Each arrow can be turned directly into a method.
+     */
+    public void listing5_19() {
+        // Note: We don't define these in the listing. They're
+        // just here as minimal shims to enable compilation.
+        record PastDue(){}
+        record LatefeeDraft(){}
+        record ReviewedDraft(){}
+        record BillingResult(){}
+        record NeedsReview(){}
+
+        //
+        //      ┌──── (this class is here just so we can show the method definitions)
+        //      ▼
+        class ___ {
+            List<PastDue> collectPastDue(List<Invoice> invoices){return null;}  // ◄──┐ (All return null just so they
+            LatefeeDraft buildTheDraft(List<PastDue> invoices) {return null;}   //    │  will compile)
+            ReviewedDraft assesTheDraft(LatefeeDraft invoice) {return null;}
+            BillingResult submitBill(LatefeeDraft draft){return null;}
+            Approval startApproval(NeedsReview needsReview) {return null;}
+        }
+    }
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.20 through 5.25
+     * ───────────────────────────────────────────────────────
+     * Now we begin the data modeling!
+     *
+     * We invented 7 new data types. These all need designed and
+     * modeled. We begin with the "easy" one: PastDue
+     */
+    public void listing5_20_to_5_25() {
+        // One way of capturing "something we know about a state" is
+        // through wrapper types. It could be as simple as this.
+        record PastDue(Invoice invoice) {
+        }
+
+        // However, if we ask the "semantic" questions we learned about
+        // in chapters 3 & 4, we'll find that this doesn't quite meet
+        // the standards we've been chasing.
+        //
+        // "What does it mean to be past due?"
+        //
+        // The entire notion of "past due" depends on *time*
+        /*
+        record PastDue(Invoice invoice) {
+          PastDue {
+            if (invoice.dueDate().isBefore(???)) {
+                                            ▲
+            }                               └──── What goes here??
+        }
+         */
+
+        // We're in new modeling territory. We cannot defend what this data
+        // type "is" via the constructor, because its meaning is contextual
+        // and comes from "outside" of it
+
+        // outside context is what makes it different from what we looked
+        // at before. Types like NonNegativeInt have everything they need
+        // to enforce their semantics "inside" of the constructor.
+        record NonNegativeInt(int value) {
+            NonNegativeInt {
+                if (value < 0) {
+                    throw new IllegalArgumentException("Nope");
+                }
+            }
+        }
+
+        // You might try to make the wrapper type carry this outside context.
+        record PastDueV2 (
+                Invoice invoice,
+                LocalDate lateAsOf   // ◄── We could use this to defend the semantics
+        ) {/*...*/}                  //     during construction. But should we...?
+
+        // The real world is messy. The bulk of the PastDue data type's value is what it
+        // communicates *about* the requirements. It's still useful if it's squishy!
+
+        // These two transforms communicate very different things.
+        // List<Invoice> -> LateFee
+        // List<PastDue> -> LateFee
     }
 
 
 
 
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.26 through 5.27
+     * ───────────────────────────────────────────────────────
+     * Next up, we tackle how to represent the life cycle of
+     * a Late Fee.
+     *
+     * There are no shortage of options, we walk through the
+     * most "obvious" first.
+     */
+    public void listing5_26_to_5_27() {
+        record USD(BigDecimal value){}
+        record PastDue(Invoice invoice){}
+        record InvoiceId(String value){}
+        record Rejection(String why){}
+        interface ReviewedFee{} // (not defined as part of this listing)
+
+        // Is this good modeling?
+        // I'd argue it's not terrible. It enables some really
+        // powerful things. However, it's extremely clunky from
+        // an ergonomics perspective. We've got a ton of repeated
+        // fields between each data type.
+        record DraftLateFee(
+            String customerId,
+            USD total,
+            LocalDate invoiceDate,
+            LocalDate dueDate,
+            List<PastDue> includedInFee
+        ){}
+
+        record BilledLatefee(
+            InvoiceId id,  //  ◄── This data type is 1:1 with Draft sans this single field
+            String customerId,
+            USD total,
+            LocalDate invoiceDate,
+            LocalDate dueDate,
+            List<PastDue> includedInFee
+        ){}
+
+        record RejectedLatefee(
+            Rejection reason,    //  ◄── Ditto here. This is the only thing that's different.
+            String customerId,
+            USD total,
+            LocalDate invoiceDate,
+            LocalDate dueDate,
+            List<PastDue> includedInFee
+        ){}
+
+        // They're clunky, but their modeling gives us power.
+        // We can specify exactly which methods operate on which
+        // lifecycle states.
+        // For instance:
+        class Example {
+            //
+            //                          ┌── We only assess DRAFT late fees!
+            //                          ▼
+            ReviewedFee assessDraft(DraftLateFee fee) {
+                // ...
+                return null;
+            }
+        }
+
+        // However, they remain too clunky to use in practice.
+        // Developers recoil from this kind of duplication.
+    }
+
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.28 - 5.32
+     * ───────────────────────────────────────────────────────
+     * Exploring more representations and their implications on code.
+     *
+     */
+    public void listing5_28_to_5_32() {
+        record USD(BigDecimal value){}
+        record PastDue(Invoice invoice){}
+        record InvoiceId(String value){}
+        record Rejection(String why){}
+        record Details(                     //  ──┐
+                USD total,                  //    │  Pulling all the common fields out
+                LocalDate invoiceDate,      //    │  onto their own data type
+                LocalDate dueDate,          //    │
+                List<PastDue> includedInFee //  ──┘
+        ){}
+        record DraftLateFee(
+                Details details   //  ◄── Now the details can be shared
+        ){}
+
+        record BilledLatefee(
+                InvoiceId id,
+                Details details   //  ◄── Ditto
+        ){}
+
+        record RejectedLatefee(
+                Rejection reason,
+                Details details   //  ◄── Ditto
+        ){}
+
+
+        // Is this better? It depends!
+        // As we design the representation, we have to keep an eye
+        // towards how these things will actually work in practice.
+        //
+        // What you might not notice until you start trying to program
+        // with these is that they're really inflexible.
+        //
+        // Can we, say, compute some aggregate stats? Totals by lifecycle?
+        /*
+        Map<???, USD> totalsByLifecycle(List<???> fees) {
+            //  ???                           ▲
+        }                                     └── What goes here? Each lifecycle is its own isolated type
+        */
+
+        // Maybe sealing fixes?
+        /*sealed*/ interface LateFee {
+            record DraftV2(Details details) implements LateFee {}
+            record BilledV2(InvoiceId id, Details details) implements LateFee {}
+            record RejectedV2(Rejection reason, Details details) implements LateFee {}
+
+        }
+
+        // Maybe now..?
+        Function<List<LateFee>, Map<LateFee, USD>> totalsByLifecycle = (List<LateFee> fees) -> {
+            // fees.stream().map(fee -> fee.details() ???)
+            //                                ▲
+            //                                └── You might expect this to work since they're
+            //                                    all the same data type, but to Java, they're
+            //                                    "just" an interface. It has no idea what's inside.
+
+            return null;
+        };
+
+        // More workarounds...?
+        Function<List<LateFee>, Map<LateFee, USD>> totalsByLifecycleV2 = (List<LateFee> fees) -> {
+            //  fees.stream()
+            //      .map(fee -> return switch(fee) {
+            //          case DraftV2 d -> d.details();     ─┐
+            //          case BilledV2 b -> b.details();     │ I think the only appropriate response to
+            //          case RejectedV2 r -> r.details();  ─┘ this nonsense is "ugh..."
+            //      })
+            //      .map(...)
+
+            return null;
+        };
+
+        //
+        // Even MORE workarounds?!?
+        //
+        interface HasDetails {  // This CAN work, but.... should we do this?
+            Details details();  //
+        }
+        interface LateFeeV2 extends HasDetails {
+            record DraftV3(Details details) implements LateFeeV2 {}
+            record BilledV3(InvoiceId id, Details details) implements LateFeeV2 {}
+            record RejectedV3(Rejection reason, Details details) implements LateFeeV2 {}
+        }
+
+        // Let's use this need for sophisticated workarounds as feedback
+        // that our modeling isn't working.
+    }
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.33 - 5.38
+     * ───────────────────────────────────────────────────────
+     * Exploring even more representations.
+     *
+     * We'll seldom get things right on the first try -- and that's ok!
+     * The nice thing about just playing around with data is how
+     * low the stakes are. Refactoring data's representation is far
+     * easier that refactoring code.
+     */
+    public void listing5_33_to_5_38() {
+        record PastDue(Invoice invoice) {}
+        record InvoiceId(String value){}
+        record Rejection(String why){}
+        record USD(BigDecimal value) {
+            // We don't define these in the listing, but they'd look
+            // something like this.
+            static USD zero() {return new USD(BigDecimal.ZERO);}
+            static USD add(USD x, USD y){ return new USD(x.value().add(y.value()));}
+        }
+        // This is yet another option for representing complex lifecycle
+        // states without duplicating all the fields. Rather than extract
+        // what's the same, we can extract what's unique into its own type.
+        //
+        // NOTE: As with all the other examples, this should be sealed, but we
+        // can't do that while defining it inside a method. So... just pretend.
+        /*sealed*/ interface Lifecycle {}
+        record Draft() implements Lifecycle{}
+        record Billed(InvoiceId id) implements Lifecycle {}
+        record Rejected(Rejection why) implements Lifecycle {}
+
+        record LateFee(
+                Lifecycle state,  //    ◄── Now all the common stuff and the unique
+                USD total,        //        lifecycle info can live on the same model
+                LocalDate invoiceDate,
+                LocalDate dueDate,
+                List<PastDue> includedInFee
+        ){}
+
+        class Example {
+            // Programming with our data types is pleasant again.
+            // We've restored some runtime flexibility. Computing aggregate stats
+            // across all lifecycle states is now trivial.
+            Map<Lifecycle, USD> totalsByLifecycle(List<LateFee> fees) {
+                return fees.stream()
+                    .collect(groupingBy(LateFee::state,
+                        mapping(LateFee::total, reducing(USD.zero(), USD::add))));
+            }
+        }
+
+        // ┌────────────────────────────────────────────────────────────────────┐
+        // │                             HOWEVER!                               │
+        // └────────────────────────────────────────────────────────────────────┘
+        //
+        // Not all is perfect with this representation.
+        // In exchange for runtime flexibility, we lost the ability to
+        // enforce important invariants at compile time.
+        class BillingExample {
+
+            //                    ┌─ Our code has started lying again :(
+            //                    ▼
+            LateFee submitBill(LateFee fee) {
+                //
+                //                   ┌─ And so we're back on the hook for defensive programming :(
+                //                   ▼
+                //  ┌────────────────────────────────────────┐
+                if (!(fee.state() instanceof Draft)) {
+                    throw new IllegalArgumentException(
+                        "You're about to charge something you shouldn't!!!"
+                    );
+                }
+                return null;
+            }
+        }
+
+        // Another big problem with all of this is that we've lost the
+        // ability to communicate. Our "story" has become truncated and imprecise.
+        //
+        // List<Invoice>
+        // -> List<PastDue>
+        //      ┌─────────────────── What happened to "Draft"?
+        //      ▼
+        // -> LateFee           ┌─── We've lost all the subtlety of how the Late Fee changes.
+        // -> ???               ▼
+        // -> BillableFee -> LateFee (??? OR ???)
+        //
+        // That's no good.
+        //
+        // Let's try this:
+        //
+        // ┌────────────────────────────────────────────────────────────────────┐
+        // │             Capturing lifecycle state as a Type Variable           │
+        // └────────────────────────────────────────────────────────────────────┘
+        //
+        //                ┌─ We can "parameterize" LateFee by its Lifecycle information
+        //                │
+        //                │                ┌─ The generic Type Variable, State, is bounded by
+        //                ▼                ▼  the type Lifecycle. It won't accept anything else!
+        record LateFeeV2<State extends Lifecycle>(
+                State state, //  ◄──────────────┐ This type variable is referenced on the
+                USD total,   //                 │ model, which unifies the compile-time and runtime
+                LocalDate invoiceDate,//        │ representations!
+                LocalDate dueDate,
+                List<PastDue> includedInFee
+        ){}
+
+        // Generics aren't just for collections!
+        // Expressing constraints in the type system allows us to
+        // USE that type information while defining methods
+        class LeveragingTypeInformationInMethods {
+            void doSomething1(LateFeeV2<Draft> fee) {/*...*/}
+            void doSomething2(LateFeeV2<Billed> fee) {/*...*/}
+            void doSomething3(LateFeeV2<Rejected> fee) {/*...*/}
+            void doSomething4(LateFeeV2<? extends Lifecycle> fee) {/*...*/}
+            void doSomething5(LateFeeV2 fee) {/*...*/}
+            //                   ▲
+            //                   └─── We can completely leave off the type information.
+            //                        Java will produce a helpful warning. This is a great
+            //                        option for slowly refactoring legacy code towards
+            //                        type safety.
+        }
+
+        // These types let us express rich domain information at all "levels" of
+        // our program
+        //
+        // ┌────────────────────────────────────────────────────────────────────┐
+        // │             Restoring the richness of our story                    │
+        // └────────────────────────────────────────────────────────────────────┘
+        // List<Invoice>
+        // -> List<PastDue>
+        // -> LateFee<Draft>
+        // -> BillableFee -> LateFee<Billed> OR LateFee<Rejected>
+
+        //
+        // Neat, right?
+    }
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.39 - 5.40
+     * ───────────────────────────────────────────────────────
+     * Here's our initial sketch of the data model
+     */
+    public void listing5_39_to_5_40() {
+        class ___ {
+            record PastDue(Invoice invoice) {}
+            record InvoiceId(String value){}
+            record Rejection(String why){}
+            record USD(BigDecimal value) {        }
+            /*sealed*/ interface Lifecycle {}
+            record Draft() implements Lifecycle{}
+            record Billed(InvoiceId id) implements Lifecycle {}
+            record Rejected(Rejection why) implements Lifecycle {}
+
+            record LateFee<State extends Lifecycle>(
+                    State state,
+                    USD total,
+                    LocalDate invoiceDate,
+                    LocalDate dueDate,
+                    List<PastDue> includedInFee
+            ){}
+
+
+            /*sealed*/ interface ReviewedFee {}
+            record Billable(LateFee<Draft> latefee) implements ReviewedFee {}
+            record NeedsReview(LateFee<Draft> latefee) implements ReviewedFee {}
+            record NotBillable(LateFee<Draft> latefee, String rationale) implements ReviewedFee {}
+
+            interface TheBehaviorsWillLookLikeThis {
+                List<PastDue> collectPastDue(List<Invoice> invoices);
+                LateFee<Draft> buildDraft(List<PastDue> pastDue);
+                ReviewedFee assessDraft(LateFee<Draft> draft);
+                LateFee<? extends Lifecycle> submitBill(Billable billableFee);
+                Approval startApproval(NeedsReview needsReview);
+            }
+        }
+
+    }
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.41
+     * ───────────────────────────────────────────────────────
+     * Our data modeling was done in a loose isolation of the rest
+     * of the world. Now we have to merge them together.
+     *
+     * As an initial starting point, we need to map out what each
+     * "new" method depends on from the "old" world.
+     *
+     */
+    public void listing5_41() {
+        /*
+        collectPastDue
+            DependsOn:
+                List<Invoice> (Entity / Database (read))
+                CurrentDate (Environment (read))
+                CustomerRating (API (read))
+            Output:
+                List<PastDueInvoice>
+
+        buildDraft
+            DependsOn:
+                List<PastDue> (Output from collectPastDue)
+                CurrentDate (Environment (read))
+                PaymentTerms (API (read))
+                FeePercentage (Database (read))
+                Customer (Database (read))
+          Output:
+                Latefee<Draft>
+
+        assessDraft
+            DependsOn:
+                LateFee<Draft> (Output from buildDraft)
+                Rules (Database (read))
+                Customer (Database (read))
+                ApprovalStatus (API (read))
+            Output:
+                Billable
+                OR NeedsReview
+                OR NotBillable
+        submitBill
+            DependsOn:
+                BillableFee (output from AssessDraft)
+                BillingService (API write)
+            Output:
+                BilledLateFee
+                OR RejectedLateFee
+
+        startApproval
+            DependsOn:
+                NeedsReview (output from AssessDraft)
+                CustomerID (database (read))
+                ApprovalsService (API read/write)
+
+             */
+    }
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.42 through 5.47
+     * ───────────────────────────────────────────────────────
+     * There are few black and white answers in software engineering.
+     * We deal with tradeoffs and concessions.
+     *
+     * In this listing, we look at a possible implementation for
+     * what buildDraft might look like if we just "plug in" whatever
+     * we need from the outside world.
+     *
+     * Sometimes this is fine; sometimes it's not. The problem from a
+     * modeling perspective is that it drags "our" method back into
+     * being one that spends all of its time managing "other" stuff.
+     */
+    public void listing5_42_to_5_47() {
+
+        record Draft(){}
+        record Latefee<A>(){}
+        record PastDue(){}
+
+        class Example {
+            ContractsAPI contractsAPI;
+            FeesRepo feesRepo;
+            Latefee<Draft> buildDraft(Customer customer, List<PastDue> invoices){
+                LocalDate today = LocalDate.now();          //  ─┐
+                PaymentTerms terms = contractsAPI           //   │  Most of our method's implementation ends up
+                        .getPaymentTerms(customer.getId()); //   │  devoted to managing "what's already there" rather
+                BigDecimal feePercentage = feesRepo.get(    //   │  working on business logic.
+                        customer.getAddress().getCountry()  //   │
+                );                                          //  ─┘
+                // plus anything else we need...
+
+                // then only once all that is done can we
+                // start to write any business logic
+                return new Latefee<>(/*...*/);
+            }
+        }
+
+        // ┌────────────────────────────────────────────────────────────────────┐
+        // │         Separate how you get data from what you do with it         │
+        // └────────────────────────────────────────────────────────────────────┘
+        //
+        //   Latefee<Draft> doAction(){    ─┐
+        //      // [LOAD DATA]              │ Any method like this, that does all the
+        //      // [BUSINESS LOGIC]         │ work of getting loading the data it needs
+        //   }    ──────────────────────────┘
+        //
+        //                             ┌──────────  Can be refactored to one that ACCEPTS
+        //                             ▼            that same data as an argument
+        //   Latefee<Draft> doAction([DATA]){
+        //      // [BUSINESS LOGIC]
+        //   }       ▲
+        //           └─── This frees the implementation to be devoted to business logic
+
+        //
+        // We can do this refactoring to buildDraft.
+        class Example2 {
+            Latefee<Draft> buildDraft(Customer customer,
+                                      PaymentTerms terms,
+                                      BigDecimal feePercentage,
+                                      List<PastDue> invoices){
+                // Now I can be pure business logic!
+                return new Latefee<>(/*...*/);
+            }
+        }
+
+        // This same refactoring can potentially be done to ALL of our methods!
+        // ┌────────────────────────────────────────────────────────────────────┐
+        // │                   Decouple, Decouple, Decouple!                    │
+        // └────────────────────────────────────────────────────────────────────┘
+        //
+        //     public void processLatefees() {
+        //         [LOAD ALL THE DATA WE NEED]
+        //         CoutryCode country = customer.getBillingAddress().country();
+        //         BigDecimal feePercentage = feeRepo.get(country);
+        //         List<Invoice> allInvoices = invoiceRepo.findInvoices(customer.getId())
+        //         // and so on ...
+        //
+        //
+        //         [USE THE DATA IN BUSINESS LOGIC]
+        //         List<Invoice> pastDue = collectPastDue(allInvoices, rating, today)
+        //         // and so on...
+        //     }
+
+        // We can pull the "how we get the data" into its own method.
+        // And give it its own data type!
+        // This gives us opportunities to tighten up the data model.
+        // For instance, rather than percentage being represented by a
+        // vague BigDecimal (which is VERY easy to misunderstand), we can
+        // make it IMPOSSIBLE to use incorrectly by leveraging a more semantic
+        // data type -- here's the one we made in Chapter 03
+        record Percent(double numerator, double denominator) {
+            Percent {
+                if (numerator > denominator) {
+                    throw new IllegalArgumentException(
+                        "Percentages are 0..1 and must be expressed " +
+                        "as a proper fraction. e.g. 1/100");
+                }
+            }
+        }
+        record InvoicingData(
+            Customer customer,
+            List<Invoice> invoices,
+            LocalDate currentDate,
+            CustomerRating customerRating,
+            PaymentTerms terms,
+            Percent feePercent,
+            Rules rules,
+            Optional<Approval> approval
+        ){}
+
+        // ┌────────────────────────────────────────────────────────────────────┐
+        // │              Using this refactoring in our main method             │
+        // └────────────────────────────────────────────────────────────────────┘
+        class FeeService {
+            private Services.RatingsAPI ratingsApi;
+            private ContractsAPI contractsApi;
+            private Services.ApprovalsAPI approvalsApi;
+            private Services.BillingAPI billingApi;
+            private Repositories.CustomerRepo customerRepo;
+            private Repositories.InvoiceRepo invoiceRepo;
+            private Repositories.RulesRepo rulesRepo;
+            private FeesRepo feesRepo;
+            public void processLateFees(){
+                this.streamInvoicingData().forEach(invoicingData -> {
+                    // Just business logic here!
+                });
+
+            }
+
+            // We can pull out all the gross management of these existing APIs, and
+            // services, and entities into their own method. This frees up the rest
+            // of our code to focus on what it cares about: the business logic.
+            Stream<InvoicingData> streamInvoicingData() {
+                // If this looks like a lot, that's because it IS!
+                // When you aggregate it all together, it reveals how much time we wasted
+                // in our original implementation just managing "how" we get what we need.
+                // This feels different when pulled out because it's no longer amortized
+                // across all the other business logic. It's true cost is laid bare.
+                LocalDate today = LocalDate.now();
+                return customerRepo.findAll()
+                    .stream()
+                    .map(customer -> {
+                        BigDecimal uglyFee = feesRepo.get(customer.getAddress().getCountry());
+                        Percent feePercent = new Percent(uglyFee.doubleValue(), 1);
+                        return new InvoicingData(
+                            customer,
+                            invoiceRepo.findInvoices(customer.getId()),
+                            today,
+                            ratingsApi.getRating(customer.getId()),
+                            contractsApi.getPaymentTerms(customer.getId()),
+                            feePercent,
+                            rulesRepo.loadDefaults(),
+                            Optional.ofNullable(customer.getApprovalId())
+                                    .flatMap(approvalsApi::getApproval));
+                        }
+                    );
+            }
+        }
+    }
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.48 through 5.49
+     * ───────────────────────────────────────────────────────
+     * A big theme that permeates this chapter is that engineering
+     * is contextual. We're always making tradeoffs.
+     *
+     * In this listing we explore a refactoring that we *might* want
+     * to do. The "cost" here is that we begin carving into the world
+     * of "what's already there" and rebuilding it into a new shape.
+     *
+     * This is a valuable thing to do in most codebases, but not always
+     * the "right" thing to do as part of an individual feature.
+     */
+    public void listing5_48_to_5_49() {
+        // ┌────────────────────────────────────────────────────────────────────┐
+        // │        Decoupling from the Tyranny of What's Already There         │
+        // └────────────────────────────────────────────────────────────────────┘
+        //
+
+        // minimal shims just to enable the main example.
+        record CustomerId(){}
+        record Percent(){}
+
+        // We don't have to settle for the world as we found it -- as it was dictated
+        // by other people. We can unify disparate services and APIs.
+        //
+        // Design is about making the world as we want it to be.
+        //
+        // An obvious problem with the service oriented hellscape in which our feature
+        // lives is that the boundaries, which may be totally sane at the system level, do
+        // not fit what we're trying to do at the service level. They force our data to be
+        // fragmented.
+        //
+        // We can hide these arbitrary service boundaries behind a new data type.
+        record EnrichedCustomer(
+                CustomerId id,
+                Address address,
+                Percent feePercentage,
+                PaymentTerms terms,
+                CustomerRating rating,
+                Optional<Approval> approval
+        ) {}
+    }
+
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 5.50
+     * ───────────────────────────────────────────────────────
+     * The finished data model!
+     */
+    public void listing5_50() {
+        class ___ {
+            record Percent(double numerator, double denominator) {
+                Percent {
+                    if (numerator > denominator) {
+                        throw new IllegalArgumentException(
+                                "Percentages are 0..1 and must be expressed " +
+                                        "as a proper fraction. e.g. 1/100");
+                    }
+                }
+            }
+            record CustomerId(String value){}
+            record PastDue(Invoice invoice) {}
+            record InvoiceId(String value){}
+            record Rejection(String why){}
+            record USD(BigDecimal value) {        }
+            /*sealed*/ interface Lifecycle {}
+            record Draft() implements Lifecycle{}
+            record Billed(InvoiceId id) implements Lifecycle {}
+            record Rejected(Rejection why) implements Lifecycle {}
+
+            record LateFee<State extends Lifecycle>(
+                    State state,
+                    USD total,
+                    LocalDate invoiceDate,
+                    LocalDate dueDate,
+                    List<PastDue> includedInFee
+            ){}
+
+
+            /*sealed*/ interface ReviewedFee {}
+            record Billable(LateFee<Draft> latefee) implements ReviewedFee {}
+            record NeedsReview(LateFee<Draft> latefee) implements ReviewedFee {}
+            record NotBillable(LateFee<Draft> latefee, String rationale) implements ReviewedFee {}
+
+            record EnrichedCustomer(
+                    CustomerId id,
+                    Address address,
+                    Percent feePercentage,
+                    PaymentTerms terms,
+                    CustomerRating rating,
+                    Optional<Approval> approval
+            ) {}
+
+            interface TheBehaviorsWillLookLikeThis {
+                List<PastDue> collectPastDue(List<Invoice> invoices);
+                LateFee<Draft> buildDraft(List<PastDue> pastDue);
+                ReviewedFee assessDraft(LateFee<Draft> draft);
+                LateFee<? extends Lifecycle> submitBill(Billable billableFee);
+                Approval startApproval(NeedsReview needsReview);
+            }
+        }
+    }
+
+
 }
+
+

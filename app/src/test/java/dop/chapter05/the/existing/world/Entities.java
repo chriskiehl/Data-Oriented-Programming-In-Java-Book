@@ -113,6 +113,8 @@ public class Entities {
     @Data
     public static class Rules {
         BigDecimal minimumFeeThreshold;
+        BigDecimal maximumFeeThreshold;
+
     }
 
 

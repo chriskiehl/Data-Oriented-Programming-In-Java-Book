@@ -4,8 +4,8 @@ import java.util.Optional;
 
 public class Services {
     public interface RatingsAPI {
-        enum CustomerStanding {GOOD, ACCEPTABLE, POOR}
-        CustomerStanding getRating(String customerId);
+        enum CustomerRating {GOOD, ACCEPTABLE, POOR}
+        CustomerRating getRating(String customerId);
     }
 
     public interface ContractsAPI {
@@ -14,8 +14,8 @@ public class Services {
     }
 
     public interface ApprovalsAPI {
-        enum Status {Pending, Approved, Denied}
-        record Approval(String id, Status status){}
+        enum ApprovalStatus {PENDING, APPROVED, DENIED}
+        record Approval(String id, ApprovalStatus status){}
         record CreateApprovalRequest(/*...*/) {}
         Approval createApproval(CreateApprovalRequest request);
         Optional<Approval> getApproval(String approvalId);

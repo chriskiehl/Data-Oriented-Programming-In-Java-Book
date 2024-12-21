@@ -25,7 +25,7 @@ public class Repositories {
 
     public interface InvoiceRepo {
         void save(Invoice invoice);
-        List<Invoice> findInvoice(String customerId);
+        List<Invoice> findInvoices(String customerId);
     }
 
     public interface RulesRepo {
