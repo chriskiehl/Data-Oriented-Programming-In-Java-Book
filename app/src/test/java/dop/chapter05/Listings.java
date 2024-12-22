@@ -1,26 +1,22 @@
 package dop.chapter05;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
-import com.google.common.base.Supplier;
 import dop.chapter05.the.existing.world.Entities.*;
 import dop.chapter05.the.existing.world.Repositories;
 import dop.chapter05.the.existing.world.Repositories.FeesRepo;
 import dop.chapter05.the.existing.world.Services;
+import dop.chapter05.the.existing.world.Services.ApprovalsAPI;
 import dop.chapter05.the.existing.world.Services.ApprovalsAPI.Approval;
 import dop.chapter05.the.existing.world.Services.ApprovalsAPI.ApprovalStatus;
 import dop.chapter05.the.existing.world.Services.ContractsAPI;
 import dop.chapter05.the.existing.world.Services.ContractsAPI.PaymentTerms;
 import dop.chapter05.the.existing.world.Services.RatingsAPI.CustomerRating;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Currency;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
@@ -53,6 +49,7 @@ public class Listings {
      * are the external APIs we'll interact with.
      * We cheat a bit and ignore stuff like HTTP and failures.
      */
+    @Test
     public void listing5_1() {
         interface RatingsAPI {
             enum CustomerStanding {GOOD, ACCEPTABLE, POOR}
@@ -133,7 +130,7 @@ public class Listings {
         class LateFeeChargingService {               // ◄───────┐ The bet I make in the book is that this general
             private Services.RatingsAPI ratingsApi;         //  │ setup feels deeply familiar as a starting point.
             private ContractsAPI contractsApi;     //  │ We have an army of Entities, Service Classes, and
-            private Services.ApprovalsAPI approvalsApit;    //  │ Repositories (or "Data Access Objects" depending on
+            private ApprovalsAPI approvalsApi;    //  │ Repositories (or "Data Access Objects" depending on
             private Services.BillingAPI billingApi;         //  │ your preferred lingo) all crammed into the top of a
             private Repositories.CustomerRepo customerRepo; //  │ a class that's usually called [Thing]Service.
             private Repositories.InvoiceRepo invoiceRepo;
@@ -360,18 +357,24 @@ public class Listings {
         // It can be very hard to see inside all this sea of nested if/else
         // statements, but we're actually only doing three distinct actions.
         // These three things are hidden because of all the other stuff going on.
+        class HereJustForTheExample{
+            public ApprovalStatus getApprovalStatus(String approvalId) {
+                return ApprovalStatus.APPROVED;
+            }
+        }
         Runnable originalImplementation = () -> {
-            Rules rules;         //─┐
-            BigDecimal latefee;  // │ here just to make things compile
-            Customer customer;   //─┘
+            HereJustForTheExample api = new HereJustForTheExample();  //─┐
+            Rules rules = new Rules();                                // │ here just to make things compile
+            BigDecimal latefee = BigDecimal.ONE;                      // │
+            Customer customer = new Customer();                       //─┘
             if (latefee.compareTo(rules.getMaximumFeeThreshold()) <= 0) {
                 // [logic omitted]
             } else {
                 if (latefee.compareTo(rules.getMaximumFeeThreshold()) > 0) {
-                    if (customer.getApprovalId().isEmpty()) {
+                    if (Objects.isNull(customer.getApprovalId())) {
                         // [logic omitted]
                     } else {
-                        ApprovalStatus status; // = getApprovalStatus(customer);
+                        ApprovalStatus status = api.getApprovalStatus(customer.getApprovalId());
                         if (status.equals(ApprovalStatus.PENDING)) {
                             // [logic omitted]
                         } else if (status.equals(ApprovalStatus.DENIED)) {
@@ -397,33 +400,34 @@ public class Listings {
         //          // ...               │
         //     }                       ──┘
         //
-        //
-        // This same information can be expressed as a Sum Type!
-        //
-        //  ┌─ (The sealed part is commented out because we're defining it
-        //  │   inside a method)
-        //  ▼
-        /*sealed*/ interface Decision {
-            record Option1() implements Decision {}  // ─┐
-            record Option2() implements Decision {}  //  │ This captures the same if/else information above
-            record Option3() implements Decision {}  // ─┘ as a piece of data!
-
-            // This is one of the things that makes data-oriented programming
-            // so powerful. We can *decouple* decision from action.
-            // This lets us decide what to do with the decisions our application
-            // makes and when (if ever!) we take action.
+        class ____ {
+            // This same information can be expressed as a Sum Type!
             //
-            // We can build interpreters for those decisions!
-            Function<Decision, String> doSomethingWithTheDecision = (Decision decision) -> {
-                return switch(decision) {
-                    case Option1 op -> "I do something with option1";
-                    case Option2 op -> "I do something with option2";
-                    case Option3 op -> "I do something with option3";
-                    // Note! This is only here because we didn't seal the type
-                    // above (due to limitations of what we can define in a method)
-                    default -> throw new IllegalStateException("Unexpected value: " + decision);
+            //  ┌─ (The sealed part is commented out because we're defining it
+            //  │   inside a method)
+            //  ▼
+            /*sealed*/ interface Decision {
+                record Option1() implements Decision {}  // ─┐
+                record Option2() implements Decision {}  //  │ This captures the same if/else information above
+                record Option3() implements Decision {}  // ─┘ as a piece of data!
+
+                // This is one of the things that makes data-oriented programming
+                // so powerful. We can *decouple* decision from action.
+                // This lets us decide what to do with the decisions our application
+                // makes and when (if ever!) we take action.
+                //
+                // We can build interpreters for those decisions!
+                Function<Decision, String> doSomethingWithTheDecision = (Decision decision) -> {
+                    return switch(decision) {
+                        case Option1 op -> "I do something with option1";
+                        case Option2 op -> "I do something with option2";
+                        case Option3 op -> "I do something with option3";
+                        // Note! This is only here because we didn't seal the type
+                        // above (due to limitations of what we can define in a method)
+                        default -> throw new IllegalStateException("Unexpected value: " + decision);
+                    };
                 };
-            };
+            }
         }
     }
 
@@ -679,91 +683,94 @@ public class Listings {
      *
      */
     public void listing5_28_to_5_32() {
-        record USD(BigDecimal value){}
-        record PastDue(Invoice invoice){}
-        record InvoiceId(String value){}
-        record Rejection(String why){}
-        record Details(                     //  ──┐
-                USD total,                  //    │  Pulling all the common fields out
-                LocalDate invoiceDate,      //    │  onto their own data type
-                LocalDate dueDate,          //    │
-                List<PastDue> includedInFee //  ──┘
-        ){}
-        record DraftLateFee(
-                Details details   //  ◄── Now the details can be shared
-        ){}
+        class ___ {
+            record USD(BigDecimal value){}
+            record PastDue(Invoice invoice){}
+            record InvoiceId(String value){}
+            record Rejection(String why){}
+            record Details(                     //  ──┐
+                                                USD total,                  //    │  Pulling all the common fields out
+                                                LocalDate invoiceDate,      //    │  onto their own data type
+                                                LocalDate dueDate,          //    │
+                                                List<PastDue> includedInFee //  ──┘
+            ){}
+            record DraftLateFee(
+                    Details details   //  ◄── Now the details can be shared
+            ){}
 
-        record BilledLatefee(
-                InvoiceId id,
-                Details details   //  ◄── Ditto
-        ){}
+            record BilledLatefee(
+                    InvoiceId id,
+                    Details details   //  ◄── Ditto
+            ){}
 
-        record RejectedLatefee(
-                Rejection reason,
-                Details details   //  ◄── Ditto
-        ){}
+            record RejectedLatefee(
+                    Rejection reason,
+                    Details details   //  ◄── Ditto
+            ){}
 
 
-        // Is this better? It depends!
-        // As we design the representation, we have to keep an eye
-        // towards how these things will actually work in practice.
-        //
-        // What you might not notice until you start trying to program
-        // with these is that they're really inflexible.
-        //
-        // Can we, say, compute some aggregate stats? Totals by lifecycle?
-        /*
-        Map<???, USD> totalsByLifecycle(List<???> fees) {
-            //  ???                           ▲
-        }                                     └── What goes here? Each lifecycle is its own isolated type
-        */
+            // Is this better? It depends!
+            // As we design the representation, we have to keep an eye
+            // towards how these things will actually work in practice.
+            //
+            // What you might not notice until you start trying to program
+            // with these is that they're really inflexible.
+            //
+            // Can we, say, compute some aggregate stats? Totals by lifecycle?
+            /*
+            Map<???, USD> totalsByLifecycle(List<???> fees) {
+                //  ???                           ▲
+            }                                     └── What goes here? Each lifecycle is an isolated type
+            */
 
-        // Maybe sealing fixes?
-        /*sealed*/ interface LateFee {
-            record DraftV2(Details details) implements LateFee {}
-            record BilledV2(InvoiceId id, Details details) implements LateFee {}
-            record RejectedV2(Rejection reason, Details details) implements LateFee {}
+            // Maybe sealing fixes?
+            /*sealed*/ interface LateFee {
+                record DraftV2(Details details) implements LateFee {}
+                record BilledV2(InvoiceId id, Details details) implements LateFee {}
+                record RejectedV2(Rejection reason, Details details) implements LateFee {}
 
+            }
+
+            // Maybe now..?
+            Function<List<LateFee>, Map<LateFee, USD>> totalsByLifecycle = (List<LateFee> fees) -> {
+                // fees.stream().map(fee -> fee.details() ???)
+                //                                ▲
+                //                                └── You might expect this to work since they're
+                //                                    all the same data type, but to Java, they're
+                //                                    "just" an interface. It has no idea what's inside.
+
+                return null;
+            };
+
+            // More workarounds...?
+            Function<List<LateFee>, Map<LateFee, USD>> totalsByLifecycleV2 = (List<LateFee> fees) -> {
+                //  fees.stream()
+                //      .map(fee -> return switch(fee) {
+                //          case DraftV2 d -> d.details();     ─┐
+                //          case BilledV2 b -> b.details();     │ I think the only appropriate response to
+                //          case RejectedV2 r -> r.details();  ─┘ this nonsense is "ugh..."
+                //      })
+                //      .map(...)
+
+                return null;
+            };
+
+            //
+            // Even MORE workarounds?!?
+            //
+            interface HasDetails {  // This CAN work, but.... should we do this?
+                Details details();  //
+            }
+            interface LateFeeV2 extends HasDetails {
+                record DraftV3(Details details) implements LateFeeV2 {}
+                record BilledV3(InvoiceId id, Details details) implements LateFeeV2 {}
+                record RejectedV3(Rejection reason, Details details) implements LateFeeV2 {}
+            }
+
+            // Let's use this need for sophisticated workarounds as feedback
+            // that our modeling isn't working.
         }
 
-        // Maybe now..?
-        Function<List<LateFee>, Map<LateFee, USD>> totalsByLifecycle = (List<LateFee> fees) -> {
-            // fees.stream().map(fee -> fee.details() ???)
-            //                                ▲
-            //                                └── You might expect this to work since they're
-            //                                    all the same data type, but to Java, they're
-            //                                    "just" an interface. It has no idea what's inside.
-
-            return null;
-        };
-
-        // More workarounds...?
-        Function<List<LateFee>, Map<LateFee, USD>> totalsByLifecycleV2 = (List<LateFee> fees) -> {
-            //  fees.stream()
-            //      .map(fee -> return switch(fee) {
-            //          case DraftV2 d -> d.details();     ─┐
-            //          case BilledV2 b -> b.details();     │ I think the only appropriate response to
-            //          case RejectedV2 r -> r.details();  ─┘ this nonsense is "ugh..."
-            //      })
-            //      .map(...)
-
-            return null;
-        };
-
-        //
-        // Even MORE workarounds?!?
-        //
-        interface HasDetails {  // This CAN work, but.... should we do this?
-            Details details();  //
-        }
-        interface LateFeeV2 extends HasDetails {
-            record DraftV3(Details details) implements LateFeeV2 {}
-            record BilledV3(InvoiceId id, Details details) implements LateFeeV2 {}
-            record RejectedV3(Rejection reason, Details details) implements LateFeeV2 {}
-        }
-
-        // Let's use this need for sophisticated workarounds as feedback
-        // that our modeling isn't working.
     }
 
 
@@ -1125,7 +1132,7 @@ public class Listings {
         class FeeService {
             private Services.RatingsAPI ratingsApi;
             private ContractsAPI contractsApi;
-            private Services.ApprovalsAPI approvalsApi;
+            private ApprovalsAPI approvalsApi;
             private Services.BillingAPI billingApi;
             private Repositories.CustomerRepo customerRepo;
             private Repositories.InvoiceRepo invoiceRepo;

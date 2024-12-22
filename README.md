@@ -110,6 +110,25 @@ RetryDecision reschedule(FailedTask failedTask) {       //  ◄───┘ to u
 ```
 
 
+**Classes inside of methods**
+
+You'll often run across a "nothing" class inside of certain listings. For instance
+
+```
+class Chapter05 {
+    void listing5_13() {
+        class __ {   ◄─────────────────────────────────┐ This nested class is here becuase Java doesn't support  
+                                                       │ certain forward references / type hierarchies if you try  
+            // ...                                     │ to define them directly in the body of the method. 
+            // rest of example code                    │ Wrapping all the definitions in their own class allows 
+            // ...                                     │ things to (mostly) behave as expected. 
+        }
+    }
+}
+
+```
+
+
 ## Table of Contents
 
 | Chapter                                                  | Code Listings                                                                                                                                 | 
