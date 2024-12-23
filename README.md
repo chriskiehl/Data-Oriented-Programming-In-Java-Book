@@ -112,7 +112,9 @@ RetryDecision reschedule(FailedTask failedTask) {       //  ◄───┘ to u
 
 **Classes inside of methods**
 
-You'll often run across a "nothing" class inside of certain listings. For instance
+> [!Note]
+> Some listings will have classes defined in the body of the listing. These are only there because Java doesn't allow us to define records with forward references directly in a method's body, whereas doing it inside a class is fine. Thus, the kinda wonky occasional pattern of class(method(class (record, record, record, etc.)))
+
 
 ```
 class Chapter05 {
@@ -125,7 +127,6 @@ class Chapter05 {
         }
     }
 }
-
 ```
 
 
