@@ -139,7 +139,7 @@ class Chapter05 {
 | Chapter 03 - Data and Meaning                             | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter03/Listings.java) |
 | Chapter 04 - Representation is the Essence of Programming | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter04/Listings.java) |
 | Chapter 05 - Modeling Domain Behaviors                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter05/Listings.java) |
-| Chapter 06 - Coming soon!                                 | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter06/Listings.java) |
+| Chapter 06 - Implementing the domain model                | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter06/Listings.java) |
 | Chapter 07 - Guiding the design with properties           | Coming soon!                                                                                                                                  |
 
 
