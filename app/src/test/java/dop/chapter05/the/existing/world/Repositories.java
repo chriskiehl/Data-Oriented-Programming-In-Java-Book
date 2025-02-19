@@ -14,13 +14,10 @@ import java.util.List;
 // i.e. they have ORM style CRUD methods like findAll() get(), save() etc..
 public class Repositories {
 
-    public interface InvoiceRepository {
-        List<Invoice> findAll();
-
-    }
-
     public interface CustomerRepo {
         List<Customer> findAll();
+        void save(Customer customer);
+
     }
 
     public interface InvoiceRepo {
@@ -35,5 +32,4 @@ public class Repositories {
     public interface FeesRepo {
         BigDecimal get(String countryCode);
     }
-
 }

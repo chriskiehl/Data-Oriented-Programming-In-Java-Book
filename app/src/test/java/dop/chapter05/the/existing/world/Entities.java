@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * In chapter 5, we explore what data oriented programming looks
@@ -46,6 +47,14 @@ public class Entities {
         InvoiceType invoiceType;    // ◄───┐ When this is set to LATEFEE, it's expected
         @Nullable                   //     │ that the audit info is populated.
         AuditInfo auditInfo;        // ◄───┘ Otherwise, it should be null.
+
+        public static String tempId() {
+            return "TEMP_ID::" + UUID.randomUUID();
+        }
+
+        public static boolean isTempId(String invoiceId) {
+            return invoiceId.contains("TEMP_ID::");
+        }
     }
 
 
@@ -57,6 +66,7 @@ public class Entities {
     public enum InvoiceStatus {OPEN, CLOSED}
 
     @Entity
+    @Data
     @AllArgsConstructor
     public static class LineItem {
         @Id
@@ -86,6 +96,7 @@ public class Entities {
     @Entity
     @lombok.Getter
     @lombok.Setter
+    @AllArgsConstructor
     public static class Customer {
         @Id
         String id;
