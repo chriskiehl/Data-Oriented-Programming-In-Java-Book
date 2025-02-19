@@ -30,6 +30,8 @@ dependencies {
 
     testImplementation("org.projectlombok:lombok:1.18.34")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
+    testImplementation("org.mockito:mockito-core:5.13.0")
+
 
 }
 

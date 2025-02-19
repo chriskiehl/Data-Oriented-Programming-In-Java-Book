@@ -6,6 +6,7 @@ import dop.chapter05.the.existing.world.Annotations.ManyToMany;
 import dop.chapter05.the.existing.world.Annotations.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -97,6 +98,7 @@ public class Entities {
     @lombok.Getter
     @lombok.Setter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class Customer {
         @Id
         String id;
@@ -104,8 +106,6 @@ public class Entities {
         @Nullable
         String approvalId;   // ◄────┐ Approvals are managed in another system, but
     }                        //        we track that state on the customer Entity.
-
-
                              //        Doing so is "free" with our magical ORM.
 
 
