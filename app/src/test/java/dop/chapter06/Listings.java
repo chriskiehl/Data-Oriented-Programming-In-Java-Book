@@ -2,11 +2,19 @@ package dop.chapter06;
 
 import dop.chapter05.the.existing.world.Entities;
 import dop.chapter05.the.existing.world.Entities.Invoice;
+import dop.chapter05.the.existing.world.Entities.LineItem;
 import dop.chapter05.the.existing.world.Services;
+import dop.chapter05.the.existing.world.Services.ApprovalsAPI.ApprovalStatus;
 import dop.chapter05.the.existing.world.Services.ContractsAPI;
 import dop.chapter05.the.existing.world.Services.ContractsAPI.PaymentTerms;
 import dop.chapter05.the.existing.world.Services.RatingsAPI.CustomerRating;
+import dop.chapter06.the.implementation.Core;
 import dop.chapter06.the.implementation.Service;
+import dop.chapter06.the.implementation.Types;
+import dop.chapter06.the.implementation.Types.*;
+import dop.chapter06.the.implementation.Types.Lifecycle.Draft;
+import dop.chapter06.the.implementation.Types.ReviewedFee.Billable;
+import dop.chapter06.the.implementation.Types.ReviewedFee.NotBillable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -14,13 +22,13 @@ import org.mockito.MockedStatic;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static dop.chapter05.the.existing.world.Entities.InvoiceStatus.OPEN;
+import static dop.chapter05.the.existing.world.Entities.InvoiceType.STANDARD;
+import static dop.chapter05.the.existing.world.Services.ApprovalsAPI.ApprovalStatus.*;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static org.mockito.Mockito.*;
@@ -458,8 +466,9 @@ public class Listings {
 
             }
 
-            // BUT
-            // This is not to say there's one "right" way of modeling this requirements.
+            // BUT!
+
+            // This is not to say there's one "right" way of modeling this requirement.
             // Equally fine would be something like this.
             // Instead of returning a function that produces data *later*, we pass in
             // more data so that it can compute the result *now*.
@@ -476,4 +485,427 @@ public class Listings {
     }
 
 
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 6.24
+     * ───────────────────────────────────────────────────────
+     * Don't drive yourself crazy over purity and referential
+     * transparency. Close enough is good enough.
+     */
+    @Test
+    void listing6_24() {
+        class __ {
+            //
+            record PastDue(Invoice invoice) {}
+            //               ▲
+            //               └── We depend on a mutable identity object. We can never
+            //                   truly be referential transparent because the "same" object
+            //                   could lead to different results.
+            //
+            // But this is just being needlessly pedantic 99.999999999999% of the time.
+            // As long as you're not sharing references around or performing mutation
+            // the risk here is low enough to ignore.
+        }
+    }
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 6.25
+     * ───────────────────────────────────────────────────────
+     * Where do things go?
+     * Divide them up by their determinism!
+     */
+    @Test
+    void listing6_25() {
+        /*
+        Assume a file system like:
+
+        com.dop.invoicing
+          |- latefees
+          |    |- Core  ◄─── We'll put all our deterministic code here.
+          |    |- Service
+          |    |- Types
+         */
+    }
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 6.26 through 6.29
+     * ───────────────────────────────────────────────────────
+     * Implementation begins!
+     * This is where we'll start to see our modeling efforts begin
+     * to pay us back. Most of the functions will just follow the
+     * types we designed.
+     */
+    @Test
+    void listing6_26_to_6_29() {
+       class V1 {
+           // Here's where we left on in Chapter 5.
+           public static List<PastDue> collectPastDue(
+                   EnrichedCustomer customer,
+                   LocalDate today,
+                   List<Invoice> invoices) {
+               // Implement me!
+               return null;
+           }
+       }
+
+       class V2 {
+            static boolean TODO = true;
+            // This is where all the function stuff we talked about comes into play.
+            // Deterministic functions can only do what their types say.
+            // That's all they can do.
+            // Which means that our implementation just follows the types we designed.
+            public static List<PastDue> collectPastDue(
+                    EnrichedCustomer customer,
+                    LocalDate today,
+                    List<Invoice> invoices) {
+                // everything other than the filter is just doing what the type
+                // signature says.
+                return invoices.stream()
+//                        .filter(invoice -> ???)  ◄─── We just have to decide what goes here.
+                        .map(PastDue::new)
+                        .toList();
+           }
+       }
+       class V3 {
+           public static List<PastDue> collectPastDue(
+                   EnrichedCustomer customer,
+                   LocalDate today,
+                   List<Invoice> invoices) {
+               return invoices.stream()
+                       //                    ┌──── Adding in the filter implementation
+                       //                    ▼
+                       .filter(invoice -> isPastDue(invoice, customer.rating(), today))
+                       .map(PastDue::new)
+                       .toList();
+           }
+
+           static boolean isPastDue(Invoice invoice, CustomerRating rating, LocalDate today) {
+               return invoice.getInvoiceType().equals(STANDARD)
+                       && invoice.getStatus().equals(OPEN)
+                       && today.isAfter(invoice.getDueDate().with(gracePeriod(rating)));
+               //         └────────────────────────────────────────────────────────────┘
+               //                               │
+               //                               └─ Note how much this reads like the requirement! Neat!
+           }
+
+           // (We defined this one a few listings ago.)
+           static TemporalAdjuster gracePeriod(CustomerRating rating) {
+               return switch(rating) {
+                   case CustomerRating.GOOD -> date -> date.plus(60, DAYS);
+                   case CustomerRating.ACCEPTABLE -> date -> date.plus(30, DAYS);
+                   case CustomerRating.POOR -> lastDayOfMonth();
+               };
+           }
+       }
+    }
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 6.30 through 6.32
+     * ───────────────────────────────────────────────────────
+     * "Just use maps"?
+     */
+    @Test
+    void listing6_30_to_6_32() {
+        class V1 {
+            // A very popular recommendation for data-oriented programming
+            // is the idea that you should "just use maps".
+            //
+            // When presented with an implementation like this:
+            static TemporalAdjuster gracePeriod(CustomerRating rating) {
+                return switch(rating) {
+                    case CustomerRating.GOOD -> date -> date.plus(60, DAYS);
+                    case CustomerRating.ACCEPTABLE -> date -> date.plus(30, DAYS);
+                    case CustomerRating.POOR -> lastDayOfMonth();
+                };
+            }
+            // A natural question, given what we know about determinism, would
+            // be why we need the function at all. Why not express this as _data_?
+            static Map<CustomerRating, TemporalAdjuster> gracePeriodV2 = Map.of(
+                CustomerRating.GOOD, date -> date.plus(60, DAYS),
+                CustomerRating.ACCEPTABLE, date -> date.plus(30, DAYS),
+                CustomerRating.POOR, TemporalAdjusters.lastDayOfMonth()
+            );
+
+            // We could refactor like this:
+            static boolean isPastDueV2(Invoice invoice, CustomerRating rating, LocalDate today) {
+                return invoice.getInvoiceType().equals(STANDARD)
+                        && invoice.getStatus().equals(OPEN)
+                        && today.isAfter(invoice.getDueDate().with(gracePeriodV2.get(rating)));
+                //                                                └───────────────────────────┘
+                //                                                              ▲
+                //               Replaces a function call with a map lookup! ───┘
+            }
+
+            // But This is a dangerous refactor.
+            // What algebraic types and pattern matching give is *exhaustiveness* at
+            // compile time. The compiler knows if you've checked every case and will
+            // tell you if you didn't.
+            //
+            // You "know" the map has everything in it *today*, but there's no way to
+            // guarantee it tomorrow. Semvar is a lie. "Minor" version bumps break software
+            // all the time.
+            //
+            // Since you can't be sure, and the compiler can't help, you have to defend.
+            static boolean isPastDueV3(Invoice invoice, CustomerRating rating, LocalDate today) {
+                TemporalAdjuster WHAT_GOES_HERE = TemporalAdjusters.firstDayOfMonth();
+                return invoice.getInvoiceType().equals(STANDARD)
+                        && invoice.getStatus().equals(OPEN)
+                        && today.isAfter(invoice.getDueDate()
+                            .with(gracePeriodV2.getOrDefault(rating, WHAT_GOES_HERE)));
+                //                             └───────────┘         └───────────┘
+                //                                  ▲                      ▲
+                //       We're forced to do this ───┘                      │
+                //                                                         │
+                //          But notice that we're inventing solutions to ──┘
+                //          problems that ONLY exist because of our modeling
+                //          choices. The domain doesn't define a "default"
+                //          grace period.
+            }
+            // Good modeling should eliminate illegal states not introduce them!
+        }
+    }
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 6.31 through 6.38
+     * ───────────────────────────────────────────────────────
+     * The right type can reveal shortcomings in the design of the system.
+     */
+    @Test
+    void listing6_31_to_6_38() {
+        class V1 {
+            // I'll keep drawing attention to it.
+            // Checkout this type signature. It takes a list of invoices and
+            // returns a single LateFee draft.
+            // Our implementation is forced into being "small." Functions can't go off and do
+            // anything they way. They map inputs to outputs.
+            static LateFee<Draft> buildDraft(LocalDate today, EnrichedCustomer customer, List<PastDue> invoices) {
+                // Which means that this is pretty much the only implementation
+                // that's even allowed by our types. It HAS to return this data type.
+                return new LateFee<>(  //─┐
+                    new Draft(),       // │ And all of this is pre-ordained.
+                    customer,          // │
+                    null,              // │ The only thing left for us to do is implement the
+                    today,             // │ thing the computes the total and the due dates.
+                    null,              // │
+                    invoices           //─┘
+                );
+            }
+        }
+        class V2 {
+            // I'll keep drawing attention to it.
+            // Checkout this type signature. It takes a list of invoices and
+            // returns a single LateFee draft.
+            // Our implementation is forced into being "small." Functions can't go off and do
+            // anything they way. They map inputs to outputs.
+            static LateFee<Draft> buildDraft(LocalDate today, EnrichedCustomer customer, List<PastDue> invoices) {
+                // Which means that this is pretty much the only implementation
+                // that's even allowed by our types. It HAS to return this data type.
+                return new LateFee<>(  //─┐
+                        new Draft(),       // │ And all of this is pre-ordained.
+                        customer,          // │
+                        null,              // │ The only thing left for us to do is implement the
+                        today,             // │ thing the computes the total and the due dates.
+                        null,              // │
+                        invoices           //─┘
+                );
+            }
+
+            // Implementing the due date is easy. If follows the requirements.
+            static LocalDate dueDate(LocalDate today, PaymentTerms terms) {
+                // Note that well typed functions are small! Often the first thing
+                // we do is start returning data.
+                return switch (terms) {
+                    case PaymentTerms.NET_30 -> today.plusDays(30);
+                    case PaymentTerms.NET_60 -> today.plusDays(60);
+                    case PaymentTerms.DUE_ON_RECEIPT -> today;
+                    case PaymentTerms.END_OF_MONTH -> today.with(lastDayOfMonth());
+                };
+            }
+
+            // computing the total is far more interesting, because it holds something
+            // that feels gross.
+
+            // The "outside world" speaks BigDecimal and Currency.
+            // Our world speaks USD (per the requirements).
+            // ┌──────────────────────────────────────────────────────────────────┐
+            //            THE FACT THAT THIS FEELS AWFUL IS A FEATURE
+            // └──────────────────────────────────────────────────────────────────┘
+            //
+            // We shouldn't do this conversion in "our world." In fact, we shouldn't
+            // "do" it at all. In an ideal world, we'd enforce this USD invariant
+            // on data as it enters our system -- a process far removed from our
+            // feature.
+            //
+            // The types are telling us that something is wrong with the design **of the system**.
+            //
+            // We don't have to fix it now, but we should call it out.
+            static USD unsafeGetChargesInUSD(LineItem lineItem) throws IllegalArgumentException {
+                if (!lineItem.getCurrency().getCurrencyCode().equals("USD")) {
+                    // If this ever throws, the system as a whole is in a bad state.
+                    throw new IllegalArgumentException("Big scary message here");
+                } else {
+                    return new USD(lineItem.getCharges());
+                }
+            }
+
+            // Putting it all together, we get:
+            static USD computeTotal(List<PastDue> invoices) {
+                return invoices.stream().map(PastDue::invoice)
+                        .flatMap(x -> x.getLineItems().stream())
+                        .map(V2::unsafeGetChargesInUSD)
+                        .reduce(USD.zero(), USD::add);
+            }
+        }
+    }
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 6.39 through 6.43
+     * ───────────────────────────────────────────────────────
+     * The Optional holy war
+     */
+    @Test
+    void listing6_39_to_6_43() {
+        // [note] listings 6.39 and 6.40 are skipped here
+        //        since they're covered in the implementation package.
+        //        see: dop.chapter06.the.implementation
+        //
+        // Instead, we'll focus on.... Optional!
+        class __{
+            // (ignore this. It's just here to power the below examples)
+            static Optional<String> tryToFindThing(String whatever) {
+                return Optional.empty();
+            }
+
+            // Optionals are contentious because we can interact with them
+            // both functionally and imperatively.
+            //
+            // Here's the imperative style
+            static String imperativeExample(String thingId) {
+                Optional<String> maybeThing = tryToFindThing(thingId);
+                return maybeThing.isPresent()
+                    ? maybeThing.get().toUpperCase()
+                    : "Nothing found!";
+            }
+            // Here's the functional approach.
+            static String functionalExample(String thingId) {
+                return tryToFindThing(thingId)
+                        .map(String::toUpperCase)
+                        .orElse("Nothing Found!");
+            }
+            // The question is: which is better?
+
+            // Is this:
+            static String example1(LateFee<Draft> draft) {
+                return draft.customer().approval().map(approval -> switch(approval.status()) {
+                    case APPROVED -> "new Billable(draft)"; // (stringified to mirror the shortened book example)
+                    case PENDING -> "new NotBillable(draft, ...)";
+                    case DENIED -> "new NotBillable(draft, ...)";
+                }).orElse("new NeedsApproval(draft)");
+            }
+            // better than this?
+            static String example2(LateFee<Draft> draft) {
+                return draft.customer().approval().isEmpty()
+                    ? "new NeedsApproval(draft)"
+                    :  switch (draft.customer().approval().get().status()) {
+                        case APPROVED -> "new Billable(draft)";
+                        case PENDING -> "new NotBillable(draft, ...)";
+                        case DENIED -> "new NotBillable(draft, ...)";
+                };
+            }
+            // Or are they just different?
+            // The book makes an argument for each in different situations.
+        }
+    }
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 6.44 through 6.47
+     * ───────────────────────────────────────────────────────
+     * It's ok to introduce types! As many as you need!
+     *
+     * Clarity while reading > enjoyment while writing.
+     */
+    @Test
+    void listing6_44() {
+        class __ {
+            // we being here.
+            // This is an OK method, but it's visually assaulting. It's too dense to
+            // understand without slowing down to study it.
+            public static ReviewedFee assessDraft(Entities.Rules rules, LateFee<Draft> draft) {
+                if (draft.total().value().compareTo(rules.getMinimumFeeThreshold()) < 0) {
+                    return new NotBillable(draft, new Reason("Below threshold"));
+                } else if (draft.total().value().compareTo(rules.getMaximumFeeThreshold()) > 0) {
+                    return draft.customer().approval().isEmpty()
+                        ? new ReviewedFee.NeedsApproval(draft)
+                        : switch (draft.customer().approval().get().status()) {
+                            case APPROVED -> new Billable(draft);
+                            case PENDING -> new NotBillable(draft, new Reason("Pending decision"));
+                            case DENIED -> new NotBillable(draft, new Reason("exempt from large fees"));
+                    };
+                } else {
+                    return new Billable(draft);
+                }
+            }
+        }
+
+        // So what if we did this: separate where we make a decision from what we do with it.
+        class V2 {
+            // We can introduce our own private enum to explain the semantics behind
+            // what the assessments mean.
+            private enum Assessment {ABOVE_MAXIMUM, BELOW_MINIMUM, WITHIN_RANGE}
+
+            // and we can use that while figuring out what's up with the total.
+            // doing so visually (and cognitively!) simplifies the code. We only
+            // worry about one thing at a time.
+            static Assessment assessTotal(Entities.Rules rules, USD total) {
+                if (total.value().compareTo(rules.getMinimumFeeThreshold()) < 0) {
+                    return Assessment.BELOW_MINIMUM;
+                } else if (total.value().compareTo(rules.getMaximumFeeThreshold()) > 0) {
+                    return Assessment.ABOVE_MAXIMUM;
+                } else {
+                    return Assessment.WITHIN_RANGE;
+                }
+            }
+            // Which in turn simplifies this method.
+            // It's been reduced down to pattern matching. This is quick to skim
+            // and quick to understand.
+            public static ReviewedFee assessDraft(Entities.Rules rules, LateFee<Draft> draft) {
+                return switch (assessTotal(rules, draft.total())) {
+                    case Assessment.WITHIN_RANGE -> new Billable(draft);
+                    case Assessment.BELOW_MINIMUM -> new NotBillable(draft, new Reason("Below threshold"));
+                    case Assessment.ABOVE_MAXIMUM -> draft.customer().approval().isEmpty()
+                        ? new ReviewedFee.NeedsApproval(draft)
+                        : switch (draft.customer().approval().get().status()) {
+                            case APPROVED -> new Billable(draft);
+                            case PENDING -> new NotBillable(draft, new Reason("Pending decision"));
+                            case DENIED -> new NotBillable(draft, new Reason("exempt from large fees"));
+                    };
+                };
+            }
+        }
+    }
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 6.48 - 6.55
+     * ───────────────────────────────────────────────────────
+     * The final listings in the book are tours of the final
+     * implementation.
+     *
+     * Rather than duplicate them here, I've added the full
+     * implementation to java/dop/chapter06/the/implementation.
+     * You can browse all the source there in context.
+     */
+    @Test
+    void listing6_48() {
+        // See: java/dop/chapter06/the/implementation
+    }
 }
