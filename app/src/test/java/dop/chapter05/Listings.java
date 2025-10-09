@@ -1142,7 +1142,6 @@ public class Listings {
                 this.streamInvoicingData().forEach(invoicingData -> {
                     // Just business logic here!
                 });
-
             }
 
             // We can pull out all the gross management of these existing APIs, and

@@ -1,0 +1,24 @@
+{
+  "type": "AND",
+  "a": {
+    "type": "OR",
+    "a": {
+      "type": "EQ",
+      "field": "Geo",
+      "value": "foo"
+    },
+    "b": {
+      "type": "EQ",
+      "field": "Geo",
+      "value": "bar"
+    }
+  },
+  "b": {
+    "type": "NOT",
+    "expr": {
+      "type": "EQ",
+      "field": "Region",
+      "value": "whatever"
+    }
+  }
+}

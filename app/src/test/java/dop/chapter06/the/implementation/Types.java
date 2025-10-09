@@ -20,9 +20,17 @@ public class Types {
         public USD multiply(BigDecimal amount){
             return new USD(value.multiply(amount));
         }
+        public USD multiply(int amount){
+            return new USD(value.multiply(BigDecimal.valueOf(amount)));
+        }
+        public USD multiply(Percent percent){
+            return this.multiply(percent.decimalValue());
+        }
         public static USD zero() {return new USD(BigDecimal.ZERO);}
         public static USD add(USD a, USD b) { return new USD(a.value().add(b.value()));}
-
+        public static USD subtract(USD a, USD b) { return new USD(a.value().add(b.value()));}
+        public static USD of(double amount){ return new USD(BigDecimal.valueOf(amount));}
+        public static USD of(BigDecimal amount){ return new USD(amount);}
         public static Collector<USD,?, USD> summing() {
             return Collectors.reducing(USD.zero(), USD::add);
         }
@@ -36,9 +44,10 @@ public class Types {
                                 "as a proper fraction. e.g. 1/100");
             }
         }
-        BigDecimal decimalValue() {
+        public BigDecimal decimalValue() {
             return BigDecimal.valueOf(numerator / denominator);
         }
+
     }
     public record CustomerId(String value){}
     public record PastDue(Entities.Invoice invoice) {}
