@@ -141,6 +141,8 @@ class Chapter05 {
 | Chapter 05 - Modeling Domain Behaviors                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter05/Listings.java) |
 | Chapter 06 - Implementing the domain model                | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter06/Listings.java) |
 | Chapter 07 - Guiding the design with properties           | Coming soon!                                                                                                                                  |
+| Chapter 08 - Business Rules as Data                       | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter08/Listings.java) |
+
 
 
 ## Questions and Feedback

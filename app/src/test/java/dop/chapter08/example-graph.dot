@@ -1,0 +1,22 @@
+digraph Rule {
+    rankdir=TD;
+    node_9d54a989 [label="And"]
+	node_9d54a989 -> node_cf7ac4e3
+	node_9d54a989 -> node_141bf586
+	node_cf7ac4e3 [label="Or"]
+	node_cf7ac4e3 -> node_a4bf6d1d
+	node_cf7ac4e3 -> node_85ef509a
+	node_a4bf6d1d [label="Or"]
+	node_a4bf6d1d -> node_85ef8908
+	node_a4bf6d1d -> node_85ef4003
+	node_85ef8908 [label="COUNTRY=US"]
+	node_85ef4003 [label="COUNTRY=BE"]
+	node_85ef509a [label="COUNTRY=FR"]
+	node_141bf586 [label="Or"]
+	node_141bf586 -> node_930ad8e0
+	node_141bf586 -> node_a5e4027c
+	node_930ad8e0 [label="SEGMENT=public"]
+	node_a5e4027c [label="Not"]
+	node_a5e4027c -> node_b83f3b85
+	node_b83f3b85 [label="REGION=LATAM"]
+}
