@@ -18,8 +18,20 @@ repositories {
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
+    implementation("com.opencsv:opencsv:5.12.0")
+    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+    implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+    implementation("org.glassfish:jakarta.el:4.0.2")
+    implementation("guru.nidi:graphviz-java:0.18.1")
+    implementation("org.apache.logging.log4j:log4j-api:2.24.1")
+    implementation("org.apache.logging.log4j:log4j-core:2.24.1")
+
+    implementation("guru.nidi:graphviz-java:0.18.1")
+    implementation("org.apache.xmlgraphics:batik-transcoder:1.17")
+    implementation("org.apache.xmlgraphics:batik-codec:1.17")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 
     // This dependency is used by the application.
     implementation(libs.guava)
@@ -31,6 +43,7 @@ dependencies {
     testImplementation("org.projectlombok:lombok:1.18.34")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
     testImplementation("org.mockito:mockito-core:5.13.0")
+    testImplementation("net.jqwik:jqwik:1.9.3")
 
 
 }

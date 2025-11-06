@@ -14,9 +14,13 @@ import jakarta.validation.Validator;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import net.jqwik.api.constraints.Size;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.time.LocalDate;
 import java.util.*;
@@ -27,6 +31,11 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
 public class Sketch {
+
+
+
+    record ItemId(){}
+    record CartItem(String id, BigDecimal price){}
 
     record Address(
         @NotBlank String street,
@@ -83,6 +92,9 @@ public class Sketch {
         private ProductRepo productRepo;
         private OrderRepo orderRepo;
 
+        // maybe accept the request object, and make it maybe have a user or not
+        // that determines if it's a guest checkout
+        // if guest: we need a special
         public void checkout(Cart cart) {
             Set<ConstraintViolation<Cart>> errors = validator.validate(cart);
             if (!errors.isEmpty()) {
@@ -290,9 +302,7 @@ public class Sketch {
     }
 
 
-    interface Drin
 
-    record ValidPerson(){}
     static final class MyValidator implements Validator2<Person, Person> {
 
         @Override
