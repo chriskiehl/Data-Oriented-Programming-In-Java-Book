@@ -142,6 +142,9 @@ class Chapter05 {
 | Chapter 06 - Implementing the domain model                | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter06/Listings.java) |
 | Chapter 07 - Guiding the design with properties           | Coming soon!                                                                                                                                  |
 | Chapter 08 - Business Rules as Data                       | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter08/Listings.java) |
+| Chapter 09 - Refactoring Towards Data                     | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter09/Listings.java) |
+| Chapter 10 - Data Oriented Architecture                   | Coming soon!                                                                                                                                  |
+| Chapter 11 - Testing Data Oriented Programs               | Coming soon!                                                                                                                                  |
 
 
 
