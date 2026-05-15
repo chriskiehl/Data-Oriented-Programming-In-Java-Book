@@ -40,12 +40,14 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 
+    compileOnly("org.immutables:value-annotations:2.12.1")
+    annotationProcessor("org.immutables:value:2.12.1")
+
     testImplementation("org.projectlombok:lombok:1.18.34")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
+    testCompileOnly("org.immutables:value-annotations:2.12.1")
+    testAnnotationProcessor("org.immutables:value:2.12.1")
     testImplementation("org.mockito:mockito-core:5.13.0")
-    testImplementation("net.jqwik:jqwik:1.9.3")
-
-
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

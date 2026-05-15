@@ -1,30 +1,16 @@
 package dop.chapter03;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
 
-/**
- * Chapter 3 is about starting to explore the semantics
- * that govern the data within a domain. It looks at the
- * gaps that usually exist between what we "know" in our
- * heads about the things we're modeling, versus how much
- * of that knowledge actually ends up in the code (very
- * little).
- *
- * This chapter will give you the tools to see "through"
- * your programs into the underlying sets of values that
- * it denotes.
- */
-public class Listing3_16_to_3_18 {
+public class Listing3_15_to_3_17 {
 
 
 
@@ -43,6 +29,13 @@ public class Listing3_16_to_3_18 {
      */
     @Test
     void example() {
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 3.15
+         * ───────────────────────────────────────────────────────
+         * capturing our specific meaning of Degrees in a type
+         * ───────────────────────────────────────────────────────
+         */
         // Degrees is a core idea in our domain. It has a semantics.
         // A set of rules which make it, *it*.
         record Degrees(double value) {
@@ -55,6 +48,13 @@ public class Listing3_16_to_3_18 {
                 }
             }
         }
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 3.16
+         * ───────────────────────────────────────────────────────
+         * Encoding domain information about degrees into our model
+         * ───────────────────────────────────────────────────────
+         */
         // We can refactor the measurement data type to use
         // our new Degree type.
         record Measurement(
@@ -63,6 +63,13 @@ public class Listing3_16_to_3_18 {
                 Degrees contactAngle  // Nice!
         ) {}
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 3.17
+         * ───────────────────────────────────────────────────────
+         * Types keep the meaning of our data in tact
+         * ───────────────────────────────────────────────────────
+         */
         // And this yields something really cool.
         // The code no longer "forgets" what it is.
         Measurement measurement = new Measurement("HEAT-01", 12, new Degrees(108.2));

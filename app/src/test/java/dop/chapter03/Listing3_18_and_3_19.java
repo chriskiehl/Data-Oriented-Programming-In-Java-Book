@@ -1,40 +1,15 @@
 package dop.chapter03;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
-
-
-/**
- * Chapter 3 is about starting to explore the semantics
- * that govern the data within a domain. It looks at the
- * gaps that usually exist between what we "know" in our
- * heads about the things we're modeling, versus how much
- * of that knowledge actually ends up in the code (very
- * little).
- *
- * This chapter will give you the tools to see "through"
- * your programs into the underlying sets of values that
- * it denotes.
- */
-public class Listing3_19_to_3_20 {
-
-
-
+public class Listing3_18_and_3_19 {
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listings 3.19 to 3.20
+     * Listings 3.18
      * ───────────────────────────────────────────────────────
-     * We can apply this idea to all the data in our domain.
-     * We can make what we're talking about unambiguous.
+     * Capturing the constraints in a new type
      * ───────────────────────────────────────────────────────
      */
     @Test
@@ -61,6 +36,13 @@ public class Listing3_19_to_3_20 {
                 }
             }
         }
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 3.19
+         * ───────────────────────────────────────────────────────
+         * Putting the domain information into our model
+         * ───────────────────────────────────────────────────────
+         */
         // We can stick this new type on our data model.
         record Measurement(
                 String sampleId,

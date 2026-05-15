@@ -41,7 +41,7 @@ public class Listing3_1 {
      *
      * In real life, nobody lets me talk about this because it's too
      * boring. But you're stuck reading my book, so I'm not going to
-     * waste my one chance to drone on about my data on oil curing rates.
+     * waste my one chance to drone on about my data on oil curing.
      *
      * It's interesting. I swear.
      * ───────────────────────────────────────────────────────

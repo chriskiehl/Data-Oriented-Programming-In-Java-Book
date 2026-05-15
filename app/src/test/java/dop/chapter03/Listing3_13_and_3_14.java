@@ -5,26 +5,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
 
-/**
- * Chapter 3 is about starting to explore the semantics
- * that govern the data within a domain. It looks at the
- * gaps that usually exist between what we "know" in our
- * heads about the things we're modeling, versus how much
- * of that knowledge actually ends up in the code (very
- * little).
- *
- * This chapter will give you the tools to see "through"
- * your programs into the underlying sets of values that
- * it denotes.
- */
-public class Listing3_13_to_3_15 {
+public class Listing3_13_and_3_14 {
 
 
 

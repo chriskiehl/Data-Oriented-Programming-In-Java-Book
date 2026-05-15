@@ -1,30 +1,13 @@
 package dop.chapter03;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
 
-/**
- * Chapter 3 is about starting to explore the semantics
- * that govern the data within a domain. It looks at the
- * gaps that usually exist between what we "know" in our
- * heads about the things we're modeling, versus how much
- * of that knowledge actually ends up in the code (very
- * little).
- *
- * This chapter will give you the tools to see "through"
- * your programs into the underlying sets of values that
- * it denotes.
- */
-public class Listing3_21_to_3_25 {
+public class Listing3_20_to_3_24 {
 
 
 
@@ -63,6 +46,14 @@ public class Listing3_21_to_3_25 {
             }
         }
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 3.20
+         * ───────────────────────────────────────────────────────
+         * Capturing the meaning of SampleId in the code?
+         * Does this modeling work? Let's find out!
+         * ───────────────────────────────────────────────────────
+         */
         //         ┌ This is the next logical data type to introduce, but... does
         //         │ it really capture what it means to be a Sample ID in our domain?
         //         ▼
@@ -77,13 +68,26 @@ public class Listing3_21_to_3_25 {
                 }
             }
         }
-
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 3.21
+         * ───────────────────────────────────────────────────────
+         * Solved?
+         * ───────────────────────────────────────────────────────
+         */
         record Measurement(
                 SampleId sampleId,        // ◄────┐ What's wrong with this modeling?
                 PositiveInt daysElapsed,  //      │ Let's take it for a spin and see how it feels.
                 Degrees contactAngle
         ) {}
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 3.22
+         * ───────────────────────────────────────────────────────
+         * Wait -- how do we groupBy using this type?
+         * ───────────────────────────────────────────────────────
+         */
         // What if we wanted to do something super basic, say, bucket all the
         // measurements by their curing method.
         List<Measurement> measurements = List.of(); // (we don't need any items for the example to work)
@@ -96,6 +100,13 @@ public class Listing3_21_to_3_25 {
         //                                           │ it's "just" another string.
         //                                           └─
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 3.23
+         * ───────────────────────────────────────────────────────
+         * Maybe we could group by the internal details?
+         * ───────────────────────────────────────────────────────
+         */
         measurements.stream()
                 .collect(groupingBy(
                         m -> m.sampleId().value().split("-")[0]
@@ -104,6 +115,15 @@ public class Listing3_21_to_3_25 {
                     //                                we *could* "safely" access its individual pieces ("safely" here
                     //                                used very loosely and with disregard for potential future change)
 
+
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 3.24
+         * ───────────────────────────────────────────────────────
+         * Custom accessor methods could hide the implementation
+         * details like we do in OOP
+         * ───────────────────────────────────────────────────────
+         */
         //         ┌ One option would be to steal some ideas from OOP and "hide" the internal
         //         │ details behind public methods.
         //         ▼

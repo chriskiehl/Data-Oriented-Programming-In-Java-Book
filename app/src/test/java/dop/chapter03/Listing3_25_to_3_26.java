@@ -1,40 +1,19 @@
 package dop.chapter03;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
-
-
-/**
- * Chapter 3 is about starting to explore the semantics
- * that govern the data within a domain. It looks at the
- * gaps that usually exist between what we "know" in our
- * heads about the things we're modeling, versus how much
- * of that knowledge actually ends up in the code (very
- * little).
- *
- * This chapter will give you the tools to see "through"
- * your programs into the underlying sets of values that
- * it denotes.
- */
-public class Listing3_26_to_3_27 {
+public class Listing3_25_to_3_26 {
 
 
 
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listings 3.26 through 3.27
+     * Listings 3.25
      * ───────────────────────────────────────────────────────
      * Back to the drawing board. What is it that we're trying to
-     * represent?
+     * represent? Let's look at what we know
      * ───────────────────────────────────────────────────────
      */
     @Test
@@ -50,9 +29,18 @@ public class Listing3_26_to_3_27 {
          *     Globally unique.
          */
 
+
+
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 3.26
+         * ───────────────────────────────────────────────────────
+         * We can capture the meaning of Sample ID
+         * ───────────────────────────────────────────────────────
+         */
         // A sample ID isn't a string (despite the fact that it might be
-        // serialized that way on the way into our system). The sample ID
-        // is made up of multiple pieces of information. Each has it's own
+        // serialized that way when it enters our system). The sample ID
+        // is made up of multiple pieces of information. Each has its own
         // constraints and things that make it *it*.
         record PositiveInt(int value){
             // constructor omitted for brevity
