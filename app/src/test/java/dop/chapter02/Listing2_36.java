@@ -1,91 +1,36 @@
 package dop.chapter02;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.Arrays;
+import java.util.List;
 
-/**
- * Chapter 2 explores the details of what it means
- * to model data "as data." We explore the different
- * kinds of objects we can create in Java (identity vs
- * value) and the effects that they have on our code.
- */
 public class Listing2_36 {
-
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 2.7
+     * Listing 2.36
      * ───────────────────────────────────────────────────────
-     * We can make new value classes on top of existing ones!
-     * ───────────────────────────────────────────────────────
-     */
-    static class Vector {
-        Double x;
-        Double y;
-        //  ▲
-        //  └────── There's *technically* one more thing
-        //          we'd need to add here to really make
-        //          this a value, but we'll come back to it later.
-        public Vector(Double x, Double y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public Double x(){return x;}
-        public Double y(){return y;}
-        //            ▲
-        //            └───── Getters are A-OK on value classes
-        //
-        //      ┌───── But note that there are no setters!
-        //      ▼                   Values don't change!
-        // (No setters here!)
-
-        @Override
-        public boolean equals(Object o) {
-            // The default equals method includes an object check
-            // but this is irrelevant.
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            // The state is what determines the equality!
-            Vector vector = (Vector) o;
-            return Objects.equals(x, vector.x)
-                    && Objects.equals(y, vector.y);
-        }
-        @Override
-        public int hashCode() {return Objects.hash(x, y);}
-    }
-
-
-
-    /**
-     * ───────────────────────────────────────────────────────
-     * Listings 2.36
-     * ───────────────────────────────────────────────────────
-     * Record classes have some Quality of Life features over
-     * regular classes (in addition to just involving less
-     * boilerplate). One of the main ones we'll utilize throughout
-     * the book is the Compact Constructor.
+     * Poisoning records with mutable references
      * ───────────────────────────────────────────────────────
      */
     @Test
-    public void example() {
-        record Rational(int num, int denom) {
-            Rational {                                           // ◄─┐
-                if (denom == 0) {                                //   │ Checking during construction makes sure
-                    throw new IllegalArgumentException(          //   │ that only valid data is created.
-                            "Hey! That’s not how math works!"
-                    );
-                }
-            }
-        }
+    void example() {
+        List<String> friends = Arrays.asList("Joe", "Jane");  // ◄── Whoops! Accidentally called the wrong list constructor
+        Person person = new Person("Bob", friends);           // ◄── And now a mutable list is hidden inside our “value”
+
+        System.out.println(person);
+        //[out]  Person2[name=Bob, friends=[Joe, Jane]]
+
+        // ┌───── Anyone that holds a reference can reach inside the “value” and change its state
+        // ▼
+        friends.set(0, "Billy");
+        System.out.println(person);
+        // [out] Person2[name=Bob, friends=[Billy, Jane]]     // ◄── This should be impossible!
     }
+
+
+    record Person(
+        String name,
+        List<String> friends
+    ){}
 }

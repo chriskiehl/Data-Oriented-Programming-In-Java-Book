@@ -2,25 +2,23 @@ package dop.chapter02;
 
 import org.junit.jupiter.api.Test;
 
-public class Listing2_13 {
+import java.util.*;
 
-
+public class Listing2_46 {
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 2.13
+     * Listing 2.46
      * ───────────────────────────────────────────────────────
-     * Identities are created when we assign values to
-     * *mutable* variables!
+     * Core data types for a card game in 4 lines
      * ───────────────────────────────────────────────────────
      */
-    @Test
-    public void example() {
-        int xPosition = 4;
-        // This does not create a value!
-        // It creates an identity, xPosition, against which
-        // values will be tracked over time.
-        // We can do something that should be impossible:
-        xPosition = 5; // Change breaks the core contract of values!
+    interface CardGame {
+        enum Suit {Hearts, Diamonds, Club, Spade;}
+        enum Rank {ONE, TWO, THREE, FOUR, FIVE, /*...*/;}
+
+        record Card(Rank rank, Suit suit){};
+
+        record GameState(List<Card> drawPile, List<Card> discards){}
     }
 }

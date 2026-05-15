@@ -1,29 +1,14 @@
 package dop.chapter02;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.Objects;
 
-/**
- * Chapter 2 explores the details of what it means
- * to model data "as data." We explore the different
- * kinds of objects we can create in Java (identity vs
- * value) and the effects that they have on our code.
- */
 public class Listing2_3 {
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 2.7
+     * Listing 2.3
      * ───────────────────────────────────────────────────────
      * We can make new value classes on top of existing ones!
      * ───────────────────────────────────────────────────────

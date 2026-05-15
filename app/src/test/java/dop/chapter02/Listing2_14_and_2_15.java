@@ -1,74 +1,12 @@
 package dop.chapter02;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-/**
- * Chapter 2 explores the details of what it means
- * to model data "as data." We explore the different
- * kinds of objects we can create in Java (identity vs
- * value) and the effects that they have on our code.
- */
 public class Listing2_14_and_2_15 {
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 2.7
-     * ───────────────────────────────────────────────────────
-     * We can make new value classes on top of existing ones!
-     * ───────────────────────────────────────────────────────
-     */
-    static class Vector {
-        Double x;
-        Double y;
-        //  ▲
-        //  └────── There's *technically* one more thing
-        //          we'd need to add here to really make
-        //          this a value, but we'll come back to it later.
-        public Vector(Double x, Double y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public Double x(){return x;}
-        public Double y(){return y;}
-        //            ▲
-        //            └───── Getters are A-OK on value classes
-        //
-        //      ┌───── But note that there are no setters!
-        //      ▼                   Values don't change!
-        // (No setters here!)
-
-        @Override
-        public boolean equals(Object o) {
-            // The default equals method includes an object check
-            // but this is irrelevant.
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            // The state is what determines the equality!
-            Vector vector = (Vector) o;
-            return Objects.equals(x, vector.x)
-                    && Objects.equals(y, vector.y);
-        }
-        @Override
-        public int hashCode() {return Objects.hash(x, y);}
-    }
-
-
-
-    /**
-     * ───────────────────────────────────────────────────────
-     * Listings 2.14 & 2.15
+     * Listings 2.14
      * ───────────────────────────────────────────────────────
      * Code is how we communicate. If we don't make it say exactly
      * what we mean, then it's up to our readers to guess.
@@ -80,16 +18,26 @@ public class Listing2_14_and_2_15 {
      */
     @Test
     public void example() {
+        class Point {
+            private double x;
+            private double y;
+        }
         class Vector {
-            double x;   // ◄─┐
-            double y;   //   │ If we don't say that these are supposed to be values
-                        //   │ it'll be super easy for the intended semantics of the
-                        //   │ code to drift over time
+            private double x;         //   ◄──┐ The lack of setters hints towards our intentions,
+            private double y;         //      │ but the code doesn’t enforce its value semantics
+            // constructor, getters,
+            // equals, hashcode
+        }
 
-            public void scale(double amount) {    // ◄─┐
-                this.x = this.x * amount;         //   │ This is a reasonable addition for
-                this.y = this.y * amount;         //   │ an Identity Class, but *not* a valid
-            }                                     //   │ addition for a Value Class!
+        class Ball {                  //      │
+            private Point pos;        //      │
+            private Vector vector;    //      │
+            // constructor, getters,
+            // equals, hashcode
+
+            public void moveTo(Point newPos) { // Reasonable additions for identity objects,
+                this.pos = newPos;             // but invalid additions for value objects
+            }
         }
     }
 }

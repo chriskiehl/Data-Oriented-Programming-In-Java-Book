@@ -1,26 +1,29 @@
 package dop.chapter02;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class Listing2_13 {
+import java.util.*;
 
-
+public class Listing2_42 {
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 2.13
+     * Listing 2.42
      * ───────────────────────────────────────────────────────
-     * Identities are created when we assign values to
-     * *mutable* variables!
+     * Creating a piece of “data” that consists entirely of nulls
      * ───────────────────────────────────────────────────────
      */
-    @Test
-    public void example() {
-        int xPosition = 4;
-        // This does not create a value!
-        // It creates an identity, xPosition, against which
-        // values will be tracked over time.
-        // We can do something that should be impossible:
-        xPosition = 5; // Change breaks the core contract of values!
+    void example() {
+        Person person = new Person(null, null);   // ◄── A garbage piece of data that consists entirely of nulls
     }
+
+
+
+
+
+    record Person(
+        String name,
+        Listing2_40_and_2_41.ImmutableList<String> friends
+    ){}
 }

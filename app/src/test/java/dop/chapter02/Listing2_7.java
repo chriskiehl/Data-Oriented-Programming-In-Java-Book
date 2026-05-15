@@ -1,40 +1,46 @@
 package dop.chapter02;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
-/**
- * Chapter 2 explores the details of what it means
- * to model data "as data." We explore the different
- * kinds of objects we can create in Java (identity vs
- * value) and the effects that they have on our code.
- */
-public class Listings {
+public class Listing2_7 {
 
     /**
      * ───────────────────────────────────────────────────────
      * Listing 2.7
      * ───────────────────────────────────────────────────────
-     * We can make new value classes on top of existing ones!
+     * Building new Value objects from existing value objects
      * ───────────────────────────────────────────────────────
      */
-    static class Vector {
+    class Ball {
+        private Point pos;             //  ◄──┐ New values can be built on top of existing ones
+        private Vector vector;        //      │
+        public Ball(Point pos, Vector vector) {
+            this.pos = pos;
+            this.vector = vector;
+        }
+        public Point getPosition() { return this.pos; }            //  │ They just have to follow all the same rules. They must be
+        public Vector getVector() { return this.vector; }          //  │ immutable and defined by their state.
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Ball ball = (Ball) o;
+            return Objects.equals(pos, ball.pos) && Objects.equals(getVector(), ball.getVector());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(pos, getVector());
+        }
+    }
+
+
+
+    public static class Vector {
         Double x;
         Double y;
-        //  ▲
-        //  └────── There's *technically* one more thing
-        //          we'd need to add here to really make
-        //          this a value, but we'll come back to it later.
         public Vector(Double x, Double y) {
             this.x = x;
             this.y = y;
@@ -42,12 +48,6 @@ public class Listings {
 
         public Double x(){return x;}
         public Double y(){return y;}
-        //            ▲
-        //            └───── Getters are A-OK on value classes
-        //
-        //      ┌───── But note that there are no setters!
-        //      ▼                   Values don't change!
-        // (No setters here!)
 
         @Override
         public boolean equals(Object o) {
@@ -56,7 +56,7 @@ public class Listings {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             // The state is what determines the equality!
-            Vector vector = (Vector) o;
+            Listing2_6.Vector vector = (Listing2_6.Vector) o;
             return Objects.equals(x, vector.x)
                     && Objects.equals(y, vector.y);
         }
@@ -64,4 +64,12 @@ public class Listings {
         public int hashCode() {return Objects.hash(x, y);}
     }
 
+
+    // We don't show the implementation of this in the book.
+    static class Point {
+        Double x;
+        Double y;
+
+
+    }
 }
