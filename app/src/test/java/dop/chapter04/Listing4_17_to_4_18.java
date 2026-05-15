@@ -30,7 +30,7 @@ public class Listing4_17_to_4_18 {
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listings 4.17 through 4.18
+     * Listings 4.17
      * ───────────────────────────────────────────────────────
      * Defensive coding to the rescue?
      * ───────────────────────────────────────────────────────
@@ -69,6 +69,14 @@ public class Listing4_17_to_4_18 {
             }
         }
 
+
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.18
+         * ───────────────────────────────────────────────────────
+         * No more ill-defined data!
+         * ───────────────────────────────────────────────────────
+         */
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             Template template = new Template("Cool Template", List.of(new Step("Step 1")));
             new Status(

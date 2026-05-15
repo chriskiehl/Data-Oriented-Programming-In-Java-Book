@@ -60,6 +60,14 @@ public class Listing4_6_to_4_7 {
         record Instance(List<Step> steps) {}
         // [END IGNORE]
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.7
+         * ───────────────────────────────────────────────────────
+         * Bad modeling allows our code to "say" strange things.
+         * For instance: "Socks are always already packed"
+         * ───────────────────────────────────────────────────────
+         */
         // The quick check we can always perform while design is seeing
         // if our code lets us express anything weird.
         Template travelPrep = new Template(
@@ -76,6 +84,13 @@ public class Listing4_6_to_4_7 {
                 // Our data model allows us to express a bunch of nonsense!
         );
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.8
+         * ───────────────────────────────────────────────────────
+         * We could always just defensively make sure that...
+         * ───────────────────────────────────────────────────────
+         */
         // This is a dangerous part in the design process that we have to train
         // ourselves to notice. The "programmer" part of our brain -- the one that
         // thinks in code, might look at this modeling error and start down an

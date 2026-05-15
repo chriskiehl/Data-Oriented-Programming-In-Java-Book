@@ -1,13 +1,11 @@
 package dop.chapter04;
 
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Chapter 4 builds on top of chapter 3's exploration of
@@ -24,7 +22,7 @@ import java.util.function.Function;
  * We can learn from our mistakes before we start pouring concrete
  * in the form of implementation code.
  */
-public class Listing4_10_to_4_13 {
+public class Listing4_10_to_4_12 {
 
 
 
@@ -64,6 +62,13 @@ public class Listing4_10_to_4_13 {
             // Alternative modelings are left as an exercise to the reader ^_^
         ){}
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.12
+         * ───────────────────────────────────────────────────────
+         * Adding template to our Status model
+         * ───────────────────────────────────────────────────────
+         */
         // Now -- the big remaining design question is where we put that core idea
         // that steps in our checklist get completed.
         // Rather than trying to fit it into any one of our existing models, we might

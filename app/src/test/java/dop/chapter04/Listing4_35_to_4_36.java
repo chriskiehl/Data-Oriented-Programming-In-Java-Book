@@ -1,13 +1,7 @@
 package dop.chapter04;
 
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Chapter 4 builds on top of chapter 3's exploration of
@@ -24,19 +18,17 @@ import java.util.function.Function;
  * We can learn from our mistakes before we start pouring concrete
  * in the form of implementation code.
  */
-public class Listing4_36_to_4_40 {
+public class Listing4_35_to_4_36 {
 
 
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listings 4.35
+     * ───────────────────────────────────────────────────────
+     * 
+     * ───────────────────────────────────────────────────────
+     */
 
-    interface StepState {}
-
-    // Note: sealing doesn't work locally inside a method.
-    //       So, it's commented out here. Checkout the supplementary
-    //       file `test.dop.chapter03.SealingExample` to see it in action
-    sealed interface StepStateV2 {}
-    record NotStartedV2() implements StepStateV2 {}
-    record CompletedV2() implements StepStateV2 {}
-    record SkippedV2() implements StepStateV2 {}
 
     /**
      * ───────────────────────────────────────────────────────
@@ -55,6 +47,9 @@ public class Listing4_36_to_4_40 {
      * states a checlist step can be: NotStarted, Completed, or Skipped.
      * ───────────────────────────────────────────────────────
      */
+
+    interface StepState {}
+
     @Test
     public void example() {
 

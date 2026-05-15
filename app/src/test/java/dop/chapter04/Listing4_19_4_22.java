@@ -1,44 +1,32 @@
 package dop.chapter04;
 
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Chapter 4 builds on top of chapter 3's exploration of
- * learning to see through our code into what it actually
- * means and communicates. This is a fun one, because it
- * walks through the design process in all of its messy
- * glory. We'll make mistakes, refine, refactor -- and even
- * go back to the drawing board a few time.
+ * ───────────────────────────────────────────────────────
+ * Listings 4.19 through 4.23
+ * ───────────────────────────────────────────────────────
+ * More requirements! Steps can be skipped!
+ * Skipping steps on a checklist is a big deal in rocketry.
+ * We have to know who did them, when, and *why*.
  *
- * What I hope to show is that focusing on the data and getting its
- * representation pinned down *before* we start worrying about
- * its behaviors makes any mistakes low cost and fast to correct.
- * This approach enables rapid prototyping and immediate feedback.
- * We can learn from our mistakes before we start pouring concrete
- * in the form of implementation code.
+ * Should be a small lift, right? After all, we already figured
+ * out how to track when the steps got completed. Doing the
+ * same thing for skipped should be a breeze.
+ * ───────────────────────────────────────────────────────
  */
-public class Listing4_19_4_23 {
-
-
+public class Listing4_19_4_22 {
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listings 4.19 through 4.23
+     * Listings 4.19
      * ───────────────────────────────────────────────────────
-     * More requirements! Steps can be skipped!
-     * Skipping steps on a checklist is a big deal in rocketry.
-     * We have to know who did them, when, and *why*.
-     *
-     * Should be a small lift, right? After all, we already figured
-     * out how to track when the steps got completed. Doing the
-     * same thing for skipped should be a breeze.
+     * Another "easy" update?
      * ───────────────────────────────────────────────────────
      */
     @Test
@@ -78,6 +66,14 @@ public class Listing4_19_4_23 {
         // instead refactoring "mechanically" -- manipulating the symbols to factor
         // out the duplication.
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.20
+         * ───────────────────────────────────────────────────────
+         * Attempting to "solve" the redundant fields by "DRYing"
+         * the code.
+         * ───────────────────────────────────────────────────────
+         */
         // For instance, we can refactor the multiple booleans into
         // a single Enum. Nice!
         enum State {NOT_STARTED, COMPLETED, SKIPPED};
@@ -90,6 +86,13 @@ public class Listing4_19_4_23 {
                 User confirmedBy,
                 String rational
         ) {
+            /**
+             * ───────────────────────────────────────────────────────
+             * Listings 4.21
+             * ───────────────────────────────────────────────────────
+             * Protecting ourselves from the illegal states our modeling allows
+             * ───────────────────────────────────────────────────────
+             */
             StatusV2 {
                 // But, ugh.. this hasn't actually made our lives that much easier.
                 // Our code is still allowed to express nonsensical states. Which means
@@ -111,7 +114,13 @@ public class Listing4_19_4_23 {
                 // what it means for existing states.
             }
         }
-
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.22
+         * ───────────────────────────────────────────────────────
+         * Ongoing woes
+         * ───────────────────────────────────────────────────────
+         */
         // The woes with the design go beyond the difficulty in validating it.
         // We have that ongoing problem where our data is "forgetful". Aside from
         // when we're validating it, we have no idea what status it's in.

@@ -26,8 +26,6 @@ import java.util.function.Function;
  */
 public class Listing4_1 {
 
-
-
     /**
      * ───────────────────────────────────────────────────────
      * Listings 4.1
@@ -54,7 +52,7 @@ public class Listing4_1 {
         //             If all the steps are complete. The checklist is complete.
         // Easy Peasy?
         //
-        // ...Done?
+        // Done?
     }
 }
 

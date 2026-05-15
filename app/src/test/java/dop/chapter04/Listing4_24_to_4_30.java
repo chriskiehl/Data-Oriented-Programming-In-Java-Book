@@ -1,13 +1,10 @@
 package dop.chapter04;
 
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Chapter 4 builds on top of chapter 3's exploration of
@@ -24,13 +21,13 @@ import java.util.function.Function;
  * We can learn from our mistakes before we start pouring concrete
  * in the form of implementation code.
  */
-public class Listing4_24_to_4_31 {
+public class Listing4_24_to_4_30 {
 
 
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listings 4.24 through 4.31
+     * Listings 4.24
      * ───────────────────────────────────────────────────────
      * Obvious things which maybe aren't so obvious: there's an
      * implicit AND between everything in a record.
@@ -39,10 +36,10 @@ public class Listing4_24_to_4_31 {
     @Test
     public void example() {
         // All defined in previous listings
+        record User(String value){}
         record Step(String name) {}
         record Template(String name, List<Step> steps) {}
         record Instance(String name, Instant date, Template template){}
-        record User(String value){}
         enum State {NOT_STARTED, COMPLETED, SKIPPED};
 
         record Status(    // ◄─────────────────┐
@@ -79,30 +76,48 @@ public class Listing4_24_to_4_31 {
        ){}
 
 
-                //
         // We'll rebuild the Status data type piece by piece, at each
         // step we're going to force ourselves to read the code for exactly
         // what it says. We'll explcitly pause to notice what the implicit ANDs
         // are doing to our data model.
-
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.25
+         * ───────────────────────────────────────────────────────
+         * Going attribute by attribute
+         * ───────────────────────────────────────────────────────
+         */
         record StatusV1(
-                String name, // │
-        //      (AND)           │  So far so good. These ANDs make sense
-                Step step   //  │
+                Template template, // │
+        //      (AND)                 │  So far so good. These ANDs make sense
+                Step step         //  │
         ) {}
-
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.26
+         * ───────────────────────────────────────────────────────
+         * Testing the waters with `isCompleted`
+         * ───────────────────────────────────────────────────────
+         */
         // Adding our next attribute back in:
         record StatusV2(
-                String name,         //  │
+                Template template,   //  │
         //      (AND)                //  │
                 Step step,           //  │
         //      (AND)                //  │ This one feels a little weird, but it still
                 boolean isCompleted  //  │ seems reasonable overall
         ) {}
-
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.27
+         * ───────────────────────────────────────────────────────
+         * Combining this attribute breaks the meaning of our data.
+         * Interesting!
+         * ───────────────────────────────────────────────────────
+         */
         // If we keep going, we slam into a problem
         record StatusV3(
-                String name,         //  │
+                Template template,   //  │
         //      (AND)                //  │
                 Step step,           //  │
         //      (AND)                //  │
@@ -110,6 +125,7 @@ public class Listing4_24_to_4_31 {
         //      (AND)                //  │ Right here we hit a hard wall. This attribute cannot be ANDed
                 User completedBy     //  │ with the rest, because it’s only defined *sometimes*
         ) {}
+
 
         // This is where we really have to read the code for exactly what's there.
         // What about this combination of attributes makes the modeling "wrong"?
@@ -126,6 +142,14 @@ public class Listing4_24_to_4_31 {
         //
         // Listening to what the attributes mean, we can adjust our naming of the record:
         //
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.28
+         * ───────────────────────────────────────────────────────
+         * We've accidentally been modeling something that represents
+         * a Completed Checklist item!
+         * ───────────────────────────────────────────────────────
+         */
         record Completed(
                 String name,         //  │ Look how cohesive these attribute are
         //      (AND)                //  │ now that we've scoped them to exactly what
@@ -139,13 +163,28 @@ public class Listing4_24_to_4_31 {
         // This "aha!" moment is the best part of the design process.
         // If the above only and exclusively represents Completed steps, then we
         // also need to model steps before they're completed. i.e.
-
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.29
+         * ───────────────────────────────────────────────────────
+         * When a checklist isn’t yet completed, it is…
+         * ───────────────────────────────────────────────────────
+         */
         record NotStarted(
                 Template template,   //  │
         //      (AND)                //  │ There is no mention of completedBy here, because it’s not completed!
                 Step step            //  │ It’s Not Started!
         ){}
 
+
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listings 4.30
+         * ───────────────────────────────────────────────────────
+         * Reintroducing the Skipped status is now simple.
+         * Good modeling is flexible and makes change easy.
+         * ───────────────────────────────────────────────────────
+         */
         // Now adding skipped back into the model is *actually* simple.
         // This is what good modeling feels like. It feels smooth. Without friction.
         record Skipped(

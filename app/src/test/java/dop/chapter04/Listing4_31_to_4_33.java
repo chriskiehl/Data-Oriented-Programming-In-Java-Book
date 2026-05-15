@@ -1,13 +1,10 @@
 package dop.chapter04;
 
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Chapter 4 builds on top of chapter 3's exploration of
@@ -24,21 +21,22 @@ import java.util.function.Function;
  * We can learn from our mistakes before we start pouring concrete
  * in the form of implementation code.
  */
-public class Listing4_32 {
+public class Listing4_31_to_4_33 {
 
 
-
-    // records cannot extend classes, so we tie them
-    // together with an interface.
-    interface StepState { }
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listings 4.32 through 4.34
+     * Listing 4.31
      * ───────────────────────────────────────────────────────
-     * From AND, AND, AND to OR, OR, OR
+     * Defining a new data type with an Interface
      * ───────────────────────────────────────────────────────
      */
+    interface ChecklistStatus {   // ◄── The interface name is treated a data type in our code
+        // ◄── The body of the interface is empty, because we’re not defining any behaviors. [
+    }
+
+
     @Test
     public void example() {
         // All defined in previous listings
@@ -47,29 +45,41 @@ public class Listing4_32 {
         record Instance(String name, Instant date, Template template){}
         record User(String value){}
 
-
-
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 4.32
+         * ───────────────────────────────────────────────────────
+         * Implementing the ChecklistStatus interface
+         * ───────────────────────────────────────────────────────
+         */
         record NotStarted(
-                Template template,
-                Step step
-        ) implements StepState {}  // Each record type implements this interface
+            Template template,
+            Step step
+        ) implements ChecklistStatus {}  // Each record type implements this interface
 
         record Completed(
-                Template template,
-                Step step,
-                User completedBy,
-                Instant completedOn
-        ) implements StepState {}  // Here, too
+            Template template,
+            Step step,
+            User completedBy,
+            Instant completedOn
+        ) implements ChecklistStatus {}  // Here, too
 
         record Skipped(
-                Template template,
-                Step step,
-                User skippedBy,
-                Instant skippedOn,
-                String rationale
-        ) implements StepState {}  // and here.
+            Template template,
+            Step step,
+            User skippedBy,
+            Instant skippedOn,
+            String rationale
+        ) implements ChecklistStatus {}  // and here.
 
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 4.33
+         * ───────────────────────────────────────────────────────
+         * Capturing the statuses as types
+         * ───────────────────────────────────────────────────────
+         */
         // Now we can use this interface to unite the disparate types.
         // All of them belong to / are "about" this idea of Step Statuses.
         Template template = new Template("Howdy", List.of(
@@ -82,7 +92,7 @@ public class Listing4_32 {
         //    │  because the interface unites them under the same "family"
         //    │
         //    ▼                                       │
-        StepState completed = new Completed( //  ◄───┘
+        ChecklistStatus completed = new Completed( //  ◄───┘
                 template,
                 step,
                 new User("Bob"),

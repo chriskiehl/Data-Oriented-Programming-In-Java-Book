@@ -27,35 +27,53 @@ import java.util.function.Function;
 public class Listing4_14_to_4_16 {
 
 
-
     /**
      * ───────────────────────────────────────────────────────
-     * Listings 4.14 through 4.16
+     * Listing 4.14
      * ───────────────────────────────────────────────────────
-     * A new requirement appears!
-     * We want to be able to track who performed an individual step
-     * in the checklist. This should be an easy addition given our
-     * modeling, right...?
+     * Updating our requirements
+     * ───────────────────────────────────────────────────────
+     */
+      /*
+                               NOTES.md
+      =========================================================
+      ...
+      Instance:
+          A named run-through of a template
+          at a particular point in time where
+          users coordinate to complete the list
+          of things to do and
+          record the results.
+
+          [[The user and time of completion must be recorded]]
+                         ▲
+                         └───── New requirement!
+      */
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 4.15
+     * ───────────────────────────────────────────────────────
+     * An easy addition...?
      * ───────────────────────────────────────────────────────
      */
     @Test
     public void example() {
-        // Step, Template, and Instance were defined in previous listings
-        record Step(String name) {}
-        record Template(String name, List<Step> steps) {}
-        record Instance(String name, Instant date, Template template){}
-
         // Minimally viable user type.
         // It's not that interesting to our example, so we
         // keep it pretty bare bones.
         record User(String value){}
+
+        // Step, Template, and Instance were defined in previous listings
+        record Step(String name) {}
+        record Template(String name, List<Step> steps) {}
+        record Instance(String name, Instant date, Template template){}
 
         record Status(
                 Template template,
                 Step step,
                 boolean isCompleted,
                 User completedBy,     // ◄────┐
-                Instant completedOn   //      │ Just plug these in here...?
+                Instant completedOn   // ◄────┐ Just plug these in here...?
         ){}
 
         // Here's where we take another step back
@@ -84,6 +102,14 @@ public class Listing4_14_to_4_16 {
         // Patching it over with nulls only introduces more problems. Check this out:
         Template template = new Template("Cool Template", List.of(new Step("Step 1")));
 
+
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 4.16
+         * ───────────────────────────────────────────────────────
+         * Breaking causality
+         * ───────────────────────────────────────────────────────
+         */
         // We can break causality itself!
         new Status(
                 template,
