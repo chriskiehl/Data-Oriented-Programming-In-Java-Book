@@ -15,7 +15,7 @@ Source code for the book Data Oriented Programming in Java (by me! Chris Kiehl!)
 This book is a distillation of everything I’ve learned about what effective development looks like in Java (so far!). It’s what’s left over after years of experimenting, getting things wrong (often catastrophically), and
 slowly having anything resembling “devotion to a single paradigm” beat out of me by the great humbling filter that is reality.
 
-Data-orientation doesn't replace object orientation. The two work together and enhance each other. DoP is born from a very simple idea, and one that people have been repeatedly rediscovering since the dawn of computing: “representation is the essence of programming”. Programs that are organized around the data they manage tend to be simpler, smaller, and significantly easier understand. When we do a really good job of capturing the data in our domain, the rest of the system tends to fall into place in a way which can feel like it’s writing itself.
+Data-orientation doesn't replace object orientation. The two work together and enhance each other. DoP is born from a very simple idea, and one that people have been repeatedly rediscovering since the dawn of computing: “representation is the essence of programming”. Programs that are organized around the data they manage tend to be simpler, smaller, and significantly easier understand. When we do a really good task of capturing the data in our domain, the rest of the system tends to fall into place in a way which can feel like it’s writing itself.
 
 ## Getting Started with this project
 
@@ -35,7 +35,7 @@ gradle build
 
 ### Running the code
 
-The `tests/` package houses all of the runnable code. You can run all the tests in a class with this command:
+The `tests/` package houses all the runnable code. You can run all the tests in a class with this command:
 
 ```
 gradle test --tests 'path.to.test.Class'
@@ -43,12 +43,6 @@ gradle test --tests 'path.to.test.Class'
 e.g.
 ```
 gradle test --tests 'dop.chapter02.Listings'
-```
-
-You can also run individual tests by specifying the method.
-
-```
-gradle test --tests 'dop.chapter02.Listings.listing_2_1'
 ```
 
 
@@ -73,7 +67,7 @@ Each listing in the book will have a corresponding example in the code. The Java
 */
 ```
 
-Sometimes, separate listings in the book will be combined into one example in the code.
+Sometimes, separate listings in the book will be combined into one example in a single class.
 
 ```
 /**
@@ -87,7 +81,7 @@ Sometimes, separate listings in the book will be combined into one example in th
 ```
 
 > [!Note]
-> The class names in the code will often differ from the class names used in the book. Java doesn't let us redefine classes over and over again (which we do in the book as we refactor), so we 'cheat' by appending a qualifying suffix. For instance, `ScheduledTask` in listing A might become `ScheduledTaskV2` or `ScheduledTaskWithBetterOOP` in a subsequent example code. The listing numbers in the Javadoc will always tie to the Listing numbers in the book.
+> The class names in the code will often differ from the class names used in the book. Java doesn't let us redefine classes over and over again (which we do in the book as we refactor), so we 'cheat' by appending a qualifying suffix. For instance, `ScheduledTask` in listing A might become `ScheduledTaskV2` or `ScheduledTaskWithBetterOOP`. The listing numbers in the Javadoc will always tie to the Listing numbers in the book.
 
 
 **Character Encodings**
@@ -134,23 +128,24 @@ class Chapter05 {
 
 | Chapter                                                   | Code Listings                                                                                                                                 | 
 |-----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| Chapter 01 - Data Oriented Programming                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter01/Listings.java) |
-| Chapter 02 - Data, Identity, and Values                   | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter02/Listings.java) |
-| Chapter 03 - Data and Meaning                             | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter03/Listings.java) |
-| Chapter 04 - Representation is the Essence of Programming | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter04/Listings.java) |
-| Chapter 05 - Modeling Domain Behaviors                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter05/Listings.java) |
-| Chapter 06 - Implementing the domain model                | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter06/Listings.java) |
+| Chapter 01 - Data Oriented Programming                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter01/) |
+| Chapter 02 - Data, Identity, and Values                   | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter02/) |
+| Chapter 03 - Data and Meaning                             | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter03/) |
+| Chapter 04 - Representation is the Essence of Programming | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter04/) |
+| Chapter 05 - Modeling Domain Behaviors                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter05/) |
+| Chapter 06 - Implementing the domain model                | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter06/) |
 | Chapter 07 - Guiding the design with properties           | Coming soon!                                                                                                                                  |
-| Chapter 08 - Business Rules as Data                       | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter08/Listings.java) |
-| Chapter 09 - Refactoring Towards Data                     | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter09/Listings.java) |
+| Chapter 08 - Business Rules as Data                       | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter08/) |
+| Chapter 09 - Refactoring Towards Data                     | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter09/) |
 | Chapter 10 - Data Oriented Architecture                   | Coming soon!                                                                                                                                  |
-| Chapter 11 - Testing Data Oriented Programs               | Coming soon!                                                                                                                                  |
+| Chapter 11 - Data Oriented Testing                        | Coming soon!                                                                                                                                  |
+| Chapter 12 - Writing Integration Tests                    | Coming soon!                                                                                                                                  |
 
 
 
 ## Questions and Feedback
 
-I'd love to hear any and all feedback. You can leave comments in the [Manning forum](https://livebook.manning.com/forum?product=kiehl&page=1). I'm also very responsive to emails. If you have a question about the repo, feel free to write me at me@chriskiehl.com. 
+I'd love to hear any and all feedback. You can leave comments in the [Manning forum](https://livebook.manning.com/forum?product=kiehl&page=1). I'm also very responsive to emails. If you have a questions, feel free to write me at me@chriskiehl.com. 
 
 
 
