@@ -1,13 +1,12 @@
 package dop.chapter05;
 
-import com.google.common.base.Strings;
+import dop.chapter05.Listing5_43_to_5_47.Lifecycle.Draft;
 import dop.chapter05.the.existing.world.Entities.*;
 import dop.chapter05.the.existing.world.Repositories;
 import dop.chapter05.the.existing.world.Repositories.FeesRepo;
 import dop.chapter05.the.existing.world.Services;
 import dop.chapter05.the.existing.world.Services.ApprovalsAPI;
 import dop.chapter05.the.existing.world.Services.ApprovalsAPI.Approval;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI.ApprovalStatus;
 import dop.chapter05.the.existing.world.Services.ContractsAPI;
 import dop.chapter05.the.existing.world.Services.ContractsAPI.PaymentTerms;
 import dop.chapter05.the.existing.world.Services.RatingsAPI.CustomerRating;
@@ -16,32 +15,17 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
-import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
-import static java.util.stream.Collectors.*;
+import static dop.chapter05.Listing5_43_to_5_47.ReviewedFee.*;
 
-/**
- * Chapter 5 takes all the modeling tools we've explored
- * so far and applies them to building a complex feature.
- * No more simple domains. No more isolated modeling. We
- * dive into the messy world of building software. That
- * means everything that makes it hard: databases, ORMS,
- * third party services (with APIs we don't control), and
- * the absolute worst thing of all: prior decisions.
- *
- * We'll learn how to work with all of these limitations
- * and produce clean, clear, data-oriented code.
- */
-public class Listing5_42_to_5_47 {
+public class Listing5_43_to_5_47 {
 
 
 
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 5.42 through 5.47
+     * Listing 5.43 through 5.48
      * ───────────────────────────────────────────────────────
      * There are few black and white answers in software engineering.
      * We deal with tradeoffs and concessions.
@@ -57,40 +41,54 @@ public class Listing5_42_to_5_47 {
     @Test
     public void example() {
 
-        record Draft(){}
-        record Latefee<A>(){}
-        record PastDue(){}
-
         class Example {
             ContractsAPI contractsAPI;
             FeesRepo feesRepo;
-            Latefee<Draft> buildDraft(Customer customer, List<PastDue> invoices){
+            /**
+             * ───────────────────────────────────────────────────────
+             * Listing 5.43
+             * ───────────────────────────────────────────────────────
+             * One possible implementation for buildDraft
+             * ───────────────────────────────────────────────────────
+             */
+            LateFee<Draft> buildDraft(Customer customer, List<PastDue> invoices){
                 LocalDate today = LocalDate.now();          //  ─┐
                 PaymentTerms terms = contractsAPI           //   │  Most of our method's implementation ends up
                         .getPaymentTerms(customer.getId()); //   │  devoted to managing "what's already there" rather
                 BigDecimal feePercentage = feesRepo.get(    //   │  working on business logic.
                         customer.getAddress().getCountry()  //   │
                 );                                          //  ─┘
-                // plus anything else we need...
+                // plus anything else we need /*...*/
 
                 // then only once all that is done can we
                 // start to write any business logic
-                return new Latefee<>(/*...*/);
+                // return new LateFee<>(/*...*/);
+
+
+                return null; // (so the example compiles)
             }
         }
 
+
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 5.44
+         * ───────────────────────────────────────────────────────
+         * Refactoring to separate how we get data from how we use it
+         * ───────────────────────────────────────────────────────
+         */
         // ┌────────────────────────────────────────────────────────────────────┐
         // │         Separate how you get data from what you do with it         │
         // └────────────────────────────────────────────────────────────────────┘
         //
-        //   Latefee<Draft> doAction(){    ─┐
+        //   LateFee<Draft> doAction(){    ─┐
         //      // [LOAD DATA]              │ Any method like this, that does all the
         //      // [BUSINESS LOGIC]         │ work of getting loading the data it needs
         //   }    ──────────────────────────┘
         //
         //                             ┌──────────  Can be refactored to one that ACCEPTS
         //                             ▼            that same data as an argument
-        //   Latefee<Draft> doAction([DATA]){
+        //   LateFee<Draft> doAction([DATA]){
         //      // [BUSINESS LOGIC]
         //   }       ▲
         //           └─── This frees the implementation to be devoted to business logic
@@ -98,31 +96,42 @@ public class Listing5_42_to_5_47 {
         //
         // We can do this refactoring to buildDraft.
         class Example2 {
-            Latefee<Draft> buildDraft(Customer customer,
+            LateFee<Draft> buildDraft(Customer customer,
                                       PaymentTerms terms,
                                       BigDecimal feePercentage,
                                       List<PastDue> invoices){
                 // Now I can be pure business logic!
-                return new Latefee<>(/*...*/);
+                // return new LateFee<>(/*... */);
+
+
+                return null; // (so the example compiles)
             }
         }
 
+
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 5.45
+         * ───────────────────────────────────────────────────────
+         * Two buckets of different functionality
+         * ───────────────────────────────────────────────────────
+         */
         // This same refactoring can potentially be done to ALL of our methods!
         // ┌────────────────────────────────────────────────────────────────────┐
         // │                   Decouple, Decouple, Decouple!                    │
         // └────────────────────────────────────────────────────────────────────┘
         //
-        //     public void processLatefees() {
+        //     public void processLateFees() {
         //         [LOAD ALL THE DATA WE NEED]
         //         CoutryCode country = customer.getBillingAddress().country();
         //         BigDecimal feePercentage = feeRepo.get(country);
         //         List<Invoice> allInvoices = invoiceRepo.findInvoices(customer.getId())
-        //         // and so on ...
+        //         // and so on  /*...*/
         //
         //
         //         [USE THE DATA IN BUSINESS LOGIC]
         //         List<Invoice> pastDue = collectPastDue(allInvoices, rating, today)
-        //         // and so on...
+        //         // and so on /*...*/
         //     }
 
         // We can pull the "how we get the data" into its own method.
@@ -152,6 +161,7 @@ public class Listing5_42_to_5_47 {
             Optional<Approval> approval
         ){}
 
+
         // ┌────────────────────────────────────────────────────────────────────┐
         // │              Using this refactoring in our main method             │
         // └────────────────────────────────────────────────────────────────────┘
@@ -164,17 +174,18 @@ public class Listing5_42_to_5_47 {
             private Repositories.InvoiceRepo invoiceRepo;
             private Repositories.RulesRepo rulesRepo;
             private FeesRepo feesRepo;
-            public void processLateFees(){
-                this.streamInvoicingData().forEach(invoicingData -> {
-                    // Just business logic here!
-                });
 
-            }
-
+            /**
+             * ───────────────────────────────────────────────────────
+             * Listing 5.46
+             * ───────────────────────────────────────────────────────
+             * Isolating all the services calls and loading into its own method
+             * ───────────────────────────────────────────────────────
+             */
             // We can pull out all the gross management of these existing APIs, and
             // services, and entities into their own method. This frees up the rest
             // of our code to focus on what it cares about: the business logic.
-            Stream<InvoicingData> streamInvoicingData() {
+            List<InvoicingData> loadInvoicingData() {
                 // If this looks like a lot, that's because it IS!
                 // When you aggregate it all together, it reveals how much time we wasted
                 // in our original implementation just managing "how" we get what we need.
@@ -197,10 +208,99 @@ public class Listing5_42_to_5_47 {
                             Optional.ofNullable(customer.getApprovalId())
                                     .flatMap(approvalsApi::getApproval));
                         }
-                    );
+                    ).toList();
+            }
+
+
+            /**
+             * ───────────────────────────────────────────────────────
+             * Listing 5.47
+             * ───────────────────────────────────────────────────────
+             * An example implementation using the new data grabber
+             * ───────────────────────────────────────────────────────
+             */
+            public void processLateFees(){
+                this.loadInvoicingData().forEach(invoicingData -> {
+                    for (InvoicingData data: this.loadInvoicingData()) {
+                        List<Invoice> pastDue = collectPastDue( /*...*/);
+                        LateFee<Draft> draft = buildDraft( /*...*/);
+                        ReviewedFee decision = assessDraft( /*...*/);
+                    switch(decision) {
+                        case Billable billable       ->  someAction();
+                        case NeedsApproval na          ->  someAction();
+                        case NotBillable notBillable ->  someAction();
+                    }
+                    }
+                });
+            }
+
+
+
+
+
+
+
+
+
+            // here for compilation
+            List<Invoice> collectPastDue() {
+                return null; 
+            }
+            LateFee<Draft> buildDraft() {
+                return null;
+            }
+            ReviewedFee assessDraft() {
+                return null;
+            }
+
+            void someAction() {
+
             }
         }
     }
+
+
+
+    public record PastDue(Invoice value) {}
+
+    public sealed interface Lifecycle {
+        record Draft() implements Lifecycle {}
+        record Billed(String invoiceId) implements Lifecycle {}
+        record Rejected(Reason reason) implements Lifecycle {}
+        record InReview(ApprovalId approvalId) implements Lifecycle {}
+    }
+
+    public record LateFee<State extends Lifecycle>(
+            String customerId,
+            USD total,
+            State state,
+            LocalDate invoiceDate,
+            LocalDate dueDate,
+            List<Invoice> includedInFee
+    ){}
+
+    public sealed interface ReviewedFee {
+        record Billable(LateFee<Draft> LateFee)
+                implements ReviewedFee {}
+        record NeedsApproval(LateFee<Draft> LateFee)
+                implements ReviewedFee {}
+        record NotBillable(LateFee<Draft> LateFee, Reason reason)
+                implements ReviewedFee {}
+    }
+
+
+    interface TheMethodsSignatures {
+        List<PastDue> collectPastDue(List<Invoice> invoices);
+        LateFee<Draft> buildDraft(List<PastDue> invoices);
+        ReviewedFee assesDraft(LateFee<Draft> invoice);
+        LateFee<? extends Lifecycle> submitBill(Billable draft);
+        LateFee<Lifecycle.InReview> startApproval(NeedsApproval needsApproval);
+    }
+
+
+    record USD(BigDecimal value) {}
+    record Reason(String value) {}
+    record ApprovalId(String value) {}
 }
 
 

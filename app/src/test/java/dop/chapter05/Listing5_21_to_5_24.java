@@ -1,47 +1,18 @@
 package dop.chapter05;
 
-import com.google.common.base.Strings;
 import dop.chapter05.the.existing.world.Entities.*;
-import dop.chapter05.the.existing.world.Repositories;
-import dop.chapter05.the.existing.world.Repositories.FeesRepo;
-import dop.chapter05.the.existing.world.Services;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI.Approval;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI.ApprovalStatus;
-import dop.chapter05.the.existing.world.Services.ContractsAPI;
-import dop.chapter05.the.existing.world.Services.ContractsAPI.PaymentTerms;
-import dop.chapter05.the.existing.world.Services.RatingsAPI.CustomerRating;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
-import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
-import static java.util.stream.Collectors.*;
-
-/**
- * Chapter 5 takes all the modeling tools we've explored
- * so far and applies them to building a complex feature.
- * No more simple domains. No more isolated modeling. We
- * dive into the messy world of building software. That
- * means everything that makes it hard: databases, ORMS,
- * third party services (with APIs we don't control), and
- * the absolute worst thing of all: prior decisions.
- *
- * We'll learn how to work with all of these limitations
- * and produce clean, clear, data-oriented code.
- */
-public class Listing5_20_to_5_25 {
+public class Listing5_21_to_5_24 {
 
 
 
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 5.20 through 5.25
+     * Listing 5.21 through 5.26
      * ───────────────────────────────────────────────────────
      * Now we begin the data modeling!
      *
@@ -50,11 +21,25 @@ public class Listing5_20_to_5_25 {
      */
     @Test
     public void example() {
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 5.21
+         * ───────────────────────────────────────────────────────
+         * Creating the PastDue type
+         * ───────────────────────────────────────────────────────
+         */
         // One way of capturing "something we know about a state" is
         // through wrapper types. It could be as simple as this.
         record PastDue(Invoice invoice) {
         }
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 5.22
+         * ───────────────────────────────────────────────────────
+         * A closer look
+         * ───────────────────────────────────────────────────────
+         */
         // However, if we ask the "semantic" questions we learned about
         // in chapters 3 & 4, we'll find that this doesn't quite meet
         // the standards we've been chasing.
@@ -78,6 +63,13 @@ public class Listing5_20_to_5_25 {
         // outside context is what makes it different from what we looked
         // at before. Types like NonNegativeInt have everything they need
         // to enforce their semantics "inside" of the constructor.
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 5.23
+         * ───────────────────────────────────────────────────────
+         * Revisiting NonNegativeInt
+         * ───────────────────────────────────────────────────────
+         */
         record NonNegativeInt(int value) {
             NonNegativeInt {
                 if (value < 0) {
@@ -86,6 +78,13 @@ public class Listing5_20_to_5_25 {
             }
         }
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 5.24
+         * ───────────────────────────────────────────────────────
+         * The meaning of “past due” is contextual and depends on outside info
+         * ───────────────────────────────────────────────────────
+         */
         // You might try to make the wrapper type carry this outside context.
         record PastDueV2 (
                 Invoice invoice,

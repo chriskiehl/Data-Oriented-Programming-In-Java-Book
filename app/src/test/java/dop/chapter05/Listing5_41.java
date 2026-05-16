@@ -1,102 +1,65 @@
 package dop.chapter05;
 
-import com.google.common.base.Strings;
-import dop.chapter05.the.existing.world.Entities.*;
-import dop.chapter05.the.existing.world.Repositories;
-import dop.chapter05.the.existing.world.Repositories.FeesRepo;
-import dop.chapter05.the.existing.world.Services;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI.Approval;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI.ApprovalStatus;
-import dop.chapter05.the.existing.world.Services.ContractsAPI;
-import dop.chapter05.the.existing.world.Services.ContractsAPI.PaymentTerms;
-import dop.chapter05.the.existing.world.Services.RatingsAPI.CustomerRating;
-import org.junit.jupiter.api.Test;
+import dop.chapter05.Listing5_41.Lifecycle.Draft;
+import dop.chapter05.Listing5_41.Lifecycle.InReview;
+import dop.chapter05.Listing5_41.ReviewedFee.Billable;
+import dop.chapter05.Listing5_41.ReviewedFee.NeedsReview;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.List;
 
-import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
-import static java.util.stream.Collectors.*;
+import static dop.chapter05.the.existing.world.Entities.Invoice;
 
-/**
- * Chapter 5 takes all the modeling tools we've explored
- * so far and applies them to building a complex feature.
- * No more simple domains. No more isolated modeling. We
- * dive into the messy world of building software. That
- * means everything that makes it hard: databases, ORMS,
- * third party services (with APIs we don't control), and
- * the absolute worst thing of all: prior decisions.
- *
- * We'll learn how to work with all of these limitations
- * and produce clean, clear, data-oriented code.
- */
 public class Listing5_41 {
-
-
-
-
     /**
      * ───────────────────────────────────────────────────────
      * Listing 5.41
      * ───────────────────────────────────────────────────────
-     * Our data modeling was done in a loose isolation of the rest
-     * of the world. Now we have to merge them together.
-     *
-     * As an initial starting point, we need to map out what each
-     * "new" method depends on from the "old" world.
-     *
+     * the current data model for our feature
+     * ───────────────────────────────────────────────────────
      */
-    @Test
-    public void example() {
-        /*
-        collectPastDue
-            DependsOn:
-                List<Invoice> (Entity / Database (read))
-                CurrentDate (Environment (read))
-                CustomerRating (API (read))
-            Output:
-                List<PastDueInvoice>
+    public record PastDue(Invoice value) {}
 
-        buildDraft
-            DependsOn:
-                List<PastDue> (Output from collectPastDue)
-                CurrentDate (Environment (read))
-                PaymentTerms (API (read))
-                FeePercentage (Database (read))
-                Customer (Database (read))
-          Output:
-                Latefee<Draft>
-
-        assessDraft
-            DependsOn:
-                LateFee<Draft> (Output from buildDraft)
-                Rules (Database (read))
-                Customer (Database (read))
-                ApprovalStatus (API (read))
-            Output:
-                Billable
-                OR NeedsReview
-                OR NotBillable
-        submitBill
-            DependsOn:
-                BillableFee (output from AssessDraft)
-                BillingService (API write)
-            Output:
-                BilledLateFee
-                OR RejectedLateFee
-
-        startApproval
-            DependsOn:
-                NeedsReview (output from AssessDraft)
-                CustomerID (database (read))
-                ApprovalsService (API read/write)
-
-             */
+    public sealed interface Lifecycle {
+        record Draft() implements Lifecycle {}
+        record Billed(String invoiceId) implements Lifecycle {}
+        record Rejected(Reason reason) implements Lifecycle {}
+        record InReview(ApprovalId approvalId) implements Lifecycle {}
     }
+
+    public record LateFee<State extends Lifecycle>(
+        String customerId,
+        USD total,
+        State state,
+        LocalDate invoiceDate,
+        LocalDate dueDate,
+        List<Invoice> includedInFee
+    ){}
+
+    sealed interface ReviewedFee {
+        record Billable(LateFee<Draft> latefee)
+            implements ReviewedFee {}
+        record NeedsReview(LateFee<Draft > latefee)
+            implements ReviewedFee {}
+        record NotBillable(LateFee<Draft> latefee, Reason reason)
+            implements ReviewedFee {}
+    }
+
+
+    interface TheMethodsSignatures {
+        List<PastDue> collectPastDue(List<Invoice> invoices);
+        LateFee<Draft> buildDraft(List<PastDue> invoices);
+        ReviewedFee assesDraft(LateFee<Draft> invoice);
+        LateFee<? extends Lifecycle> submitBill(Billable draft);
+        LateFee<InReview> startApproval(NeedsReview needsReview);
+    }
+
+
+
+
+
+    record USD(BigDecimal value) {}
+    record Reason(String value) {}
+    record ApprovalId(String value) {}
 }
-
-

@@ -22,18 +22,6 @@ import java.util.stream.Stream;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static java.util.stream.Collectors.*;
 
-/**
- * Chapter 5 takes all the modeling tools we've explored
- * so far and applies them to building a complex feature.
- * No more simple domains. No more isolated modeling. We
- * dive into the messy world of building software. That
- * means everything that makes it hard: databases, ORMS,
- * third party services (with APIs we don't control), and
- * the absolute worst thing of all: prior decisions.
- *
- * We'll learn how to work with all of these limitations
- * and produce clean, clear, data-oriented code.
- */
 public class Listings {
 
 

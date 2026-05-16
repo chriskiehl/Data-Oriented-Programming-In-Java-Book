@@ -6,42 +6,23 @@ import dop.chapter05.the.existing.world.Repositories;
 import dop.chapter05.the.existing.world.Repositories.FeesRepo;
 import dop.chapter05.the.existing.world.Services;
 import dop.chapter05.the.existing.world.Services.ApprovalsAPI;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI.Approval;
 import dop.chapter05.the.existing.world.Services.ApprovalsAPI.ApprovalStatus;
 import dop.chapter05.the.existing.world.Services.ContractsAPI;
-import dop.chapter05.the.existing.world.Services.ContractsAPI.PaymentTerms;
+import dop.chapter05.the.existing.world.Services.RatingsAPI;
 import dop.chapter05.the.existing.world.Services.RatingsAPI.CustomerRating;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
-import static java.util.stream.Collectors.*;
 
-/**
- * Chapter 5 takes all the modeling tools we've explored
- * so far and applies them to building a complex feature.
- * No more simple domains. No more isolated modeling. We
- * dive into the messy world of building software. That
- * means everything that makes it hard: databases, ORMS,
- * third party services (with APIs we don't control), and
- * the absolute worst thing of all: prior decisions.
- *
- * We'll learn how to work with all of these limitations
- * and produce clean, clear, data-oriented code.
- */
-public class Listing5_3_to_5_5 {
-
-
-
+public class Listing5_5_and_5_56 {
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 5.3 through 5.5
+     * Listing 5.5 through 5.6
      * ───────────────────────────────────────────────────────
      * These listings tackle our first stab at an implementation.
      *
@@ -66,9 +47,9 @@ public class Listing5_3_to_5_5 {
     public void example() {
         // These services are all defined in listing 5.1
         class LateFeeChargingService {               // ◄───────┐ The bet I make in the book is that this general
-            private Services.RatingsAPI ratingsApi;         //  │ setup feels deeply familiar as a starting point.
-            private ContractsAPI contractsApi;     //  │ We have an army of Entities, Service Classes, and
-            private ApprovalsAPI approvalsApi;    //  │ Repositories (or "Data Access Objects" depending on
+            private RatingsAPI ratingsApi;                  //  │ setup feels deeply familiar as a starting point.
+            private ContractsAPI contractsApi;              //  │ We have an army of Entities, Service Classes, and
+            private ApprovalsAPI approvalsApi;              //  │ Repositories (or "Data Access Objects" depending on
             private Services.BillingAPI billingApi;         //  │ your preferred lingo) all crammed into the top of a
             private Repositories.CustomerRepo customerRepo; //  │ a class that's usually called [Thing]Service.
             private Repositories.InvoiceRepo invoiceRepo;
@@ -148,7 +129,13 @@ public class Listing5_3_to_5_5 {
                     }
                 }
             }
-
+            /**
+             * ───────────────────────────────────────────────────────
+             * Listing 5.6
+             * ───────────────────────────────────────────────────────
+             * Code filled with lies
+             * ───────────────────────────────────────────────────────
+             */
             // This method has extraordinary power!
             // It's the scariest in our entire codebase. There's no "undo" button with
             // this one. Real customers live on the other side of it. A bug here

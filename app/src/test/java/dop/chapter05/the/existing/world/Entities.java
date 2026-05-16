@@ -1,7 +1,7 @@
 package dop.chapter05.the.existing.world;
 
 import dop.chapter05.the.existing.world.Annotations.Entity;
-import dop.chapter05.the.existing.world.Annotations.Id;
+import dop.chapter05.the.existing.world.Annotations.ID;
 import dop.chapter05.the.existing.world.Annotations.ManyToMany;
 import dop.chapter05.the.existing.world.Annotations.OneToOne;
 import lombok.AllArgsConstructor;
@@ -37,7 +37,7 @@ public class Entities {
     @lombok.Getter
     @lombok.Setter
     public static class Invoice {
-        @Id
+        @ID
         String invoiceId;
         String customerId;
         @Annotations.OneToMany
@@ -70,7 +70,7 @@ public class Entities {
     @Data
     @AllArgsConstructor
     public static class LineItem {
-        @Id
+        @ID
         @Nullable
         String id;
         String description;
@@ -84,7 +84,7 @@ public class Entities {
     @Data
     @AllArgsConstructor
     public static class AuditInfo {
-        @Id
+        @ID
         @OneToOne
         String invoiceId;
         @ManyToMany
@@ -100,7 +100,7 @@ public class Entities {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Customer {
-        @Id
+        @ID
         String id;
         Address address;
         @Nullable
@@ -116,6 +116,7 @@ public class Entities {
         String country;
         // and so on
     }
+
 
     // Below here are the "minor" entities in our scenario.
     // They're things that are Entities only in that they're

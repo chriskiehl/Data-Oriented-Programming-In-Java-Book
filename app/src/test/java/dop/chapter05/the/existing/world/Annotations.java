@@ -10,10 +10,11 @@ package dop.chapter05.the.existing.world;
 public interface Annotations {
     public @interface Entity {}
 
-    public @interface Id {}
+    public @interface ID {}
     public @interface OneToMany {}
     public @interface OneToOne {}
     public @interface ManyToMany {}
+    public @interface ManyToOne {}
 
     public @interface Transaction {}
     public @interface Service {}

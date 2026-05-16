@@ -33,14 +33,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static org.mockito.Mockito.*;
 
-/**
- * Chapter 6 walks through implementing the domain model
- * we came up with in chapter 5. However, that'd be pretty
- * boring on its own, so that chapter is *really* about
- * the choices we make while designing. It's about functions!
- * And determinism! And testability! And a whole host of other
- * things! It's a fun one.
- */
 public class Listing6_24 {
 
 

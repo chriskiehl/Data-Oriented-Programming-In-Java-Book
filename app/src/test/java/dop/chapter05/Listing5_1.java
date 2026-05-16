@@ -1,26 +1,8 @@
 package dop.chapter05;
 
-import com.google.common.base.Strings;
-import dop.chapter05.the.existing.world.Entities.*;
-import dop.chapter05.the.existing.world.Repositories;
-import dop.chapter05.the.existing.world.Repositories.FeesRepo;
-import dop.chapter05.the.existing.world.Services;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI.Approval;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI.ApprovalStatus;
-import dop.chapter05.the.existing.world.Services.ContractsAPI;
-import dop.chapter05.the.existing.world.Services.ContractsAPI.PaymentTerms;
-import dop.chapter05.the.existing.world.Services.RatingsAPI.CustomerRating;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
-import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
-import static java.util.stream.Collectors.*;
+import java.util.Optional;
 
 /**
  * Chapter 5 takes all the modeling tools we've explored
@@ -36,38 +18,6 @@ import static java.util.stream.Collectors.*;
  */
 public class Listing5_1 {
 
-
-
-
-    interface RatingsAPI {
-        enum CustomerStanding {GOOD, ACCEPTABLE, POOR}
-        CustomerStanding getRating(String customerId);
-    }
-
-    interface ContractsAPI {
-        enum PaymentTerms {NET_30, NET_60, END_OF_MONTH, DUE_ON_RECEIPT}
-        PaymentTerms getPaymentTerms(String customerId);
-    }
-
-    interface ApprovalsAPI {
-        enum Status {Pending, Approved, Denied}
-        record Approval(String id, Status status){}
-        record CreateApprovalRequest(/*...*/) {}
-        Approval createApproval(CreateApprovalRequest request);
-        Optional<Approval> getApproval(String approvalId);
-    }
-
-    interface billingAPI {
-        enum Status {ACCEPTED, REJECTED}
-        record SubmitInvoiceRequest(/*...*/) {}
-        record BillingResponse(
-            Status status,
-            String invoiceId,
-            String error
-        ){}
-        BillingResponse submit(SubmitInvoiceRequest request);
-    }
-
     /**
      * ───────────────────────────────────────────────────────
      * Listing 5.1
@@ -80,16 +30,39 @@ public class Listing5_1 {
      * are the external APIs we'll interact with.
      * We cheat a bit and ignore stuff like HTTP and failures.
      */
-    @Test
-    public void example() {
-
-
-
-
-
-
-
+    interface RatingsAPI {      //  ◄───────────────────────────────┐
+        enum CustomerRating {GOOD, ACCEPTABLE, POOR}
+        CustomerRating getRating(String customerId);   //           │ These are the easiest. They’re read only.
     }
+
+    interface ContractsAPI {   //   ◄───────────────────────────────┘
+        enum PaymentTerms {
+            NET_30, NET_60,
+            END_OF_MONTH, DUE_ON_RECEIPT}
+        PaymentTerms getPaymentTerms(String customerId);
+    }
+
+    interface ApprovalsAPI {
+        enum Status {PENDING, APPROVED, DENIED}
+        record Approval(String id, Status status){}
+        record CreateApprovalRequest(/*...*/){}
+        Approval createApproval(CreateApprovalRequest request); //  ◄──┐ Approvals are more complicated. We have to
+        Optional<Approval> getApproval(String approvalId);      //  ◄──┘ manage two APIs (read and write).
+    }
+
+    interface BillingAPI {
+        enum Status {ACCEPTED, REJECTED}
+        record SubmitInvoiceRequest(/*...*/) {}
+        record BillingResponse(
+                Status status,
+                String invoiceId,
+                String error
+        ){}
+        BillingResponse submit(SubmitInvoiceRequest request);  // ◄──┐ This is the most important and dangerous API in
+        //                                                           │ our codebase. Invoices go straight to the customer
+        //                                                           │ with no “undo” button
+    }
+
 }
 
 

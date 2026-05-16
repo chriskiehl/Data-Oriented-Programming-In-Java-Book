@@ -1,50 +1,21 @@
 package dop.chapter05;
 
-import com.google.common.base.Strings;
 import dop.chapter05.the.existing.world.Entities.*;
-import dop.chapter05.the.existing.world.Repositories;
-import dop.chapter05.the.existing.world.Repositories.FeesRepo;
-import dop.chapter05.the.existing.world.Services;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI.Approval;
-import dop.chapter05.the.existing.world.Services.ApprovalsAPI.ApprovalStatus;
-import dop.chapter05.the.existing.world.Services.ContractsAPI;
-import dop.chapter05.the.existing.world.Services.ContractsAPI.PaymentTerms;
-import dop.chapter05.the.existing.world.Services.RatingsAPI.CustomerRating;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
-import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static java.util.stream.Collectors.*;
 
-/**
- * Chapter 5 takes all the modeling tools we've explored
- * so far and applies them to building a complex feature.
- * No more simple domains. No more isolated modeling. We
- * dive into the messy world of building software. That
- * means everything that makes it hard: databases, ORMS,
- * third party services (with APIs we don't control), and
- * the absolute worst thing of all: prior decisions.
- *
- * We'll learn how to work with all of these limitations
- * and produce clean, clear, data-oriented code.
- */
-public class Listing5_33_to_5_38 {
-
-
+public class Listing5_34_to_5_37 {
 
 
     // This is yet another option for representing complex lifecycle
     // states without duplicating all the fields. Rather than extract
     // what's the same, we can extract what's unique into its own type.
     //
-    // NOTE: As with all the other examples, this should be sealed, but we
-    // can't do that while defining it inside a method. So... just pretend.
     record InvoiceId(String value){}
     record Rejection(String why){}
     record Draft() implements Lifecycle{}
@@ -55,7 +26,7 @@ public class Listing5_33_to_5_38 {
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 5.33 - 5.38
+     * Listing 5.34 - 5.39
      * ───────────────────────────────────────────────────────
      * Exploring even more representations.
      *
@@ -85,6 +56,14 @@ public class Listing5_33_to_5_38 {
                 List<PastDue> includedInFee
         ){}
 
+
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 5.34
+         * ───────────────────────────────────────────────────────
+         * patching around our own modeling limitations
+         * ───────────────────────────────────────────────────────
+         */
         class Example {
             // Programming with our data types is pleasant again.
             // We've restored some runtime flexibility. Computing aggregate stats
@@ -96,6 +75,13 @@ public class Listing5_33_to_5_38 {
             }
         }
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 5.35
+         * ───────────────────────────────────────────────────────
+         * Arg. We're back to defensive programming.
+         * ───────────────────────────────────────────────────────
+         */
         // ┌────────────────────────────────────────────────────────────────────┐
         // │                             HOWEVER!                               │
         // └────────────────────────────────────────────────────────────────────┘
@@ -121,6 +107,13 @@ public class Listing5_33_to_5_38 {
             }
         }
 
+        /**
+         * ───────────────────────────────────────────────────────
+         * Listing 5.36
+         * ───────────────────────────────────────────────────────
+         * We've lost expressivity in our data model
+         * ───────────────────────────────────────────────────────
+         */
         // Another big problem with all of this is that we've lost the
         // ability to communicate. Our "story" has become truncated and imprecise.
         //

@@ -22,26 +22,12 @@ import java.util.stream.Stream;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static java.util.stream.Collectors.*;
 
-/**
- * Chapter 5 takes all the modeling tools we've explored
- * so far and applies them to building a complex feature.
- * No more simple domains. No more isolated modeling. We
- * dive into the messy world of building software. That
- * means everything that makes it hard: databases, ORMS,
- * third party services (with APIs we don't control), and
- * the absolute worst thing of all: prior decisions.
- *
- * We'll learn how to work with all of these limitations
- * and produce clean, clear, data-oriented code.
- */
-public class Listing5_48_to_5_49 {
-
-
+public class Listing5_49_to_5_50 {
 
 
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 5.48 through 5.49
+     * Listing 5.49 through 5.50
      * ───────────────────────────────────────────────────────
      * A big theme that permeates this chapter is that engineering
      * is contextual. We're always making tradeoffs.
@@ -60,9 +46,6 @@ public class Listing5_48_to_5_49 {
         // └────────────────────────────────────────────────────────────────────┘
         //
 
-        // minimal shims just to enable the main example.
-        record CustomerId(){}
-        record Percent(){}
 
         // We don't have to settle for the world as we found it -- as it was dictated
         // by other people. We can unify disparate services and APIs.
@@ -84,6 +67,16 @@ public class Listing5_48_to_5_49 {
                 Optional<Approval> approval
         ) {}
     }
+
+
+
+
+
+
+
+    // minimal shims just to enable the main example.
+    record CustomerId(){}
+    record Percent(){}
 }
 
 
