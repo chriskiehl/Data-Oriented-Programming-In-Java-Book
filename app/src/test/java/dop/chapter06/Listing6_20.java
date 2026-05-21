@@ -1,21 +1,27 @@
 package dop.chapter06;
 
-public class Listing6_16 {
+public class Listing6_20 {
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 6.16
+     * Listing 6.20
      * ───────────────────────────────────────────────────────
-     * using static to signal that this should be a deterministic function
+     * Designing gracePeriod
      * ───────────────────────────────────────────────────────
      */
-    enum People {Bob, Mary}
-    enum Jobs {Cook, Engineer}
-//
-//    ┌──── We’re using static to signal that this method will behave
-//    │     as a deterministic function
-//    ▼
-    static People someMethod(Jobs job) {
-        // [Hidden]
-        return null; // (so example compiles)
+    /*
+    static ??? gracePeriod(CustomerRating rating) {
+//         ▲
+//         └──── GracePeriod maps the customer’s rating to some kind of offset
+//               measured in days. How do we capture that?
+        ???
     }
+     */
+
 }
+
+
+
+
+
+
+

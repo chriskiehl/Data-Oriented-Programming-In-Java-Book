@@ -1,21 +1,24 @@
 package dop.chapter06;
 
-public class Listing6_16 {
+public class Listing6_11 {
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 6.16
+     * Listing 6.11
      * ───────────────────────────────────────────────────────
-     * using static to signal that this should be a deterministic function
+     * Using static to denote functions
      * ───────────────────────────────────────────────────────
      */
-    enum People {Bob, Mary}
-    enum Jobs {Cook, Engineer}
-//
-//    ┌──── We’re using static to signal that this method will behave
-//    │     as a deterministic function
-//    ▼
-    static People someMethod(Jobs job) {
-        // [Hidden]
-        return null; // (so example compiles)
+    class Example1 {
+        public int increment(int x) {
+            return x + 1;
+        }
+    }
+
+    class Example2 {
+        //       ┌─── The static modifier helps communicate our intentions
+        //       ▼
+        public static int increment(int x) {
+            return x + 1;
+        }
     }
 }

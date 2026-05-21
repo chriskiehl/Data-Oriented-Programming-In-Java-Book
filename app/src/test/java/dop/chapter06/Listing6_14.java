@@ -1,21 +1,42 @@
 package dop.chapter06;
 
-public class Listing6_16 {
+public class Listing6_14 {
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 6.16
+     * Listing 6.14
      * ───────────────────────────────────────────────────────
-     * using static to signal that this should be a deterministic function
+     * How many ways could we write an implementation for this?
      * ───────────────────────────────────────────────────────
      */
     enum People {Bob, Mary}
     enum Jobs {Cook, Engineer}
-//
-//    ┌──── We’re using static to signal that this method will behave
-//    │     as a deterministic function
-//    ▼
-    static People someMethod(Jobs job) {
+
+    class SomeClass {
         // [Hidden]
-        return null; // (so example compiles)
+
+        People someMethod(Job job) {
+            // [Hidden]
+            //    ▲
+            //    └──── What can we guess about what goes on inside here?
+
+
+            return null; // (to compile)
+        }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    interface Job {}
 }

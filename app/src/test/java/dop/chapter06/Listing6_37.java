@@ -1,24 +1,23 @@
 package dop.chapter06;
 
+import java.time.LocalDate;
 import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
+import java.util.Map;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-
-public class Listing6_24 {
+public class Listing6_37 {
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 6.24
+     * Listing 6.37
      * ───────────────────────────────────────────────────────
-     * Using Java’s built-in function that maps time → time
+     * Using the map of GracePeriods
      * ───────────────────────────────────────────────────────
      */
-    static TemporalAdjuster gracePeriod(CustomerRating rating) {
-      return switch(rating) {
-        case CustomerRating.GOOD -> date -> date.plus(60, DAYS);
-        case CustomerRating.ACCEPTABLE -> date -> date.plus(30, DAYS);
-        case CustomerRating.POOR -> TemporalAdjusters.lastDayOfMonth();
-      };
+    void example() {
+        currentDate.isAfter(
+          invoice.invoiceDate()
+            .with(gracePeriod.get(customer.rating())));
+//                ▲
+//                └──── pretty clean!
     }
 
 
@@ -35,14 +34,18 @@ public class Listing6_24 {
 
 
 
+    LocalDate currentDate;
+    Invoice invoice;
+    Customer customer;
+    Map<CustomerRating, TemporalAdjuster> gracePeriod;
 
+    interface Invoice {
+        LocalDate invoiceDate();
+    }
 
-
-
-
-
-
-
+    interface Customer {
+        CustomerRating rating();
+    }
 
     enum CustomerRating {GOOD, ACCEPTABLE, POOR}
 }

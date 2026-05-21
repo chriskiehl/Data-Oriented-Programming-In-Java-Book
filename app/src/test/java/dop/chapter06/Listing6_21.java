@@ -1,24 +1,22 @@
 package dop.chapter06;
 
-import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
-
-import static java.time.temporal.ChronoUnit.DAYS;
-
-public class Listing6_24 {
+public class Listing6_21 {
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 6.24
+     * Listing 6.21
      * ───────────────────────────────────────────────────────
-     * Using Java’s built-in function that maps time → time
+     * Does throwing more data at the problem help?
      * ───────────────────────────────────────────────────────
      */
-    static TemporalAdjuster gracePeriod(CustomerRating rating) {
-      return switch(rating) {
-        case CustomerRating.GOOD -> date -> date.plus(60, DAYS);
-        case CustomerRating.ACCEPTABLE -> date -> date.plus(30, DAYS);
-        case CustomerRating.POOR -> TemporalAdjusters.lastDayOfMonth();
-      };
+    Days gracePeriod(CustomerRating rating) {
+        return switch(rating) {
+            case CustomerRating.GOOD -> new Days(60);
+            case CustomerRating.ACCEPTABLE -> new Days(30);
+            case CustomerRating.POOR -> /* ??? */ null; /* ??? */
+//                                          ▲
+//                                          └──── Hmm. What goes here? This is very
+//                                                different from the other cases
+        };
     }
 
 
@@ -35,14 +33,7 @@ public class Listing6_24 {
 
 
 
-
-
-
-
-
-
-
-
-
     enum CustomerRating {GOOD, ACCEPTABLE, POOR}
+
+    record Days(int value) {}
 }

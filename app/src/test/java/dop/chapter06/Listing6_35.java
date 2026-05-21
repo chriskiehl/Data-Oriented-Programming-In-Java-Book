@@ -5,30 +5,21 @@ import java.time.temporal.TemporalAdjusters;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
-public class Listing6_24 {
+public class Listing6_35 {
     /**
      * ───────────────────────────────────────────────────────
-     * Listing 6.24
+     * Listing 6.35
      * ───────────────────────────────────────────────────────
-     * Using Java’s built-in function that maps time → time
+     * Grace Period (we already figured this one out in Listing 6.21)
      * ───────────────────────────────────────────────────────
      */
     static TemporalAdjuster gracePeriod(CustomerRating rating) {
-      return switch(rating) {
+      return switch (rating) {
         case CustomerRating.GOOD -> date -> date.plus(60, DAYS);
         case CustomerRating.ACCEPTABLE -> date -> date.plus(30, DAYS);
         case CustomerRating.POOR -> TemporalAdjusters.lastDayOfMonth();
       };
     }
-
-
-
-
-
-
-
-
-
 
 
 
