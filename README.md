@@ -126,20 +126,20 @@ class Chapter05 {
 
 ## Table of Contents
 
-| Chapter                                                   | Code Listings                                                                                                                                 | 
-|-----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| Chapter                                                   | Code Listings                                                                                                                    | 
+|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | Chapter 01 - Data Oriented Programming                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter01/) |
 | Chapter 02 - Data, Identity, and Values                   | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter02/) |
 | Chapter 03 - Data and Meaning                             | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter03/) |
 | Chapter 04 - Representation is the Essence of Programming | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter04/) |
 | Chapter 05 - Modeling Domain Behaviors                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter05/) |
 | Chapter 06 - Implementing the domain model                | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter06/) |
-| Chapter 07 - Guiding the design with properties           | Coming soon!                                                                                                                                  |
+| Chapter 07 - Guiding the design with properties           | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter07/) |
 | Chapter 08 - Business Rules as Data                       | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter08/) |
 | Chapter 09 - Refactoring Towards Data                     | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter09/) |
-| Chapter 10 - Data Oriented Architecture                   | Coming soon!                                                                                                                                  |
-| Chapter 11 - Data Oriented Testing                        | Coming soon!                                                                                                                                  |
-| Chapter 12 - Writing Integration Tests                    | Coming soon!                                                                                                                                  |
+| Chapter 10 - Data Oriented Architecture                   | Coming soon!                                                                                                                     |
+| Chapter 11 - Data Oriented Testing                        | Coming soon!                                                                                                                     |
+| Chapter 12 - Writing Integration Tests                    | Coming soon!                                                                                                                     |
 
 
 
