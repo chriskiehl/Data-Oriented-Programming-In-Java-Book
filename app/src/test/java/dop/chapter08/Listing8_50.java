@@ -1,184 +1,94 @@
 package dop.chapter08;
 
-import dop.chapter06.the.implementation.Types.USD;
-import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.Test;
-
-import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
-import static dop.chapter08.Listing8_50.Attribute.*;
-import static dop.chapter08.Listing8_50.CountryCode.*;
-import static dop.chapter08.Listing8_50.Region.EMEA;
-import static dop.chapter08.Listing8_50.Region.LATAM;
-import static dop.chapter08.Listing8_50.Rule.*;
-import static dop.chapter08.Listing8_50.SalesChannel.Direct;
-import static dop.chapter08.Listing8_50.Segment.Public;
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Log4j2
 public class Listing8_50 {
-
-    // These are reused throughout the examples, so they're defined
-    // up here at the top for ease. They're meant to be Generic Accounting
-    // Domain-y.
-    record SalesOrgId(String value){}
-    record AccountId(String value) {}
-    enum Segment {Enterprise, Strategic, Existing, Public /*...*/ }
-    enum SalesChannel {Direct, Partner, Reseller /*...*/}
-    enum Region { LATAM, NA, EMEA /*...*/}
-    enum CountryCode {AC, AD, AE, AU, BE, FR, US, /*...*/}
-    record Sector(String value) {}
-
-    record Account(
-            AccountId accountId,
-            Region region,
-            CountryCode country,
-            Sector sector,
-            Segment segment,
-            SalesChannel channel
-    ){}
-
-    // An arbitrary account.
-    // None of the values mean anything.
-    // It's just here as a placeholder so
-    // the code compiles
-    static Account account = new Account(
-            new AccountId("12345"),
-            EMEA,
-            FR,
-            new Sector("Retail"),
-            Public,
-            Direct
-    );
-
-    enum Attribute {
-        REGION,
-        COUNTRY,
-        SECTOR,
-        SEGMENT,
-        CHANNEL
-    }
-    sealed interface Rule {
-        record Equals(Attribute field, String value) implements Rule {}
-        record And(Rule a, Rule b) implements Rule {}
-        record Or(Rule a, Rule b) implements Rule {}
-        record Not(Rule a) implements Rule {}
-
-        static Rule eq(Attribute field, String value) {
-            return new Equals(field, value);}
-
-        static Rule eq(Attribute field, Enum<?> value) {
-            return new Equals(field, value.toString());}
-
-        static Rule not(Rule rule) {
-            return new Not(rule);
-        }
-        static Rule any(Rule a, Rule... rest) {
-            return Arrays.stream(rest).reduce(a, Or::new);
-        }
-        static Rule all(Rule a, Rule... rest) {
-            return Arrays.stream(rest).reduce(a, And::new);
-        }
-
-        default Rule and(Rule other) {
-            return new And(this, other);
-        }
-        default Rule or(Rule other) {
-            return new Or(this, other);
-        }
-    }
-
-    static Rule contains(Attribute field, String opt1, String... rest) {
-        return Arrays.stream(rest)
-                .map(value -> eq(field, value))
-                .reduce(eq(field, opt1), Rule::or);
-    }
-
-
-    static String get(Account account, Attribute attr) {
-        // (8.26) The exhaustiveness of the switch guarantees type safety!
-        // Java won't compile if we miss a case.
-        return switch (attr) {
-            // In the current variation, we're interpreting everything
-            // as plain strings (we'll fix that shortly!), we "bottom out"
-            // every attribute on its string value
-            case Attribute.REGION -> account.region().name();
-            case Attribute.COUNTRY -> account.country().name();
-            case Attribute.SECTOR -> account.sector().value();
-            case Attribute.SEGMENT -> account.segment().name();
-            case Attribute.CHANNEL -> account.channel().name();
-        };
-    }
-    static String id(Rule rule) {
-        return "node_" + Integer.toHexString(rule.toString().hashCode());
-    }
-
-    static String node(Rule rule) {
-        return switch (rule) {
-            case Equals(var field, var value) -> format("%s [label=\"%s=%s\"]", id(rule), field, value);
-            default -> format("%s [label=\"%s\"]", id(rule), rule.getClass().getSimpleName());
-        };
-    }
-
-    static String edge(Rule from, Rule to) {
-        return format("%s -> %s", id(from), id(to));
-    }
-
-    static Stream<String> collectNodesAndEdges(Rule rule) {
-        return switch (rule) {
-            case Equals e -> Stream.of(node(e));
-            case Not not -> concat(
-                    Stream.of(node(not)),
-                    Stream.of(edge(not, not.a)),
-                    collectNodesAndEdges(not.a()));
-            case Or or -> concat(
-                    Stream.of(node(or)),
-                    Stream.of(edge(or, or.a)),
-                    Stream.of(edge(or, or.b)),
-                    collectNodesAndEdges(or.a()),
-                    collectNodesAndEdges(or.b()));
-            case And and -> concat(
-                    Stream.of(node(and)),
-                    Stream.of(edge(and, and.a)),
-                    Stream.of(edge(and, and.b)),
-                    collectNodesAndEdges(and.a()),
-                    collectNodesAndEdges(and.b()));
-        };
-    }
-
-    @SafeVarargs
-    static <A> Stream<A> concat(Stream<A>...ys) {
-        return Arrays.stream(ys).reduce(Stream.of(), Stream::concat);
-    }
-
-    static String graphVis(Rule rule) {
-        return String.format("""
-                digraph Rule {
-                    rankdir=TD;
-                    %s
-                }""", String.join("\n\t", collectNodesAndEdges(rule).toList()));
-    }
-
-    // Remember this?
-    // This is data we want to interpret later!
-    sealed interface RetryDecision {
-        record RetryImmediately(/*...*/) implements RetryDecision {}
-        record ReattemptLater(/*...*/) implements RetryDecision {}
-        record Abandon(/*...*/) implements RetryDecision {}
-    }
-
     /**
      * ───────────────────────────────────────────────────────
      * Listing 8.50
      * ───────────────────────────────────────────────────────
-     * We've secretly been building interpreters since the
-     * first chapter! Mwahaha!
+     * The full type-safe data model and interpreter
+     * ───────────────────────────────────────────────────────
      */
-    @Test
-    void example() {
+    enum Attribute {REGION, COUNTRY, SECTOR, SEGMENT, CHANNEL}
+    record Attr<A>(Attribute attribute, Function<Account, A> getter){}
+    record Result(Boolean matched, String expected, String found){}
 
+    sealed interface Rule {
+        record Equals<A>(Attr<A> field, A value) implements Rule {}
+        record Or(Rule a, Rule b) implements Rule {}
+        record And(Rule a, Rule b) implements Rule {}
+        record Not(Rule rule) implements Rule {}
+        default Rule or(Rule b) {
+            return new Or(this, b);
+        }
+        default Rule and(Rule b) {
+            return new And(this, b);
+        }
     }
+
+    static Attr<SalesChannel> channel =
+        new Attr<>(Attribute.CHANNEL, Account::channel);
+    static Attr<Sector> sector =
+        new Attr<>(Attribute.SECTOR, Account::sector);
+    static Attr<CountryCode> country =
+        new Attr<>(Attribute.COUNTRY, Account::country);
+    static Attr<Region> region =
+        new Attr<>(Attribute.REGION, Account::region);
+    static Attr<Segment> segment =
+        new Attr<>(Attribute.SEGMENT, Account::segment);
+
+    static Result interpret(Account account, Rule rule) {
+        return switch (rule) {
+            case Rule.Equals(var attr, var value) -> {
+                var found = attr.getter().apply(account);
+                boolean result = found.equals(value);
+                yield new Result(result,
+                    format("%s=%s", attr.attribute(), value),
+                    format("%s=%s", attr.attribute(), found));
+                }
+            case Rule.Not(Rule r) -> {
+                Result res = interpret(account, r);
+                yield new Result(!res.matched(),
+                    format("not(%s)", res.expected),
+                    res.found());
+                }
+            case Rule.Or(Rule rule1, Rule rule2) -> {
+                Result a = interpret(account, rule1);
+                Result b = interpret(account, rule2);
+                yield new Result(a.matched() || b.matched(),
+                    format("(%s OR %s)", a.expected, b.expected),
+                    format("(%s OR %s)", a.found, b.found));
+                }
+            case Rule.And(Rule rule1, Rule rule2) -> {
+                Result a = interpret(account, rule1);
+                Result b = interpret(account, rule2);
+                yield new Result(a.matched() && b.matched(),
+                    format("(%s AND %s)", a.expected, b.expected),
+                    format("(%s AND %s)", a.found, b.found));
+                }
+            };
+        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    enum Region { LATAM, NA, EMEA /*...*/}
+    enum CountryCode {AC, AD, AE, AU, BE, FR, US, /*...*/}
+    enum Segment {Enterprise, Strategic, Existing, Public /*...*/ }
+    enum SalesChannel {Direct, Partner, Reseller /*...*/}
+    record Sector(String value) {}
+    record Account(Region region, CountryCode country, Sector sector, Segment segment, SalesChannel channel){}
 }

@@ -16,7 +16,7 @@ public class Listing6_43 {
      * Attempts to convert the charges on the invoice to USD.
      *
      * In practice, we expect this never to be thrown, but
-     * that assumption[EH11.1] relies on many systems all doing the
+     * that assumption relies on many systems all doing the
      * right thing at all times.
      *
      * TODO: Validate invoices on the way into the system

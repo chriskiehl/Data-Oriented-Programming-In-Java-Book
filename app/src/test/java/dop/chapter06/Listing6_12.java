@@ -27,17 +27,18 @@ public class Listing6_12 {
 
 
       LocalDate figureOutDueDateV2(LocalDate today, PaymentTerms terms) {
-        Rating rating = this.ratingsApi.getRating();
-//             ▲
-//             └──── this becomes a very “obvious” change to make if we pick up
-//                   a requirement that due Dates should also depend on the
-//                   customer's current rating.
-        return switch(terms) {
-          // use the result here.
-          // ...
+          Rating rating = this.ratingsApi.getRating();
+//                                ▲
+//                                └──── this becomes a very “obvious” change to make if we pick up
+//                                      a requirement that due Dates should also depend on the
+//                                      customer's current rating.
+          return switch (terms) {
+              // use the result here.
+              // ...
 
-          default -> LocalDate.now(); // (Not part of the listing. Just hereto compile)
-        };
+              default -> LocalDate.now(); // (Not part of the listing. Just hereto compile)
+          };
+      }
     }
 
 

@@ -68,7 +68,7 @@ public class Listing2_24_through_2_27 {
    */
   void listing2_27() {
     float simulatedDuration = 1.0f;
-    Ball ball = new Ball(new Point(0.0, 0.0), new Vector(1.0, 0.0)); // ◄──┐ We model the ball’s[EH4.1] movement through
+    Ball ball = new Ball(new Point(0.0, 0.0), new Vector(1.0, 0.0)); // ◄──┐ We model the ball's movement through
     Ball updated = step(ball, simulatedDuration);                    //    │ time by creating a succession of values. The
     // [out] Ball(position=(1.0, 0.0), vector=(1.0, 0.0));           //    │ previous state is used to compute the next,
     Ball updatedAgain = step(updated, simulatedDuration);            //    │ which is used to compute the one after that,

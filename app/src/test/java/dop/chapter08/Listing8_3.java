@@ -7,6 +7,60 @@ import java.util.function.Function;
 
 public class Listing8_3 {
 
+
+
+
+    /**
+     * ───────────────────────────────────────────────────────
+     * Listing 8.3
+     * ───────────────────────────────────────────────────────
+     * We don't dive into it in the book, but this listing is really
+     * in the spirit of the prior chapter "what does it mean to
+     * be correct?" question.
+     *
+     * Before writing any code, we imagine what the bedrock denotation
+     * is -- in this case, a function from `Account -> Optional<SalesOrgId>`
+     */
+    @Test
+    void example() {
+        // This interface is not used in the chapter, it's only meant
+        // to conceptually show what a rule *means*
+        interface Rule extends Function<Account, Optional<SalesOrgId>> {}
+
+        class __ {
+            // Here's what rules will look like
+            public static Optional<SalesOrgId> orgId1234rule(Account account) {
+                return null; // not implemented in the book. Null is returned here
+                             // just so the code compiles
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
     record SalesOrgId(String value){}
     record AccountId(String value) {}
     enum Segment {Enterprise, Strategic, Existing, Public /*...*/ }
@@ -23,30 +77,4 @@ public class Listing8_3 {
             Segment segment,
             SalesChannel channel
     ){}
-
-    // This interface is not used in the chapter, it's only meant
-    // to conceptually show what a rule *means*
-    interface Rule extends Function<Account, Optional<SalesOrgId>> {}
-
-    /**
-     * ───────────────────────────────────────────────────────
-     * Listing 8.3
-     * ───────────────────────────────────────────────────────
-     * We don't dive into it in the book, but this listing is really
-     * in the spirit of the prior chapter "what does it mean to
-     * be correct?" question.
-     *
-     * Before writing any code, we imagine what the bedrock denotation
-     * is -- in this case, a function from `Account -> Optional<SalesOrgId>`
-     */
-    @Test
-    void example() {
-        class __ {
-            // This function is an example of what a function looks like in Java
-            public static Optional<SalesOrgId> orgId1234rule(Account account) {
-                return null; // not implemented in the book. Null is returned here
-                             // just so the code compiles
-            }
-        }
-    }
 }

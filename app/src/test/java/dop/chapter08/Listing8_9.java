@@ -1,32 +1,72 @@
 package dop.chapter08;
 
-import org.junit.jupiter.api.Test;
+import java.util.Optional;
+import java.util.Set;
+
+import static dop.chapter08.Listing8_9.CountryCode.AU;
+import static dop.chapter08.Listing8_9.CountryCode.BE;
+import static dop.chapter08.Listing8_9.CountryCode.FR;
 
 public class Listing8_9 {
-
     /**
      * ───────────────────────────────────────────────────────
      * Listing 8.9
      * ───────────────────────────────────────────────────────
-     * In this book, we've used data to model all kinds of things.
-     * Domain information (`NonNegativeInt`, `Degree`), things we "know"
-     * like an invoice being `PastDue`. Now we're going to use data
-     * to model a computation we want to evaluate *later*.
+     * Operational insight, but terrible code
+     * ───────────────────────────────────────────────────────
      */
-    @Test
-    void example() {
-        // We can model actions like this
-        // ```
-        // account.country().equals("US")
-        // ```
-        // with a simple data type.
-        record Equals(String field, String value) {}
+    /**
+     * Rule #1
+     * All accounts in EMEA excluding those in Belgium, Austria,
+     * and France belong to SalesOrg=111
+     */
+    static Optional<SalesOrgId> ruleOrg1234(Account account) {
+        if (account.region().equals(Region.EMEA)) {
+            log.debug("matched region=EMEA");
+            Set<CountryCode> excluded = Set.of(BE, AU, FR);
+            if (!excluded.contains(account.country())) {
+                log.debug("matched: {} not in {}", account.country(), excluded);
+                return Optional.of(new SalesOrgId("111"));
+            } else {
+                log.debug("Expected country not in {}, found country={}",
+                    excluded,
+                    account.country());
+                return Optional.empty();
+            }
+        } else {
+            log.debug("expected region=EMEA, found region={}",
+                account.region());
+            return Optional.empty();
+        }
+    }
 
-        Equals rule1 = new Equals("country", "US");
-        Equals rule2 = new Equals("country", "BE");
-        Equals rule3 = new Equals("country", "FR");
-        //                   ▲
-        //                   └── These all represent an equality check
-        //                       that we want to evaluate later
+
+
+
+
+
+
+
+
+
+
+
+
+
+    static Logger log = new Logger();
+
+    record SalesOrgId(String value){}
+    record AccountId(String value) {}
+    enum Region { LATAM, NA, EMEA /*...*/}
+    enum CountryCode {AC, AD, AE, AU, BE, FR, US, /*...*/}
+
+    record Account(
+            AccountId accountId,
+            Region region,
+            CountryCode country
+    ){}
+
+    static class Logger {
+        void debug(String message, Object... args) {}
     }
 }
