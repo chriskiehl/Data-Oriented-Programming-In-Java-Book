@@ -28,7 +28,7 @@ public class Listing7_46 {
         Comparator<Policy> comparator =
             comparing(Chapter7::policyImpact)
                 .thenComparing(Policy::name);
-        return maxBy(comparator).apply(x, y)
+        return maxBy(comparator).apply(x, y);
 //             ▲
 //             └──── Refactoring to use maxBy. This doesn’t change any
 //                   behavior, only make it explicit

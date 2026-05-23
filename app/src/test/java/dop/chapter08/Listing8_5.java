@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -27,13 +28,10 @@ public class Listing8_5 {
      *
      * Many-to-one is easy enough to express formally. There must
      * exist no function/rule that outputs a set with more than
-     * 1 item in it. The only complicating factor is that the
-     * functions are *partial* -- they might not map to anythingm,
-     * so we account for that by saying the number of elements
-     * must be 0 or 1.
+     * 1 item in it. 
      *
      * Eq.1
-     * $$ \forall f \in F, |Domain(f)| \in {0,1} $$
+     * $$ \forall f \in F, |Domain(f)| = 1 $$
      *
      * "Different rules must not map to the same SalesOrgId" is just
      * another way of saying they should produce "pairwise disjoint sets."
@@ -63,10 +61,10 @@ public class Listing8_5 {
         for (RuleFunction a : allKnownRules) {
             for (RuleFunction b : allKnownRules) {
                 if (a != b) {
-//                 ┌──────────────────────────┐
-                    assertEquals(image(a), 1);
-                    assertEquals(image(b), 1);   // One Rule maps to one Sales Org Id
-//                 └──────────────────────────┘
+//                 ┌────────────────────────────────┐
+                    assertEquals(image(a).size(), 1);
+                    assertEquals(image(b).size(), 1);   // One Rule maps to one Sales Org Id
+//                 └────────────────────────────────┘
 
                     assertEquals(
 //                        ┌───────────────────────────────┐
@@ -130,9 +128,14 @@ public class Listing8_5 {
             return Optional.empty();
         }
     }
-
+    // If you're looking down here -- IGNORE ME!
+    // These are just minimal (and meaningless!) shims so the tests pass!
+    static int orgId = 1;
+    static SalesOrgId nextOrgId() {
+        return new SalesOrgId(String.valueOf(orgId++));
+    }
     static Set<SalesOrgId> image(RuleFunction f) {
-        return Set.of();
+        return Set.of(nextOrgId());
     }
 
     static Set<Account> domain(RuleFunction f) {

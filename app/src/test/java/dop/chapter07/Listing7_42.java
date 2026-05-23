@@ -24,7 +24,7 @@ public class Listing7_42 {
         //
         // Sure, AI could one-shot it for you, but it's nice
         // to shake of the rust every once in a while. 
-      return null; // (so it compiles)
+      return List.of(); // (so it compiles)
     }
 
     @Test

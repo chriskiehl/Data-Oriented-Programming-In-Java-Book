@@ -48,8 +48,8 @@ public class Listing8_18 {
 
 
     enum Attribute {REGION, COUNTRY, SECTOR, SEGMENT, CHANNEL}
-    enum Region { LATAM, NA, EMEA /*/*...*/*/}
-    enum Segment {Enterprise, Strategic, Existing, Public /*/*...*/*/ }
+    enum Region { LATAM, NA, EMEA /*...*/}
+    enum Segment {Enterprise, Strategic, Existing, Public /*/*...*/ }
 
     sealed interface Rule {
         default Rule and(Rule other) {
