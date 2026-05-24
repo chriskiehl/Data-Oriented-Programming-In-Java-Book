@@ -139,7 +139,7 @@ class Chapter05 {
 | Chapter 09 - Refactoring Towards Data                     | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter09/) |
 | Chapter 10 - Data Oriented Architecture                   | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter10/) |
 | Chapter 11 - Data Oriented Testing                        | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter11/) |
-| Chapter 12 - Writing Integration Tests                    | Coming soon!                                                                                                                     |
+| Chapter 12 - Writing Integration Tests                    | [Listings.java](https://github.com/chriskiehl/Data-Oriented-Programming-In-Java-Book/blob/main/app/src/test/java/dop/chapter11/) |
 
 
 
