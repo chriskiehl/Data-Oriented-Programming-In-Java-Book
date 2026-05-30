@@ -1,58 +1,52 @@
 package dop.chapter01;
 
-import org.junit.jupiter.api.Test;
-
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
-import static java.time.LocalDateTime.now;
 
 public class Listing1_13 {
 
-/**
-     * ───────────────────────────────────────────────────────
-     * Listings 1.13
-     * ───────────────────────────────────────────────────────
-     * Luckily, it's not one or the other. It's not OOP vs DoP.
-     * We can combine the strengths of both approaches.
-     * ───────────────────────────────────────────────────────
-     */
+  /**
+   * ───────────────────────────────────────────────────────
+   * Listings 1.13
+   * ───────────────────────────────────────────────────────
+   * Luckily, it's not one or the other. It's not OOP vs DoP.
+   * We can combine the strengths of both approaches.
+   * ───────────────────────────────────────────────────────
+   */
 
 
-    class ScheduledTaskWithBestOfBothWorlds {
-        private RetryDecision status;
+  class ScheduledTaskWithBestOfBothWorlds {
+    private RetryDecision status;
 
-        void reschedule() {
-            /// ...
-        }
-
-        public boolean isAbandoned() {
-            // By combing the approaches, we get a nice internal
-            // representation to program against. We can still use
-            // OOP to control the interfaces. Further, doesn't this
-            // code feel almost like it's writing itself? Of course,
-            // we'd expose this method from our object -- it's a
-            // core idea we uncovered while modeling the data!
-            return this.status instanceof Abandoned;
-        }
+    void reschedule() {
+      // ...
     }
 
-/**
-     * (This modeling is not shown in the book for brevity)
-     * We're creating a family of related data types. The mechanics of this
-     * construct will be covered in Chapters 3 and 4.
-     */
-    sealed interface RetryDecision permits RetryImmediately, ReattemptLater, Abandoned {
+    public boolean isAbandoned() {
+      // By combing the approaches, we get a nice internal
+      // representation to program against. We can still use
+      // OOP to control the interfaces. Further, doesn't this
+      // code feel almost like it's writing itself? Of course,
+      // we'd expose this method from our object -- it's a
+      // core idea we uncovered while modeling the data!
+      return this.status instanceof Abandoned;
     }
+  }
 
-    record RetryImmediately(LocalDateTime next, int attemptsSoFar) implements RetryDecision {
-    }
+  /**
+   * (This modeling is not shown in the book for brevity)
+   * We're creating a family of related data types. The mechanics of this
+   * construct will be covered in Chapters 3 and 4.
+   */
+  sealed interface RetryDecision permits RetryImmediately, ReattemptLater, Abandoned {
+  }
 
-    record ReattemptLater(LocalDateTime next) implements RetryDecision {
-    }
+  record RetryImmediately(LocalDateTime next, int attemptsSoFar) implements RetryDecision {
+  }
 
-    record Abandoned() implements RetryDecision {
-    }
+  record ReattemptLater(LocalDateTime next) implements RetryDecision {
+  }
+
+  record Abandoned() implements RetryDecision {
+  }
+
 }
