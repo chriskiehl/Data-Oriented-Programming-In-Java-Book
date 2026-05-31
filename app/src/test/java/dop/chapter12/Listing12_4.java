@@ -1,4 +1,4 @@
-﻿package dop.chapter12;
+package dop.chapter12;
 
 import org.junit.jupiter.api.Test;
 
