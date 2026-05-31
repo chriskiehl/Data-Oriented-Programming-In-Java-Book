@@ -55,7 +55,8 @@ public class Listing3_28 {
                 if (numerator > denominator) {
                     throw new IllegalArgumentException(
                             "Percentages are 0..1 and must be expressed " +
-                            "as a proper fraction. e.g. 1/100");
+                            "as a proper fraction. e.g. 1/100 " +
+                            "and have a non-zero denominator");
                 }
             }
         }
