@@ -29,8 +29,8 @@ public class Listing3_3 {
     void example() {
         // {
         //    "sampleId”: "UV-1",
-        //    "day": 3,       //  ◄─── What the heck kind of measurement is "days"?
-        //    "contactAngle": 17.4  //  ◄─── 17.4... *what*?
+        //    "day": 10,    ◄─── What the heck kind of measurement is "days"?
+        //    "contactAngle": 6.28  ◄─── 6.28... *what*? Degrees? Radians? Other?
         // }
     }
 }
