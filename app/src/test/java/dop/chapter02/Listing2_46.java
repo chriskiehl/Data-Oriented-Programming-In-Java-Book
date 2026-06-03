@@ -12,7 +12,7 @@ public class Listing2_46 {
    * ───────────────────────────────────────────────────────
    */
   interface CardGame {
-    enum Suit {Hearts, Diamonds, Club, Spade;}
+    enum Suit {Hearts, Diamonds, Clubs, Spades;}
     enum Rank {ONE, TWO, THREE, FOUR, FIVE, /*...*/;}
 
     record Card(Rank rank, Suit suit){};

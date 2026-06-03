@@ -37,6 +37,10 @@ public class Listing2_10 {
                                  // it should highlight this as an invalid
                                  // method call.
     });
+
+    System.out.println(letters);
+    letters.set(0, "HHHH");
+    System.out.println(immutableLetters);
   }
 
 }

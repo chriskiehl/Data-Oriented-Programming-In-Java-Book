@@ -1,4 +1,4 @@
-﻿package dop.chapter12;
+package dop.chapter12;
 
 import dop.chapter12.Listing12_9.Task.Completed;
 import dop.chapter12.Listing12_9.Task.Failed;

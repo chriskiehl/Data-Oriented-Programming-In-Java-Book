@@ -75,6 +75,6 @@ public class Listing2_44_and_2_45 {
   }
 
   record Person(String firstName, String lastName) {}
-  record Tuple<A,B>(A first, B second){}
+  record Tuple<A, B>(A first, B second){}
 
 }

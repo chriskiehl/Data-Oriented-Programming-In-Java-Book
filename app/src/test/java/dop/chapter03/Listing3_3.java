@@ -18,8 +18,8 @@ public class Listing3_3 {
   void example() {
     // {
     //    "sampleId”: "UV-1",
-    //    "daysElapsed": 3,
-    //    "contactAngle": 17.4  //  ◄─── 17.4... *what*?
+    //    "daysElapsed": 3,    ◄─── What the heck kind of measurement is "daysElapsed"?
+    //    "contactAngle": 17.4  //  ◄─── 17.4... *what*? Degrees? Radians? Other?
     // }
   }
 

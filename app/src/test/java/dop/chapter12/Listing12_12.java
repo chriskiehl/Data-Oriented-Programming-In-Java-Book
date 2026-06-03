@@ -1,11 +1,13 @@
-﻿package dop.chapter12;
+package dop.chapter12;
 
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import static java.lang.String.format;
+import static java.util.stream.Stream.generate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Listing12_12 {
@@ -19,8 +21,14 @@ public class Listing12_12 {
     @Test
     void shortNamesIncrementWithoutGaps() {
         // Shortcodes are a 3 character prefix
-        String prefix = datagen.randomStr(3, 3);
+        String prefix = randPrefix();
         List<Integer> sequence = IntStream.range(0, 1000).boxed().toList();
+        // Shortcodes should follow a strictly increasing seq
+        // e.g. [n, n+1, n+2, ..., n+n].
+        List<String> expected = sequence.stream()
+                .map(num -> format("%s-%s", prefix, num))
+                .toList();
+
 
         // Creates thousands of new items so that we can verify the
         // short names increase in a strict n+1 sequence
@@ -32,15 +40,19 @@ public class Listing12_12 {
                 .map(Thing::shortCode)
                 .toList();
 
-        // Shortcodes should follow a strictly increasing seq
-        // e.g. [n, n+1, n+2, ..., n+n].
-        List<String> shortCodesExpected = sequence.stream()
-                .map(num -> format("%s-%s", prefix, num))
-                .toList();
         assertEquals(
-            shortCodesExpected,
+            expected,
             shortCodesCreated
         );
+    }
+
+    static Random rand = new Random();
+
+    String randPrefix() {
+        return String.format("%s%s%s",
+                (char)rand.nextInt('A', 'Z'),
+                (char)rand.nextInt('A', 'Z'),
+                (char)rand.nextInt('A', 'Z'));
     }
 
 

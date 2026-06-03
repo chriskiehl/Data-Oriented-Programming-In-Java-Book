@@ -48,11 +48,10 @@ public class Listing3_25_to_3_26 {
         CuringMethod method,
         PositiveInt sampleNum
     ) {
-    // (Empty!)
-    //   ▲
-    //   └── Check out that the body of sample ID is now empty. We don't have
-    //       to validate anything here. It's entirely described (and made safe) by
-    //       the data types which it's built upon.
+      SampleId {
+        Objects.requireNonNull(method);
+        Objects.requireNonNull(sampleNum);
+      }
     }
 
     // With this, our code no longer "forgets" its meaning.
