@@ -99,13 +99,13 @@ public class Listing4_19_4_22 {
                 // we're still on the hook for defending against them. And that remains
                 // extremely tedious and error prone.
                 //
-                if (state.equals(State.NOT_STARTED)) {   // The implementation for each case is left
+                if (state == State.NOT_STARTED) {   // The implementation for each case is left
                     // ...                                  as an exercise to the reader.
                 }
-                if (state.equals(State.COMPLETED)) {
+                if (state == State.COMPLETED) {
                     // ...
                 }
-                if (state.equals(State.SKIPPED)) {
+                if (state == State.SKIPPED) {
                     // ...
                 }
                 // This only gets worse as our requirements get more complex.
@@ -129,7 +129,7 @@ public class Listing4_19_4_22 {
         // certain behaviors in the system, and (c) we have to *remember* to check
         // before we do anything.
         Function<StatusV2, Void> doSomethingWithCompleted = (StatusV2 status) -> {
-            if (!status.state().equals(State.COMPLETED)) {
+            if (status.state() != State.COMPLETED) {
                 // If we remember to do this, then we know that
                 // we can safely read the actionedBy/On attributes
                 // without a Null Pointer getting thrown.

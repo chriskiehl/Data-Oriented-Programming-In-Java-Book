@@ -2,6 +2,7 @@ package dop.chapter11;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -61,7 +62,7 @@ public class Listing11_50 {
     enum Region {AMER, LA, EMEA}
     record Discount(String id){}
     record Account(Region region, USD spend){}
-    Account mkAcnt() { return new Account(AMER, new USD(0.0)); }
+    Account mkAcnt() { return new Account(AMER, new USD(BigDecimal.ZERO)); }
     static <A> Set<A> diff(Set<A> left, Set<A> right) { return left; }
     static class MyService {
         MyService(USD threshold) {}
