@@ -1,48 +1,38 @@
 package dop.chapter02;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 
 public class Listing2_8 {
 
-    /**
-     * ───────────────────────────────────────────────────────
-     * Listing 2.8
-     * ───────────────────────────────────────────────────────
-     * Complex information can be modeled as an immutable value
-     * ───────────────────────────────────────────────────────
-     */
-    class Invoice {  // ◄──┐ Huge classes with dozens of complex attributes can be a value.
-        InvoiceNum invoiceNum; // │ There’s no limit.
-        Customer customer;     // │
-        Address billTo;        // │
-        LocalDate invoiceDate; // │
-        LocalDate dueDate;     // │
-        Period billingPeriod;  // │
-        Category category;     // │
-        //        |
-        //        |
-        //        |  (and so on for dozens of attributes)
-        //        |
-        //        ▼
-        //       ...
-        // constructor, getters, equals, hashcode
-    }
+  /**
+   * ───────────────────────────────────────────────────────
+   * Listing 2.8
+   * ───────────────────────────────────────────────────────
+   * Complex information can be modeled as an immutable value
+   * ───────────────────────────────────────────────────────
+   */
+  class Invoice {   // ◄──────┐ Huge classes with dozens of complex attributes can be a value.
+    InvoiceNum invoiceNum; // │ There’s no limit.
+    Customer customer;     // │
+    Address billTo;        // │
+    LocalDate invoiceDate; // │
+    LocalDate dueDate;     // │
+    Period billingPeriod;  // │
+    Category category;     // │
+    //        |
+    //        |
+    //        |  (and so on for dozens of attributes)
+    //        |
+    //        ▼
+    //       ...
+    // constructor, getters, equals, hashcode
+  }
 
-    class InvoiceNum {}
-    class Customer {}
-    class Address {}
-    class Period {}
-    class Category {}
+  class InvoiceNum {}
+  class Customer {}
+  class Address {}
+  class Period {}
+  class Category {}
+
 }
