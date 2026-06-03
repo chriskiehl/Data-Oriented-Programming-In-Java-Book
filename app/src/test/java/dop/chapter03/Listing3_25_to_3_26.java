@@ -1,5 +1,7 @@
 package dop.chapter03;
 
+import java.util.Objects;
+
 import org.junit.jupiter.api.Test;
 
 public class Listing3_25_to_3_26 {
