@@ -16,4 +16,5 @@ public class Listing2_1 {
     xPosition++;                            //  |
     xPosition *= xPosition;                 //  ▼
   }
+
 }

@@ -1,11 +1,10 @@
 package dop.chapter02;
 
-import lombok.AllArgsConstructor;
-
 import java.util.Objects;
 
-public class Listing2_24_through_2_27 {
+import lombok.AllArgsConstructor;
 
+public class Listing2_24_through_2_27 {
 
   /**
    * ───────────────────────────────────────────────────────
@@ -125,9 +124,10 @@ public class Listing2_24_through_2_27 {
       // The state is what determines the equality!
       Vector vector = (Vector) o;
       return Objects.equals(x, vector.x)
-              && Objects.equals(y, vector.y);
+          && Objects.equals(y, vector.y);
     }
     @Override
     public int hashCode() {return Objects.hash(x, y);}
   }
+
 }
