@@ -43,7 +43,7 @@ public class Listing4_14_to_4_16 {
     // Minimally viable user type.
     // It's not that interesting to our example, so we
     // keep it pretty bare bones.
-    record User(String value) {}
+    record User(String name) {}
 
     // Step, Template, and Instance were defined in previous listings
     record Step(String name) {}

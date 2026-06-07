@@ -18,7 +18,7 @@ public class Listing4_24_to_4_30 {
   @Test
   public void example() {
     // All defined in previous listings
-    record User(String value){}
+    record User(String name){}
     record Step(String name) {}
     record Template(String name, List<Step> steps) {}
     record Instance(String name, Instant date, Template template){}

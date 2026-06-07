@@ -26,7 +26,7 @@ public class Listing4_31_to_4_33 {
     record Step(String name) {}
     record Template(String name, List<Step> steps) {}
     record Instance(String name, Instant date, Template template){}
-    record User(String value){}
+    record User(String name){}
 
     /**
      * ───────────────────────────────────────────────────────
