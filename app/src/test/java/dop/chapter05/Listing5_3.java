@@ -18,21 +18,22 @@ import java.util.List;
  */
 public class Listing5_3 {
 
-    public interface CustomerRepo {
-        List<Entities.Customer> findAll();
-        void save(Entities.Customer customer);
-    }
+  public interface CustomerRepo {
+    List<Entities.Customer> findAll();
+    void save(Entities.Customer customer);
+  }
 
-    public interface InvoiceRepo {
-        void save(Entities.Invoice invoice);
-        List<Entities.Invoice> findInvoices(String customerId);
-    }
+  public interface InvoiceRepo {
+    void save(Entities.Invoice invoice);
+    List<Entities.Invoice> findInvoices(String customerId);
+  }
 
-    public interface RulesRepo {
-        Entities.Rules loadDefaults();
-    }
+  public interface RulesRepo {
+    Entities.Rules loadDefaults();
+  }
 
-    public interface FeesRepo {
-        BigDecimal get(String countryCode);
-    }
+  public interface FeesRepo {
+    BigDecimal get(String countryCode);
+  }
+
 }
