@@ -32,104 +32,93 @@ import java.util.UUID;
  */
 public class Entities {
 
+  @Entity
+  @lombok.Getter
+  @lombok.Setter
+  public static class Invoice {
+    @ID
+    String invoiceId;
+    String customerId;
+    @Annotations.OneToMany
+    List<LineItem> lineItems;
+    InvoiceStatus status;
+    LocalDate invoiceDate;
+    LocalDate dueDate;
+    InvoiceType invoiceType;    // ◄───┐ When this is set to LATEFEE, it's expected
+    @Nullable                   //     │ that the audit info is populated.
+    AuditInfo auditInfo;        // ◄───┘ Otherwise, it should be null.
 
-    @Entity
-    @lombok.Getter
-    @lombok.Setter
-    public static class Invoice {
-        @ID
-        String invoiceId;
-        String customerId;
-        @Annotations.OneToMany
-        List<LineItem> lineItems;
-        InvoiceStatus status;
-        LocalDate invoiceDate;
-        LocalDate dueDate;
-        InvoiceType invoiceType;    // ◄───┐ When this is set to LATEFEE, it's expected
-        @Nullable                   //     │ that the audit info is populated.
-        AuditInfo auditInfo;        // ◄───┘ Otherwise, it should be null.
-
-        public static String tempId() {
-            return "TEMP_ID::" + UUID.randomUUID();
-        }
-
-        public static boolean isTempId(String invoiceId) {
-            return invoiceId.contains("TEMP_ID::");
-        }
+    public static String tempId() {
+      return "TEMP_ID::" + UUID.randomUUID();
     }
 
-
-    public enum InvoiceType {LATEFEE, STANDARD};
-
-
-    // Invoices have a very simple lifecycle on the surface.
-    // They start as OPEN, then become CLOSED once paid.
-    public enum InvoiceStatus {OPEN, CLOSED}
-
-    @Entity
-    @Data
-    @AllArgsConstructor
-    public static class LineItem {
-        @ID
-        @Nullable
-        String id;
-        String description;
-        BigDecimal charges;  // ◄──┐ Keeping with the theme of "modeling based on whatever
-        Currency currency;   //    │ the ORM makes easiest, the Entities use built in
-    }                        //    │ data types rather than more data-oriented ones (like USD or Money)
-
-
-
-    @Entity
-    @Data
-    @AllArgsConstructor
-    public static class AuditInfo {
-        @ID
-        @OneToOne
-        String invoiceId;
-        @ManyToMany
-        List<Invoice> includedInFee;
-        @Nullable
-        String reason;  // ◄───┐ This will only be defined when a Fee cannot
-                        //     │ be billed for some reason.
+    public static boolean isTempId(String invoiceId) {
+      return invoiceId.contains("TEMP_ID::");
     }
+  }
 
-    @Entity
-    @lombok.Getter
-    @lombok.Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Customer {
-        @ID
-        String id;
-        Address address;
-        @Nullable
-        String approvalId;   // ◄────┐ Approvals are managed in another system, but
-    }                        //        we track that state on the customer Entity.
-                             //        Doing so is "free" with our magical ORM.
+  public enum InvoiceType {LATEFEE, STANDARD};
 
+  // Invoices have a very simple lifecycle on the surface.
+  // They start as OPEN, then become CLOSED once paid.
+  public enum InvoiceStatus {OPEN, CLOSED}
 
-    @lombok.Getter
-    public static class Address {
-        String line1;
-        String city;
-        String country;
-        // and so on
-    }
+  @Entity
+  @Data
+  @AllArgsConstructor
+  public static class LineItem {
+    @ID
+    @Nullable
+    String id;
+    String description;
+    BigDecimal charges;  // ◄──┐ Keeping with the theme of "modeling based on whatever
+    Currency currency;   //    │ the ORM makes easiest, the Entities use built in
+  }                      //    │ data types rather than more data-oriented ones (like USD or Money)
 
+  @Entity
+  @Data
+  @AllArgsConstructor
+  public static class AuditInfo {
+    @ID
+    @OneToOne
+    String invoiceId;
+    @ManyToMany
+    List<Invoice> includedInFee;
+    @Nullable
+    String reason;  // ◄───┐ This will only be defined when a Fee cannot
+                    //     │ be billed for some reason.
+  }
 
-    // Below here are the "minor" entities in our scenario.
-    // They're things that are Entities only in that they're
-    // saved and loaded from the (pretend) database and thus
-    // designed around the ORM's convenience.
-    @Data
-    public static class Rules {
-        BigDecimal minimumFeeThreshold;
-        BigDecimal maximumFeeThreshold;
+  @Entity
+  @lombok.Getter
+  @lombok.Setter
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class Customer {
+    @ID
+    String id;
+    Address address;
+    @Nullable
+    String approvalId;   // ◄────┐ Approvals are managed in another system, but
+  }                      //        we track that state on the customer Entity.
+                         //        Doing so is "free" with our magical ORM.
 
-    }
+  @lombok.Getter
+  public static class Address {
+    String line1;
+    String city;
+    String country;
+    // and so on
+  }
 
-
-
+  // Below here are the "minor" entities in our scenario.
+  // They're things that are Entities only in that they're
+  // saved and loaded from the (pretend) database and thus
+  // designed around the ORM's convenience.
+  @Data
+  public static class Rules {
+    BigDecimal minimumFeeThreshold;
+    BigDecimal maximumFeeThreshold;
+  }
 
 }

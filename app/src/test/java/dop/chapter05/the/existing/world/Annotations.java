@@ -8,17 +8,19 @@ package dop.chapter05.the.existing.world;
  * the specific technology involved.
  */
 public interface Annotations {
-    public @interface Entity {}
 
-    public @interface ID {}
-    public @interface OneToMany {}
-    public @interface OneToOne {}
-    public @interface ManyToMany {}
-    public @interface ManyToOne {}
+  @interface Entity {}
 
-    public @interface Transaction {}
-    public @interface Service {}
-    public @interface Controller {}
+  @interface ID {}
+  @interface OneToMany {}
+  @interface OneToOne {}
+  @interface ManyToMany {}
+  @interface ManyToOne {}
 
-    public interface Repository<EntityType, PrimaryKeyType>{}
+  @interface Transaction {}
+  @interface Service {}
+  @interface Controller {}
+
+  interface Repository<EntityType, PrimaryKeyType> {}
+
 }

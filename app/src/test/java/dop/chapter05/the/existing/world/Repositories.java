@@ -1,6 +1,5 @@
 package dop.chapter05.the.existing.world;
 
-
 import dop.chapter05.the.existing.world.Entities.Customer;
 import dop.chapter05.the.existing.world.Entities.Invoice;
 import dop.chapter05.the.existing.world.Entities.Rules;
@@ -14,22 +13,23 @@ import java.util.List;
 // i.e. they have ORM style CRUD methods like findAll() get(), save() etc..
 public class Repositories {
 
-    public interface CustomerRepo {
-        List<Customer> findAll();
-        void save(Customer customer);
+  public interface CustomerRepo {
+    List<Customer> findAll();
+    void save(Customer customer);
 
-    }
+  }
 
-    public interface InvoiceRepo {
-        void save(Invoice invoice);
-        List<Invoice> findInvoices(String customerId);
-    }
+  public interface InvoiceRepo {
+    void save(Invoice invoice);
+    List<Invoice> findInvoices(String customerId);
+  }
 
-    public interface RulesRepo {
-        Rules loadDefaults();
-    }
+  public interface RulesRepo {
+    Rules loadDefaults();
+  }
 
-    public interface FeesRepo {
-        BigDecimal get(String countryCode);
-    }
+  public interface FeesRepo {
+    BigDecimal get(String countryCode);
+  }
+
 }
