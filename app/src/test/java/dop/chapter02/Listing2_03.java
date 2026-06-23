@@ -1,0 +1,72 @@
+package dop.chapter02;
+
+import java.util.Objects;
+
+import org.junit.jupiter.api.Test;
+
+public class Listing2_03 {
+
+  /**
+   * ───────────────────────────────────────────────────────
+   * Listing 2.3
+   * ───────────────────────────────────────────────────────
+   * We can make new value classes on top of existing ones!
+   * ───────────────────────────────────────────────────────
+   */
+  static class Vector {
+    Double x;
+    Double y;
+    //  ▲
+    //  └────── There's *technically* one more thing
+    //          we'd need to add here to really make
+    //          this a value, but we'll come back to it later.
+    public Vector(Double x, Double y) {
+      this.x = x;
+      this.y = y;
+    }
+
+    public Double x(){return x;}
+    public Double y(){return y;}
+    //            ▲
+    //            └───── Getters are A-OK on value classes
+    //
+    //      ┌───── But note that there are no setters!
+    //      ▼                   Values don't change!
+    // (No setters here!)
+
+    @Override
+    public boolean equals(Object o) {
+      // The default equals method includes an object check
+      // but this is irrelevant.
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      // The state is what determines the equality!
+      Vector vector = (Vector) o;
+      return Objects.equals(x, vector.x)
+          && Objects.equals(y, vector.y);
+    }
+    @Override
+    public int hashCode() {return Objects.hash(x, y);}
+  }
+
+
+
+  /**
+   * ───────────────────────────────────────────────────────
+   * Listing 2.3
+   * ───────────────────────────────────────────────────────
+   * Values have no identity. They cannot be changed.
+   * They just "are."
+   * ───────────────────────────────────────────────────────
+   */
+  @Test
+  public void example() {
+    //            ┌─────── Thankfully adding 1 doesn't mutate the number 4.
+    //            ▼        (Thus removing our concept of 4 from the universe)
+    //        4 + 1
+    //        ▲
+    //        └────── The number 4 just "is." It will remain
+    //                no matter what operations we perform "on" it
+  }
+
+}
