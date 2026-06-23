@@ -1,28 +1,29 @@
 package dop.chapter06;
 
 public class Listing6_14 {
-    /**
-     * ───────────────────────────────────────────────────────
-     * Listing 6.14
-     * ───────────────────────────────────────────────────────
-     * How many ways could we write an implementation for this?
-     * ───────────────────────────────────────────────────────
-     */
-    enum People {Bob, Mary}
-    enum Jobs {Cook, Engineer}
 
-    class SomeClass {
-        // [Hidden]
+  /**
+   * ───────────────────────────────────────────────────────
+   * Listing 6.14
+   * ───────────────────────────────────────────────────────
+   * How many ways could we write an implementation for this?
+   * ───────────────────────────────────────────────────────
+   */
+  enum People {Bob, Mary}
+  enum Jobs {Cook, Engineer}
 
-        People someMethod(Job job) {
-            // [Hidden]
-            //    ▲
-            //    └──── What can we guess about what goes on inside here?
+  class SomeClass {
+    // [Hidden]
+
+    People someMethod(Job job) {
+      // [Hidden]
+      //    ▲
+      //    └──── What can we guess about what goes on inside here?
 
 
-            return null; // (to compile)
-        }
+      return null; // (to compile)
     }
+  }
 
 
 
@@ -31,12 +32,6 @@ public class Listing6_14 {
 
 
 
+  interface Job {}
 
-
-
-
-
-
-
-    interface Job {}
 }
