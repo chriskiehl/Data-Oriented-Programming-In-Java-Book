@@ -1,25 +1,17 @@
 package dop.chapter06;
 
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjuster;
-import java.util.Map;
 
-public class Listing6_37 {
+public class Listing6_27 {
 
   /**
    * ───────────────────────────────────────────────────────
-   * Listing 6.37
+   * Listing 6.27
    * ───────────────────────────────────────────────────────
-   * Using the map of GracePeriods
+   * The PastDue data type (and its dependency on an identity object)
    * ───────────────────────────────────────────────────────
    */
-  void example() {
-    currentDate.isAfter(
-      invoice.invoiceDate()
-        .with(gracePeriod.get(customer.rating())));
-//              ▲
-//              └──── pretty clean!
-  }
+  record PastDue(Invoice invoice) {}
 
 
 
@@ -27,20 +19,9 @@ public class Listing6_37 {
 
 
 
-
-  LocalDate currentDate;
-  Invoice invoice;
-  Customer customer;
-  Map<CustomerRating, TemporalAdjuster> gracePeriod;
 
   interface Invoice {
-    LocalDate invoiceDate();
+    LocalDate dueDate();
   }
-
-  interface Customer {
-    CustomerRating rating();
-  }
-
-  enum CustomerRating {GOOD, ACCEPTABLE, POOR}
 
 }
