@@ -4,18 +4,18 @@ import java.util.Optional;
 import java.util.function.BinaryOperator;
 
 public class Listing7_58 {
-    /**
-     * ───────────────────────────────────────────────────────
-     * Listing 7.58
-     * ───────────────────────────────────────────────────────
-     * Converting BinaryOperators between worlds
-     * ───────────────────────────────────────────────────────
-     */
-    void example() {
-        // Lifting arbitrary binaryOperations into the Optional universe
-        BinaryOperator<Optional<Integer>> maybeAdd = lift(Integer::sum);      
-        BinaryOperator<Optional<String>> maybeConcat = lift(String::concat);
-    }
+  /**
+   * ───────────────────────────────────────────────────────
+   * Listing 7.58
+   * ───────────────────────────────────────────────────────
+   * Converting BinaryOperators between worlds
+   * ───────────────────────────────────────────────────────
+   */
+  void example() {
+    // Lifting arbitrary binaryOperations into the Optional universe
+    BinaryOperator<Optional<Integer>> maybeAdd = lift(Integer::sum);
+    BinaryOperator<Optional<String>> maybeConcat = lift(String::concat);
+  }
 
 
 
@@ -24,32 +24,8 @@ public class Listing7_58 {
 
 
 
+  static <A> BinaryOperator<Optional<A>> lift(BinaryOperator<A> f) {
+    return (opt1, opt2) -> Optional.empty();
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    static <A> BinaryOperator<Optional<A>> lift(BinaryOperator<A> f) {
-        return (opt1, opt2) -> Optional.empty();
-    }
 }
