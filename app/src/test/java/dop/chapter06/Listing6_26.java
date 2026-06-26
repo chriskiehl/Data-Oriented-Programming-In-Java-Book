@@ -1,6 +1,9 @@
 package dop.chapter06;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+
+import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
 public class Listing6_26 {
 
@@ -20,10 +23,10 @@ public class Listing6_26 {
           CustomerRating rating) {
     return switch(rating) {
       case CustomerRating.GOOD -> invoice.dueDate().plusDays(60);
-                              //              ▲
-                              //              └──── Applying the grace Period rules directly to the date
-      default -> null;
-      // etc.
+      //                                  ▲
+      //                                  └──── Applying the grace Period rules directly to the date
+      case CustomerRating.ACCEPTABLE -> invoice.dueDate().plusDays(30);
+      case CustomerRating.POOR -> invoice.dueDate().with(lastDayOfMonth());
     };
   }
   static boolean isPastDue(/*...*/) {
