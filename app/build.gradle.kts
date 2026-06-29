@@ -20,6 +20,7 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     implementation("com.opencsv:opencsv:5.12.0")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+    implementation("jakarta.annotation:jakarta.annotation-api:3.0.0")
     implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
     implementation("org.glassfish:jakarta.el:4.0.2")
     implementation("guru.nidi:graphviz-java:0.18.1")

@@ -1,19 +1,19 @@
 package dop.chapter05.the.existing.world;
 
-import dop.chapter05.the.existing.world.Annotations.Entity;
-import dop.chapter05.the.existing.world.Annotations.ID;
-import dop.chapter05.the.existing.world.Annotations.ManyToMany;
-import dop.chapter05.the.existing.world.Annotations.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
 import java.util.UUID;
+
+import dop.chapter05.the.existing.world.Annotations.Entity;
+import dop.chapter05.the.existing.world.Annotations.ID;
+import dop.chapter05.the.existing.world.Annotations.ManyToMany;
+import dop.chapter05.the.existing.world.Annotations.OneToOne;
+import jakarta.annotation.Nullable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * In chapter 5, we explore what data oriented programming looks

@@ -16,7 +16,7 @@ public class Listing7_41 {
    * ───────────────────────────────────────────────────────
    */
   Comparator<AuditFinding> comparator =           //  ┐
-          comparing(Chapter07::findingsImpact)     //  │◄── We’ll just look at just one of the
+          comparing(Chapter07::findingsImpact)    //  │◄── We’ll just look at just one of the
               .thenComparing(AuditFinding::name); //  ┘    data types for ease of example.
 
   void testReflexivity() {
