@@ -15,7 +15,7 @@ public class Listing7_45 {
    */
   static Policy add(Policy x, Policy y) {
       Comparator<Policy> comparator =
-          comparing(Chapter7::policyImpact)
+          comparing(Chapter07::policyImpact)
               .thenComparing(Policy::name);
       return comparator.compare(x, y) > 0 ? y : x;
 //                                          ▲
@@ -23,7 +23,7 @@ public class Listing7_45 {
   }
   static AuditFinding add(AuditFinding x, AuditFinding y) {
       Comparator<AuditFinding> comparator =
-          comparing(Chapter7::findingsImpact)
+          comparing(Chapter07::findingsImpact)
               .thenComparing(AuditFinding::name);
       return comparator.compare(x, y) > 0 ? y : x;
 //                                          ▲
@@ -47,7 +47,7 @@ public class Listing7_45 {
     BILLING_ERROR, OUT_OF_COMPLIANCE, INACCURATE, NO_ISSUE
   }
 
-  static class Chapter7 {
+  static class Chapter07 {
     static CustomerImpact policyImpact(Policy policy) {
       return CustomerImpact.FAVORS;
     }

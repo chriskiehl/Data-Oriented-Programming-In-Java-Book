@@ -16,7 +16,7 @@ public class Listing7_41 {
    * ───────────────────────────────────────────────────────
    */
   Comparator<AuditFinding> comparator =           //  ┐
-          comparing(Chapter7::findingsImpact)     //  │◄── We’ll just look at just one of the
+          comparing(Chapter07::findingsImpact)     //  │◄── We’ll just look at just one of the
               .thenComparing(AuditFinding::name); //  ┘    data types for ease of example.
 
   void testReflexivity() {
@@ -71,7 +71,7 @@ public class Listing7_41 {
 
   enum CustomerImpact { HARMS, FAVORS }
 
-  static class Chapter7 {
+  static class Chapter07 {
     static CustomerImpact findingsImpact(AuditFinding finding) {
       return CustomerImpact.FAVORS;
     }

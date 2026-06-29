@@ -12,7 +12,7 @@ public class Listing7_25 {
    * ───────────────────────────────────────────────────────
    */
   void example() {
-    for (int i = Integer.MIN_VALUE; i<Integer.MAX_VALUE; i++) {
+    for (int i = Integer.MIN_VALUE; i < Integer.MAX_VALUE; i++) {
 //           ▲
 //           └──── Our main design phrase: "For all possible Integers,
 //                 it holds that..."

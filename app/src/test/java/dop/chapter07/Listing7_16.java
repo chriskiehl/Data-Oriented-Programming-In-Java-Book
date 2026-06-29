@@ -25,7 +25,7 @@ public class Listing7_16 {
 //                                                     combining lists, but they don’t have to be!
        .reduce(Map.of(), (map1, map2) -> add(
             map1, map2,
-            Chapter7::add));
+            Chapter07::add));
 //               ▲
 //               └──── The main logic is looping over the elements and applying a
 //                     binary operation. It doesn’t care what that operation does
@@ -42,7 +42,7 @@ public class Listing7_16 {
     return left;
   }
 
-  static class Chapter7 {
+  static class Chapter07 {
     static <T> List<T> add(List<T> list1, List<T> list2) {
       return Stream.concat(list1.stream(), list2.stream()).toList();
     }

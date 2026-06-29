@@ -27,7 +27,7 @@ public class Listing7_46 {
 
   static Policy add(Policy x, Policy y) {
     Comparator<Policy> comparator =
-        comparing(Chapter7::policyImpact)
+        comparing(Chapter07::policyImpact)
             .thenComparing(Policy::name);
     return maxBy(comparator).apply(x, y);
 //         ▲
@@ -36,7 +36,7 @@ public class Listing7_46 {
   }
   static AuditFinding add(AuditFinding x, AuditFinding y) {
       Comparator<AuditFinding> comparator =
-        comparing(Chapter7::findingsImpact)
+        comparing(Chapter07::findingsImpact)
             .thenComparing(AuditFinding::name);
     return maxBy(comparator).apply(x, y);
 //         ▲
@@ -61,7 +61,7 @@ public class Listing7_46 {
     BILLING_ERROR, OUT_OF_COMPLIANCE, INACCURATE, NO_ISSUE
   }
 
-  static class Chapter7 {
+  static class Chapter07 {
     static CustomerImpact policyImpact(Policy policy) {
       return CustomerImpact.FAVORS;
     }
