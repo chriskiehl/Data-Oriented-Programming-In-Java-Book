@@ -15,13 +15,13 @@ public class Listing7_39 {
    */
   static Policy add(Policy x, Policy y) {
     Comparator<Policy> comparator =                        //  ┐
-        comparing(Chapter7::policyImpact)                  //  │◄── Expressing our problem in
+        comparing(Chapter07::policyImpact)                 //  │◄── Expressing our problem in
             .thenComparing(Policy::name);                  //  ┘    terms of Comparator
     return comparator.compare(x, y) > 0 ? y : x;
   }
   static AuditFinding add(AuditFinding x, AuditFinding y) {
     Comparator<AuditFinding> comparator =                  //  ┐
-        comparing(Chapter7::findingsImpact)                //  │◄── Our refactor has about the
+        comparing(Chapter07::findingsImpact)               //  │◄── Our refactor has about the
             .thenComparing(AuditFinding::name);            //  ┘    same number of lines of code,
                                                            //       but our implementation is reading much more
                                                            //       like our requirements. “Sort by favorability,
@@ -54,7 +54,7 @@ public class Listing7_39 {
     BILLING_ERROR, OUT_OF_COMPLIANCE, INACCURATE, NO_ISSUE
   }
 
-  static class Chapter7 {
+  static class Chapter07 {
     static CustomerImpact policyImpact(Policy policy) {
       return CustomerImpact.FAVORS;
     }

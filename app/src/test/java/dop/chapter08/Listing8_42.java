@@ -1,21 +1,19 @@
 package dop.chapter08;
 
 public class Listing8_42 {
-    /**
-     * ───────────────────────────────────────────────────────
-     * Listing 8.42
-     * ───────────────────────────────────────────────────────
-     * Creating a wrapper type with extra type information
-     * ───────────────────────────────────────────────────────
-     */
 
-//        ┌───────┐
-    record Attr<A>(Attribute value){}
-//        └───────┘
-//            We can do this, though!
+  /**
+   * ───────────────────────────────────────────────────────
+   * Listing 8.42
+   * ───────────────────────────────────────────────────────
+   * Creating a wrapper type with extra type information
+   * ───────────────────────────────────────────────────────
+   */
 
-
-
+//      ┌───────┐
+  record Attr<A>(Attribute value) {}
+//      └───────┘
+//          We can do this, though!
 
 
 
@@ -24,8 +22,6 @@ public class Listing8_42 {
 
 
 
+  enum Attribute { REGION, COUNTRY, SECTOR, SEGMENT, CHANNEL }
 
-
-
-    enum Attribute {REGION, COUNTRY, SECTOR, SEGMENT, CHANNEL}
 }
